@@ -1,0 +1,15 @@
+{
+  "schema": "lintel.adapter_proposal.v0",
+  "adapter_id": "triton.v0",
+  "graph_hash": "sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0",
+  "hw_id": "nvidia.b200.80gb",
+  "compiler_ver": "triton==3.3.0+cu128",
+  "schedule": {
+    "num_warps": 8,
+    "num_stages": 3,
+    "block_m": 128,
+    "block_n": 64,
+    "block_k": 64
+  },
+  "gates": ["smem", "occupancy", "compile_ok"]
+}

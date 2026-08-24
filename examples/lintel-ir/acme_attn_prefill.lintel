@@ -1,4 +1,6 @@
 // Lintel IR v0 — control plane only. Does not lower to CUDA.
+// Degenerate one-block CFG. Opaque enum_id is the degenerate L4 form.
+// Year-1 executable: examples/poc/ (CFG + typed Triton schedule).
 // Terminator `land` lowers to admit-record decision=freeze.
 // Lowers to examples/admit-record.json
 

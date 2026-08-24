@@ -1,6 +1,6 @@
 # Lintel IR — control plane
 
-**Lintel IR** is the control-plane IR. Cake IR is a schedule IR. Triton / Tile / HIP / Cake IR plug in behind `adapter`. They are not Lintel IR.
+**Lintel IR** is the control-plane IR. Cake IR is a schedule IR **if** we ever wrap it as an adapter. Year-1 L4 is a **typed Triton schedule** ([DATA_PLANE.md](DATA_PLANE.md)). Triton / Tile / HIP / Cake IR plug in behind `adapter`. They are not Lintel IR.
 
 A module is one specialize plan at a cache key `%k`. Year-1 **executable** modules are the [PoC](POC.md) (CFG + `cost` + compile to ADG). A linear block is a CFG with one `^entry`. The agent fills enumerated slots. The compiler owns lowering, measurement, and fallback — and **compiles this plan to an ADG**. Serve does not interpret Lintel IR. Serve is `lookup(%k)`.
 
@@ -27,7 +27,7 @@ E2E stack: [ARCHITECTURE.md](ARCHITECTURE.md). Merge ticket: [ADMIT_RECORD.md](A
               ▼
      store[ %k ] = artifact.digest     ← serve is lookup(%k)
               │
-     adapter IR  Triton · Tile · HIP · Cake IR
+     adapter IR  Triton typed schedule · Tile · HIP · Cake IR (later wrap)
               │
               ▼
      classical lowering → serve
@@ -41,7 +41,7 @@ E2E stack: [ARCHITECTURE.md](ARCHITECTURE.md). Merge ticket: [ADMIT_RECORD.md](A
 |---|---|---|
 | **`cache_key`** | Bind `%k` = hash(graph, hw, compiler, adapter, policy) | Not add fields; not put `model` or `enum_id` in the key |
 | `triage` | Amdahl cut | Allowlisted regions only |
-| `propose` | Bind `enum_id` from the adapter | Pick from the enum. No `paste_cuda` |
+| `propose` | Bind allowlisted `enum_id` + **schedule record** | Pick from the two PoC records. No `paste_cuda`. Opaque field-strings are degenerate. |
 | `gate` | Oracle; fail → `{where, reason, seam}` | Not skip a required gate |
 | `measure` | Bench / serving A/B | Not invent a number |
 | `fitness` | Score vs last_good under pinned \(F\) | Not change \(F\) on the SLA path |
@@ -104,7 +104,7 @@ module @rec_acme_attn_prefill_014 version "lintel-ir.v0" {
   ^entry:
     %k  = cache_key @attn_prefill, pins
     %r  = triage @attn_prefill
-    %p  = propose propose_schedule "triton.attn.num_warps=8.block_m=128"
+    %p  = propose propose_schedule "triton.attn.w8.m128", schedule { num_warps=8, block_m=128, … }
     %g0 = gate golden     %p owner @kernels.acme
     %g1 = gate numerical  %p owner @kernels.acme { max_abs_err = 1e-3 }
     %g2 = gate serving_ab %p owner @serving.acme
@@ -130,7 +130,7 @@ Serve still `lookup(%k)` → previous digest.
 
 1. `cache_key` fields are exactly the v0 set. `model` or `enum_id` in the key → `reject`.
 2. Every terminator names `%k`.
-3. `propose.enum_id` ∈ adapter enum.
+3. `propose.enum_id` ∈ adapter allowlist; `propose.schedule` matches the slot (PoC). Linear v0 may omit `schedule` (degenerate).
 4. Every SLA `gate` has `owner`.
 5. No opcode writes kernel text.
 6. `fitness.F` is pinned by `policy`.
@@ -139,7 +139,7 @@ Serve still `lookup(%k)` → previous digest.
 
 | SLA (`mode=sku`) | Lab (`mode=lab`) |
 |---|---|
-| Fill `enum_id` / triage from allowlists | Looser propose; still no `land` without gates |
+| Fill `enum_id` / `schedule` / triage from allowlists | Looser propose; still no `land` without gates |
 | Commentary | Same |
 | **Cannot** add opcodes, drop gates, rewrite `%k` | Still cannot `land` without the SLA plan |
 
@@ -147,14 +147,14 @@ Serve still `lookup(%k)` → previous digest.
 
 | When | Work |
 |---|---|
-| **Now** | Linear v0 (degenerate) + [PoC](POC.md) CFG/cost/ADG |
-| **Q1** | Compile PoC module → ADG; interpret ADG; `store[%k]`; replay |
+| **Now** | Linear v0 (degenerate) + [PoC](POC.md) CFG/cost/ADG + typed Triton schedule |
+| **Q1** | Compile PoC module → ADG; interpret ADG; `store[%k]`; replay; `adapter_gate` `{where}` |
 | **Q3** | Second adapter = new enum / `adapter_id` (new keys), not a new IR |
 | **After PoC exit** | Coverage: `%w`, policy-hash, more edges ([LATER.md](LATER.md)). Same kernel `%k` |
 
 ## Non-goals
 
-- Not Cake IR, Tile IR, Triton AST, or `opt`.
+- Not Cake IR as the SKU (year-1 L4 is a typed Triton schedule; [DATA_PLANE.md](DATA_PLANE.md)).
 - Not one agent IR for all vendors (**C4**).
 - Not a year-1 MLIR dialect in this plan repo.
 - Not putting the LLM in `lookup(%k)`.

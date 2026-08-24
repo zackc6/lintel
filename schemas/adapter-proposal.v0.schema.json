@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zackc6/lintel/schemas/adapter-proposal.v0.schema.json",
+  "title": "Lintel adapter proposal v0 (typed schedule)",
+  "description": "Year-1 data-plane payload for propose. Triton-legal fields only. Not Cake IR.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "adapter_id", "schedule"],
+  "properties": {
+    "schema": { "const": "lintel.adapter_proposal.v0" },
+    "adapter_id": {
+      "type": "string",
+      "description": "Year-1 live: triton.v0. Later: tile.v0, hip.v0, cake.v0, …"
+    },
+    "graph_hash": { "type": "string" },
+    "hw_id": { "type": "string" },
+    "compiler_ver": { "type": "string" },
+    "schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["num_warps", "block_m", "block_n", "block_k"],
+      "properties": {
+        "num_warps": { "type": "integer", "minimum": 1, "maximum": 32 },
+        "num_stages": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "block_m": { "type": "integer", "minimum": 16 },
+        "block_n": { "type": "integer", "minimum": 16 },
+        "block_k": { "type": "integer", "minimum": 16 }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["smem", "occupancy", "tma_align", "compile_ok"]
+      }
+    },
+    "reject": {
+      "type": "object",
+      "description": "Present only when adapter_gate fails. Control IR copies {where, hint} onto the CFG edge.",
+      "additionalProperties": false,
+      "required": ["ok", "where"],
+      "properties": {
+        "ok": { "const": false },
+        "where": {
+          "type": "string",
+          "enum": ["smem", "occupancy", "tma_align", "compile_ok"]
+        },
+        "hint": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    }
+  }
+}

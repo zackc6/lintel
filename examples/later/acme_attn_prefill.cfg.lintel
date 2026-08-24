@@ -1,5 +1,6 @@
 // Coverage sketch after PoC. Year-1 executable is examples/poc/.
 // Same CFG family; this file is the source if PoC and coverage diverge.
+// Opaque enum strings here are not the live L4; PoC uses typed schedule + {where}.
 
 module @rec_acme_attn_prefill_cfg version "lintel-ir.v1-sketch" {
 

@@ -6,7 +6,7 @@ The JSON is the **lowering** of a [Lintel IR](LINTEL_IR.md) module (`land` → `
 
 ## Freeze (this one ships)
 
-Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% of GPU time. Overnight CI proposed one **enumerated** Triton schedule. Oracles passed. Serving \(F\) is up ~8% with quality parity. They merge the digest, not the chat.
+Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% of GPU time. Overnight CI proposed one **allowlisted** Triton **schedule record** (warps/block/stages, not an opaque string). Adapter `{where}` gates passed. Oracles passed. Serving \(F\) is up ~8% with quality parity. They merge the digest, not the chat.
 
 ```json
 {
@@ -30,10 +30,23 @@ Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% o
   "actions": [
     {
       "kind": "propose_schedule",
-      "enum_id": "triton.attn.num_warps=8.block_m=128"
+      "enum_id": "triton.attn.w8.m128",
+      "schedule": {
+        "num_warps": 8,
+        "num_stages": 3,
+        "block_m": 128,
+        "block_n": 64,
+        "block_k": 64
+      }
     }
   ],
   "oracles": [
+    {
+      "name": "adapter.smem",
+      "version": "0.1.0",
+      "result": "pass",
+      "false_neg_owner": "kernels@acme"
+    },
     {
       "name": "golden",
       "version": "0.1.0",
@@ -78,7 +91,7 @@ Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% o
 |---|---|---|
 | `region.graph_hash` | Which IR/region this applies to | Revert and bisect target this hash, not a Slack thread |
 | `pins` | HW + Triton + adapter + **model** + **policy** | Compiler bump or model swap is a new attempt, not a silent retune |
-| `actions[].enum_id` | The only legal move | Not free CUDA paste. If it is not in the enum, it is not on the SLA path |
+| `actions[].enum_id` + `schedule` | Allowlist slot + typed Triton fields | Not free CUDA paste. Opaque `num_warps=8.…` strings are degenerate. If the slot is not allowlisted, it is not on the SLA path |
 | `oracles[].false_neg_owner` | Who gets paged if this gate was wrong | Unnamed owner ⇒ that oracle cannot gate GA |
 | `artifact.digest` | Bytes they serve | Serve path loads this. No LLM |
 | `fitness` | Serving \(F\) vs last freeze, plus **$/compile** | Kernel microbench cannot freeze by itself |
@@ -89,7 +102,7 @@ Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% o
 
 ## Fallback (this one does *not* ship)
 
-Same region, different enum (`num_warps=16`). Kernel bench looked faster. Serving parity failed. `decision: fallback` — they keep serving the previous digest.
+Same region, different schedule (`w16.m64`). Kernel bench looked faster. Serving parity failed. `decision: fallback` — they keep serving the previous digest.
 
 See [`examples/admit-record.fallback.json`](../examples/admit-record.fallback.json). The record still exists (audit). The serve path does not change.
 

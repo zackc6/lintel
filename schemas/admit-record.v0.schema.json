@@ -69,7 +69,18 @@
           "enum_id": {
             "type": "string",
             "minLength": 1,
-            "description": "Must be in the adapter's enumerated action space. Not free text."
+            "description": "Allowlist slot. Not free text. Opaque field-strings are degenerate; PoC payload is schedule."
+          },
+          "schedule": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "num_warps": { "type": "integer" },
+              "num_stages": { "type": "integer" },
+              "block_m": { "type": "integer" },
+              "block_n": { "type": "integer" },
+              "block_k": { "type": "integer" }
+            }
           }
         }
       }

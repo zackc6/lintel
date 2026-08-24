@@ -19,7 +19,7 @@ Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compil
 | **C2** vendor headlines vs p50 | Someone publishes default-path p50/p90 + cost | Report *partner* traces in that format. Do not fake it earlier. |
 | **C3-A** free rewrite wins a public suite | Widen action enums *behind admit* | Oracles stay. Free CUDA paste is still not the demo. |
 | **C3-B** constrained actions hold (current lean) | Keep narrow enums | Sell as the safety story. |
-| **C4** Triton vs Tile vs Cake IR vs Argus | Surface fragments | Ship another `adapter` provider. Portable schema was the year-1 bet. |
+| **C4** Triton vs Tile vs Cake IR vs Argus | Surface fragments | Ship another `adapter` provider. Year-1 live L4 is a **typed Triton schedule**, not Cake IR. Portable schema was the year-1 bet. |
 | **C5** online vs freeze-before-serve | Vendors name ACF workflows in release notes | Integrate; we remain the cross-vendor admit/freeze layer. |
 | **C6-A** agents replace compilers | — | **Do not follow.** Wrong company. |
 | **C6-B** hybrid (current lean) | — | Stay. Kill switch if fallback is never drilled. |
@@ -34,11 +34,11 @@ Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), repl
 
 | T | Year-1 | Year-2 door |
 |---|---|---|
-| **T1** typed agent↔compiler interface | **Lintel IR** + [PoC](POC.md) CFG/`cost`/ADG + admit-record lowering | Coverage [LATER.md](LATER.md); still one Lintel IR |
+| **T1** typed agent↔compiler interface | **Lintel IR** + [PoC](POC.md) CFG/`cost`/ADG **and** typed Triton schedule + `{where}` ([DATA_PLANE.md](DATA_PLANE.md)) | Coverage [LATER.md](LATER.md); `@cake.v0` wrap only; still one Lintel IR |
 | **T2** admit / fallback | Layered oracles + last_good / classical | SMT / Alive2 as `oracle` providers |
 | **T3** freeze + replay | Lintel IR `%k = cache_key(...)`; serve is `lookup(%k)` | Policy bundles |
 | **T4** in-tree advisors | Out | Out unless a customer funds job (b) |
-| **T5** dialect/ISA feedback | **Lite only:** recurring failures → new oracle plugin or tighter enum (test-gated) | Not ISA RFCs |
+| **T5** dialect/ISA feedback | **Lite:** PoC `adapter_gate` `{where}`; recurring fails → new check or tighter schedule bound (test-gated) | Not ISA RFCs; L5 `where` is an oracle plugin |
 | **T6** serving A/B | One engine, partner traces | Second engine |
 | **T7** open multi-IR corpora | Out (not a data company) | Consume KernelBook-class data if it helps the Triton adapter |
 | **T8** unified ladder | Refuse KernelBench as GA metric; partner ladder + cost-to-compile | Public method note, not a fake industry p50 |

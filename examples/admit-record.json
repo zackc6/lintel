@@ -19,7 +19,14 @@
   "actions": [
     {
       "kind": "propose_schedule",
-      "enum_id": "triton.attn.num_warps=8.block_m=128"
+      "enum_id": "triton.attn.w8.m128",
+      "schedule": {
+        "num_warps": 8,
+        "num_stages": 3,
+        "block_m": 128,
+        "block_n": 64,
+        "block_k": 64
+      }
     }
   ],
   "cache_key": {
@@ -32,6 +39,13 @@
   },
   "cache_key_digest": "sha256:ec25e38a28d690828ecd63234173704d013c7062aa3e919ba5d31765831c35d7",
   "oracles": [
+    {
+      "name": "adapter.smem",
+      "version": "0.1.0",
+      "result": "pass",
+      "false_neg_owner": "kernels@acme",
+      "detail": "where=smem occupancy=compile_ok"
+    },
     {
       "name": "golden",
       "version": "0.1.0",

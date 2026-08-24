@@ -35,7 +35,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 
 - No `.github/workflows/`. Do not add Actions, pytest gates, or “start Monday” test commands.
 - Customer CI in `docs/` is the **product SKU**, not this repository.
-- `schemas/` and `examples/` are the written contract. `examples/poc/` is the year-1 executable IR. `examples/later/` is coverage. `examples/lintel-ir/` is the degenerate linear form. Do not add `src/`, `pyproject.toml`, or a validator package.
+- `schemas/` and `examples/` are the written contract. `examples/poc/` is the year-1 executable IR **and** typed Triton schedule. `examples/later/` is coverage. `examples/lintel-ir/` is the degenerate linear form. Do not add `src/`, `pyproject.toml`, or a validator package.
 - Do not add `lintel-year1-plan.tar.gz` or `scripts/publish-to-github.sh`.
 
 ## What to edit
@@ -45,14 +45,16 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 | `docs/WHY.md` | Why the IR (it already compiles without us); \(F\), tokens, walks |
 | `docs/PRODUCT.md` | SKU |
 | `docs/ARCHITECTURE.md` | Seams / FSM / adapters |
+| `docs/DATA_PLANE.md` | Cake-class Triton adapter, **not** Cake v2 the language |
+| `docs/ADAPTERS.md` | Live / stub / later `adapter_id`s |
 | `docs/YEAR1.md` | 10/25/50, quarters, GTM |
 | `docs/MARKET.md` | Value, pricing, competitors |
 | `docs/RISKS.md` | Kill switches |
 | `docs/SURVEY_MAP.md` | P/T/C → year-1 choice |
 | `docs/ADMIT_RECORD.md` | Annotated admit record for humans |
 | `docs/LINTEL_IR.md` | Lintel IR laws (`%k`, land / revert / reject) |
-| `docs/POC.md` | Year-1 executable: CFG + cost + ADG. Do not start with linear-only |
+| `docs/POC.md` | Year-1 executable: CFG + cost + ADG **and** typed L4. Do not start with linear-only or opaque enum strings |
 | `docs/LATER.md` | Coverage after PoC. Not delayed by a 10-person cap |
-| `schemas/` `examples/` | v0 linear, poc CFG, later coverage |
+| `schemas/` `examples/` | v0 linear (degenerate), poc CFG+schedule, later coverage |
 
-Keep the hybrid bet: agents search; compilers lower; this product is admit + freeze + replay. Cake and DeepSeek Harness are **mechanisms**, not forks.
+Keep the hybrid bet: agents search; compilers lower; this product is admit + freeze + replay. Cake and DeepSeek Harness are **mechanisms**, not forks. Year-1 L4 is Triton typed schedule, not Cake IR.

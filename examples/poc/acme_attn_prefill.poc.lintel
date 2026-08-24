@@ -1,5 +1,6 @@
 // PoC — lintel-ir.poc. SLA interprets the compiled ADG, not this text.
-// CFG + cost + two enums. Policy owns the graph. Agent fills enum_id only.
+// Control: CFG + cost + two allowlisted schedules. Policy owns the graph.
+// Data plane: typed Triton schedule + adapter_gate {where}. Not Cake IR.
 // Compile → examples/poc/acme_attn_prefill.poc.adg.json
 // Serve is lookup(%k). Not survey M3.
 
@@ -29,13 +30,27 @@ module @rec_acme_attn_prefill_poc version "lintel-ir.poc" {
     revert last_good under %k
 
   ^try0:
-    %p0 = propose propose_schedule "triton.attn.num_warps=8.block_m=128"
+    %p0 = propose propose_schedule "triton.attn.w8.m128", schedule {
+      num_warps = 8, num_stages = 3, block_m = 128, block_n = 64, block_k = 64
+    }
+    %s0 = gate adapter %p0 owner @kernels.acme
+    cond %s0.ok, ^gold0, ^try1
+      // fail { seam = adapter, where = smem, hint = block_m }
+
+  ^gold0:
     %g0 = gate golden %p0 owner @kernels.acme
     cond %g0.ok, ^num0, ^try1
       // fail { seam = adapter, where = golden, reason = "ref mismatch" }
 
   ^try1:
-    %p1 = propose propose_schedule "triton.attn.num_warps=16.block_m=64"
+    %p1 = propose propose_schedule "triton.attn.w16.m64", schedule {
+      num_warps = 16, num_stages = 2, block_m = 64, block_n = 64, block_k = 64
+    }
+    %s1 = gate adapter %p1 owner @kernels.acme
+    cond %s1.ok, ^gold1, ^giveup
+      // fail { seam = adapter, where = occupancy, hint = num_warps }
+
+  ^gold1:
     %g1 = gate golden %p1 owner @kernels.acme
     cond %g1.ok, ^num1, ^giveup
 

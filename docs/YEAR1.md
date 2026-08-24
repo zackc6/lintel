@@ -1,7 +1,7 @@
 # Year-1 plan (doable, commercial)
 
 **Clock:** 12 months from kickoff (~2026-09 → 2027-08).  
-**IR:** Build the [PoC](POC.md) first — CFG + cost-as-gate + compile-to-ADG on one region. Linear `lintel-ir.v0` is a degenerate one-block CFG, not the Q1 target. Staffing does not cap that set.
+**IR:** Build the [PoC](POC.md) first — CFG + cost-as-gate + compile-to-ADG on one region, **and** a typed Triton schedule + `adapter_gate` `{where}` ([DATA_PLANE.md](DATA_PLANE.md)). Linear `lintel-ir.v0` and opaque `enum_id` strings are degenerate, not the Q1 target. Staffing does not cap that set.
 
 ## Definition of done (commercial, not demo)
 
@@ -15,7 +15,7 @@ Year 1 is **done** only if all of the following are true. Missing any one means 
 6. **Support**: replay pack, spend cap, severity for oracle miss (survey §5.7 checklist #15).
 7. **Contract**: customer owns outputs; telemetry opt-in (P13).
 
-**Not** year-1 done: KernelBench rank, a public Cake-class IR, an AMD port, “agents are the default compiler,” linear-only interpret with no CFG/cost/ADG.
+**Not** year-1 done: KernelBench rank, a public Cake-class IR we own, an AMD port, “agents are the default compiler,” linear-only interpret with no CFG/cost/ADG, opaque-string autotune with no `{where}`.
 
 ## What 10 / 25 / 50 people actually do
 
@@ -63,12 +63,12 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 | Weeks | Build | Exit this slice |
 |---|---|---|
 | 1 | Pins above; [PoC](POC.md) schema + Acme CFG in-repo; sqlite session log | `lintel-ir.poc` frozen |
-| 2–4 | Compile module → ADG; interpret ADG; sandbox runs generated Triton | Walk `^try0` land **and** a revert edge on a toy kernel |
-| 5–8 | Triton adapter + golden + numerical on a pinned shape grid; `cost` uses `last_good.F` | First **internal** freeze through the PoC CFG |
+| 2–4 | Compile module → ADG; interpret ADG; sandbox runs Triton **from a typed schedule** | Walk `^try0` land **and** a revert edge on a toy kernel |
+| 5–8 | Triton adapter: two allowlisted schedules; `adapter_gate` `{where: smem\|occupancy}`; golden + numerical on a pinned shape grid; `cost` uses `last_good.F` | First **internal** freeze through the PoC CFG; one `{where: smem}` → `^try1` |
 | 9–10 | Cache key + replay after an intentional model-id swap; ADG digest pinned | Replay hard-fails on silent decision or ADG change |
-| 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log + ADG |
+| 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log + ADG + typed schedule in the admit record |
 
-**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT, AMD-as-second-live-adapter, a second live GPU vendor. **Do** build CFG, cost, and ADG compile ([POC.md](POC.md)). Serving A/B nodes in the CFG may stub until Q2 — do not stub `cond` or `cost`.
+**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT, AMD-as-second-live-adapter, a second live GPU vendor. **Do** build CFG, cost, ADG compile, and the typed Triton schedule + `{where}` ([POC.md](POC.md), [DATA_PLANE.md](DATA_PLANE.md)). Serving A/B nodes in the CFG may stub until Q2 — do not stub `cond`, `cost`, or `adapter_gate`.
 
 ## Quarter plan (critical path)
 
@@ -77,17 +77,17 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 **Build**
 
 - Admit-record schema v0 is **already in this repo**; Q1 implements session store + **PoC ADG interpreter** on top of it ([POC.md](POC.md)).
-- Seams: `llm`, `tools`, `sandbox`, `adapter` (Triton default; home-fleet swap is week 1), `oracle={golden,numerical}`; `cost` is a control op, not a new seam.
+- Seams: `llm`, `tools`, `sandbox`, `adapter` (Triton **typed schedule**; home-fleet swap is week 1), `oracle={golden,numerical}`; `cost` is a control op, not a new seam. `adapter_gate` is the adapter seam, not a new IR.
 - Control FSM = walk the Acme CFG (blocks + `cond`), not a single linear block.
 - One internal model, one hot op family (attention **or** GEMM — pick by partner, not by paper).
 
 **Do not build**
 
-- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT. A *second* GPU vendor.
+- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT. A *second* GPU vendor. Dual live L4.
 
 **Exit**
 
-- Internal CI compiles the PoC module to an ADG, walks it, and produces a frozen Triton artifact that is numerically admitted (or a documented revert edge), with a replayable log. Fallback path demonstrated.
+- Internal CI compiles the PoC module to an ADG, walks it, and produces a frozen Triton artifact that is numerically admitted (or a documented revert edge), with a replayable log. Schedule record is in the admit record. One `adapter_gate` `{where}` fail is exercised. Fallback path demonstrated.
 
 ### Q2 — Serving \(F\) and first partner (months 3–6)
 
@@ -95,7 +95,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 - Amdahl triage on a **warm** server (GEAK v4 pattern: do not burn search on cold kernels).
 - Serving seam: shadow or A/B + **output parity** on the chosen engine.
-- Localized reject strings (Cake-class diagnostics) on the Triton adapter.
+- T5-lite: grow adapter checks from recurring `{where}` fails (tighter schedule bounds, test-gated).
 - Artifact cache keys + partner-facing replay pack.
 
 **Staffing note.** If you can hire toward 15, the extra five go to solutions + serving oracles, not a second IR.
@@ -166,7 +166,7 @@ Overnight/CI specialize is the default. Interactive search is a labeled lab tier
 
 | When | Milestone | Survey hook |
 |---|---|---|
-| M1 (Q1) | PoC ADG walk on one op, freeze + fallback | T1/T2/T10-lite |
+| M1 (Q1) | PoC ADG walk on one op, freeze + fallback + typed schedule `{where}` | T1/T2/T10-lite |
 | M2 (Q2) | Warm-server A/B + parity on partner traces | T6, C2 *instrumented* |
 | M3 (Q3) | Two artifacts in partner VCS; replay after model swap | T3, C5 *path* |
 | M4 (Q4) | GA SKU; customer-owned outputs; support runbooks | P11–P15 |

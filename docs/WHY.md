@@ -13,7 +13,7 @@ Torch → Inductor / Triton → PTX → SGLang or vLLM already lowers, serves, a
 | Without Lintel IR | With it |
 |---|---|
 | Classical compile + serve | Unchanged — we do not replace L1–L7 |
-| Agent is a script or chat: skip a gate, paste CUDA, reorder steps | Closed opcodes. Agent fills `enum_id` only |
+| Agent is a script or chat: skip a gate, paste CUDA, reorder steps | Closed opcodes. Agent fills allowlisted **schedule fields** only |
 | Cache key is informal; model swap silently retunes | `%k` first-class. Same key ⇒ same terminator or **hard fail** |
 | Easy to re-run the agent on the serve path | Serve is `lookup(%k)` |
 | Git reviews a kernel diff or a transcript | Module **lowers** to an admit record |
@@ -21,7 +21,7 @@ Torch → Inductor / Triton → PTX → SGLang or vLLM already lowers, serves, a
 | Cost is a comment after the fact | `cost` can skip L6 A/B before spend |
 | Plan is whatever the prompt emitted | Compile to ADG; policy owns the graph |
 
-The IR is **T1 + T2 + T3** (typed interface, layered admit, pin-at-`%k` + replay). It is not “how kernels compile.” Cake IR / Triton still do **L4**. `opt` still does **L3/L5**.
+The IR is **T1 + T2 + T3** (typed interface, layered admit, pin-at-`%k` + replay). It is not “how kernels compile.” Triton still does **L4** (year-1: typed schedule, [DATA_PLANE.md](DATA_PLANE.md)). Cake IR / Tile are later adapters. `opt` still does **L3/L5**.
 
 **Survey M3** (LLM replaces the compiler) is out. **YEAR1 M3** (Q3: two artifacts in partner git + replay) is a milestone, not that cell.
 
@@ -46,7 +46,7 @@ We do **not** claim: default-on for every build, beat cuBLAS on all families, un
 
 ```text
  L1–L2 graph ── triage / graph_hash
- L3–L5 classical lower of L4 enum (Triton …)
+ L3–L5 classical lower of L4 **schedule** (Triton …)
  L6 serve lookup(%k)
  L7 place (not in PoC)
         │
@@ -70,8 +70,9 @@ Lowering: [examples/admit-record.json](../examples/admit-record.json).
 
 ```text
 ^entry  triage hot
-^try0   propose num_warps=8.block_m=128     ← L4 enum only
-        gate golden, numerical              ← after L5 cubin
+^try0   propose schedule {num_warps=8, block_m=128, …}  ← typed L4, allowlisted
+        gate adapter {where}            ← pre-compile, Cake-class
+        gate golden, numerical          ← after L5 cubin
         cost worth_measure
 ^ab0    serving_ab pass  (+8.1% tokens/s, parity=1)
 ^fit0   land under %k    usd_per_compile=38.4
@@ -85,8 +86,8 @@ serve   lookup(%k) → sha256:0e0ecbef…       ← L6, no LLM
 Lowering: [examples/admit-record.fallback.json](../examples/admit-record.fallback.json).
 
 ```text
-^try1   propose num_warps=16.block_m=64
-        golden + numerical pass
+^try1   propose schedule {num_warps=16, block_m=64, …}
+        adapter_gate + golden + numerical pass
 ^ab1    serving_ab fail { where = serving.output_parity, reason = "3/1000" }
         → revert last_good under %k
 serve   still lookup(%k) → previous digest
@@ -120,13 +121,26 @@ PoC CFG: after numerical, `cond %c.worth_measure, ^ab0, ^try1` (or `^giveup`).
 
 **Benefit.** No silent retune. Compiler bump (`triton==3.3.0` → next) is a **new** `%k` and must re-land.
 
+### Walk F — adapter `{where: smem}` (Cake-class L4, not Cake IR)
+
+Payload: [examples/poc/acme_attn_prefill.adapter-reject.json](../examples/poc/acme_attn_prefill.adapter-reject.json).
+
+```text
+^try0   propose schedule { block_m = 256, … }
+        gate adapter fail { where = smem, hint = block_m }
+        → ^try1     // next allowlisted record; do not nvcc this one
+```
+
+**Benefit.** The agent (or the next enum) mutates **`block_m`**, not the whole kernel text. Opaque `enum_id` strings cannot say this. A Lintel Cake dialect is not required to say this.
+
 ## 5. Band cheat-sheet (same walks)
 
 | Walk step | Band | IR |
 |---|---|---|
 | `region` / `graph` | L1→L2 | identity in `%k` |
 | `triage` / `^cold` | L1 cut | skip search |
-| `propose` enum | L4 | Triton schedule, not CUDA text |
+| `propose` schedule | L4 | Typed Triton fields, not CUDA text |
+| `gate adapter` `{where}` | L4 pre-compile | Cake-class localized reject |
 | `gate golden/numerical` | L4 after L5 | cubin oracles |
 | `cost` | control | skip L6 spend |
 | `gate serving_ab` / `land` | L6 | freeze; serve = lookup |
@@ -138,8 +152,8 @@ Lintel IR never lowers to CUDA. L3/L5 stay classical. L0 / job (b) never appears
 
 | Pass | Control IR | Adapter (L4→L5) |
 |---|---|---|
-| Check | Well-formed CFG, `%k` laws, `cost.F` == policy | Enum is a legal schedule |
-| Lower | Module → ADG | Enum → kernel / PTX |
+| Check | Well-formed CFG, `%k` laws, `cost.F` == policy | Schedule is Triton-legal; `{where}` on `adapter_gate` |
+| Lower | Module → ADG | Schedule → kernel / PTX |
 | Run | Walk ADG in CI | Measure / A/B |
 | Serve | Nothing | Load frozen cubin |
 

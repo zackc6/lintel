@@ -1,27 +1,46 @@
 {
   "schema_version": "lintel-adg.poc",
   "module_id": "rec_acme_attn_prefill_poc",
-  "commentary": "T10 lite: compile of examples/poc/acme_attn_prefill.poc.json. SLA interprets this ADG. Serve does not.",
+  "commentary": "T10 lite: compile of examples/poc/acme_attn_prefill.poc.json. SLA interprets this ADG. Serve does not. Adapter_gate {where} is an edge, same as golden.",
   "entry": "entry",
-  "agent_slots": ["propose.enum_id", "triage.region"],
-  "kernel_cache_key_note": "%k = hash(graph, hw, compiler, adapter, policy) — unchanged",
+  "agent_slots": ["propose.enum_id", "propose.schedule", "triage.region"],
+  "kernel_cache_key_note": "%k = hash(graph, hw, compiler, adapter, policy) — schedule is payload at the key, not in it",
   "adg": [
     { "id": "entry", "ops": ["cache_key", "triage"], "ok": "try0", "fail": "cold", "pred": "hot" },
     { "id": "cold", "term": "revert" },
     {
       "id": "try0",
-      "ops": ["propose", "gate.golden"],
+      "ops": ["propose", "gate.adapter"],
+      "ok": "gold0",
+      "fail": "try1",
+      "enum_id": "triton.attn.w8.m128",
+      "where": "smem",
+      "hint": "block_m",
+      "owner": "kernels@acme"
+    },
+    {
+      "id": "gold0",
+      "ops": ["gate.golden"],
       "ok": "num0",
       "fail": "try1",
-      "enum_id": "triton.attn.num_warps=8.block_m=128",
+      "where": "golden",
       "owner": "kernels@acme"
     },
     {
       "id": "try1",
-      "ops": ["propose", "gate.golden"],
+      "ops": ["propose", "gate.adapter"],
+      "ok": "gold1",
+      "fail": "giveup",
+      "enum_id": "triton.attn.w16.m64",
+      "where": "occupancy",
+      "hint": "num_warps",
+      "owner": "kernels@acme"
+    },
+    {
+      "id": "gold1",
+      "ops": ["gate.golden"],
       "ok": "num1",
       "fail": "giveup",
-      "enum_id": "triton.attn.num_warps=16.block_m=64",
       "owner": "kernels@acme"
     },
     { "id": "giveup", "term": "revert" },

@@ -37,8 +37,30 @@
             "op": "propose",
             "id": "p0",
             "kind": "propose_schedule",
-            "enum_id": "triton.attn.num_warps=8.block_m=128"
+            "enum_id": "triton.attn.w8.m128",
+            "schedule": {
+              "num_warps": 8,
+              "num_stages": 3,
+              "block_m": 128,
+              "block_n": 64,
+              "block_k": 64
+            }
           },
+          { "op": "gate", "id": "s0", "oracle": "adapter", "on": "p0", "owner": "kernels@acme" }
+        ],
+        "cond": {
+          "pred": "s0.ok",
+          "then": "gold0",
+          "else": "try1",
+          "seam": "adapter",
+          "where": "smem",
+          "hint": "block_m",
+          "reason": "shared memory exceeds device limit"
+        }
+      },
+      {
+        "id": "gold0",
+        "ops": [
           { "op": "gate", "id": "g0", "oracle": "golden", "on": "p0", "owner": "kernels@acme" }
         ],
         "cond": {
@@ -57,8 +79,29 @@
             "op": "propose",
             "id": "p1",
             "kind": "propose_schedule",
-            "enum_id": "triton.attn.num_warps=16.block_m=64"
+            "enum_id": "triton.attn.w16.m64",
+            "schedule": {
+              "num_warps": 16,
+              "num_stages": 2,
+              "block_m": 64,
+              "block_n": 64,
+              "block_k": 64
+            }
           },
+          { "op": "gate", "id": "s1", "oracle": "adapter", "on": "p1", "owner": "kernels@acme" }
+        ],
+        "cond": {
+          "pred": "s1.ok",
+          "then": "gold1",
+          "else": "giveup",
+          "seam": "adapter",
+          "where": "occupancy",
+          "hint": "num_warps"
+        }
+      },
+      {
+        "id": "gold1",
+        "ops": [
           { "op": "gate", "id": "g1", "oracle": "golden", "on": "p1", "owner": "kernels@acme" }
         ],
         "cond": { "pred": "g1.ok", "then": "num1", "else": "giveup" }

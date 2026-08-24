@@ -29,6 +29,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 
 - KernelBench rank without cost-to-compile.
 - A Cake IR prototype that only we can compile.
+- “Cake v2” as a new kernel language (the adapter contract is already the PoC).
 - A DeepSeek Harness skin with no `verify` seam.
 - “15% vendor-headline” charts (survey C2 tension).
 - Headcount 50 before M2 (partner A/B).
@@ -38,7 +39,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 ## Year-2 doors we leave open (not commitments)
 
 - Argus-class SMT as an `oracle` provider.
-- Cake-class schedule IR as an `adapter` if a tree exists or a customer funds it.
+- `@cake.v0` **wrap** (their compiler) if a public tree exists or a customer funds it — not a Lintel Cake dialect. Year-1 already has Cake **mechanisms** on Triton ([DATA_PLANE.md](DATA_PLANE.md)).
 - DSH bundle packaging if `dsh-plugin` is the distribution ABI.
 - CFG / cost-as-gate / T10 **coverage** (`%w`, policy-hash, placement) after the [PoC](POC.md) ADG walk is real ([LATER.md](LATER.md)).
 - Job (c) comments on kernel PRs (never “we review llvm-project”).
