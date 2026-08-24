@@ -4,7 +4,7 @@
 
 Lintel is **not** a new `opt` / Inductor / Triton, and **not** a generic coding agent. Agents search and synthesize; classical compilers lower, measure, and fall back; Lintel owns the **typed contract, layered admit, freeze, and replay** so that loop can be sold.
 
-This repository is the **year-1 plan plus the v0 contract** a team can start from on Monday. It is not a compiler. It does not fork [Cake](https://arxiv.org/abs/2608.12629) or [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). It takes Cake’s **typed schedule contract + localized reject + evolving harness** and DSH’s **plugin seams + append-only session log**, and composes them as the product kernel. Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (read in place; this repo does not copy it).
+This repository is a **year-1 plan** (plus a written v0 contract in `schemas/` / `examples/`). It is not a compiler and it does not run CI. It does not fork [Cake](https://arxiv.org/abs/2608.12629) or [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). It takes Cake’s **typed schedule contract + localized reject + evolving harness** and DSH’s **plugin seams + append-only session log**, and composes them as the product kernel. Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (read in place; this repo does not copy it).
 
 **Year-1 SKU.** CI/hot-path specialize on Amdahl-ranked kernels → layered admit → freeze a content-addressed artifact → serving A/B on one engine → classical fallback. Customer owns the artifact. No LLM on the serve path.
 
@@ -12,14 +12,7 @@ This repository is the **year-1 plan plus the v0 contract** a team can start fro
 
 ## Start Monday
 
-Week-1 decisions (irreversible-ish) are in [docs/YEAR1.md](docs/YEAR1.md). The contract already exists:
-
-```bash
-python3 -m venv .venv && . .venv/bin/activate
-pip install -e ".[dev]"
-python -m pytest -q
-python -m lintel --admit examples/admit-record.json --session examples/session-log.jsonl
-```
+Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Read the docs; `schemas/` and `examples/` are the written contract, not a package to test in this repo.
 
 | Path | What it is |
 |---|---|

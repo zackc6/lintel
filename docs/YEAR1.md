@@ -62,7 +62,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 | Weeks | Build | Exit this slice |
 |---|---|---|
-| 1 | Pins above; admit schema freeze (already v0 in this repo); sqlite session log | `lintel-validate` in CI |
+| 1 | Pins above; admit schema freeze (already v0 in this repo); sqlite session log | Schema v0 frozen in-repo |
 | 2–4 | FSM + seams + sandbox that can run generated Triton | One propose → gate → fallback path on a toy kernel |
 | 5–8 | Triton adapter + golden + numerical oracles on a pinned shape grid | First **internal** freeze (faster on the grid or documented miss) |
 | 9–10 | Cache key + replay after an intentional model-id swap | Replay hard-fails on silent decision change |
