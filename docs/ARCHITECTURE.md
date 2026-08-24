@@ -108,6 +108,27 @@ LLM may choose *among enumerated actions* and write rationales. It may not inven
 
 The **portable admit schema + seams** are the only things that must be right in Q1. Wrong IR choice is recoverable. Wrong “we are the compiler” story is not.
 
+## Repo layout (what 10 people grow)
+
+```text
+schemas/                 # v0 contract (do this first; already here)
+examples/                # golden admit + session log
+src/lintel/              # validate, replay, FSM, seam names
+adapters/                # year-1: triton/  year-2: tile/ hip/ cake_ir/
+oracles/                 # golden / numerical / shape_grid / serving_ab
+serving/                 # one provider (sglang XOR vllm)
+cli/                     # lintel run --mode=sku|lab
+docs/                    # this plan
+```
+
+Do not put Cake IR or DeepSeek Harness sources in-tree. If a customer funds a Cake-class adapter, it lives under `adapters/` and speaks the same admit record.
+
+## Kickoff: home fleet is a config, not a fork
+
+Default year-1 adapter is **Triton on NVIDIA** because that is where Cake / CompileIQ / FlashInfer-Bench evidence is densest. If this team’s production fleet is already AMD, Ascend, or another vendor, **swap the Q1 adapter** and keep the schema. Do not run two live adapters until M2 (partner A/B) is green.
+
+Week-1 picks (recorded in the first admit `pins`): GPU family, serving engine, op family. Changing them later is an `adapter`/`serving` provider, not a rewrite.
+
 ## Explicit non-goals (architecture)
 
 - One universal cost model for L1–L7 (survey §5.1.1: no).

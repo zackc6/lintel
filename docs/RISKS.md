@@ -21,6 +21,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 | Partner gain is only a microbench | Do not publish. Require serving \(F\) or drop the claim. |
 | Fallback never exercised | Schedule a fire-drill or we are lying about C6-B. |
 | Token/$ per admitted %\(F\) unknown by end of Q2 | Hiring freeze on net-new roles. |
+| Home fleet is not NVIDIA and we still staff Cake IR | Swap the Q1 adapter; do not dual-track. |
 | Sales demo uses free CUDA rewrite as the happy path | Pull the demo. Constrained actions only. |
 | Roadmap slide says “replace Inductor” | Delete the slide. |
 
@@ -31,6 +32,8 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 - A DeepSeek Harness skin with no `verify` seam.
 - “15% vendor-headline” charts (survey C2 tension).
 - Headcount 50 before M2 (partner A/B).
+- Two live adapters before the first partner canary.
+- A second GPU vendor in Q1 because the org chart asked for it.
 
 ## Year-2 doors we leave open (not commitments)
 

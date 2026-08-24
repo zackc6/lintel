@@ -1,0 +1,9 @@
+# Template — copy to CODEOWNERS when the team exists.
+# Year-1 rule: agent artifacts are human-owned. Auto-merge only for narrow
+# enumerated actions that already passed layered admit (survey P6 / P16).
+#
+# *                    @lintel/founders
+# schemas/             @lintel/control-plane
+# src/lintel/          @lintel/control-plane
+# adapters/            @lintel/compiler
+# oracles/             @lintel/oracles

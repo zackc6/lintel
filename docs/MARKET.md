@@ -15,6 +15,31 @@ Inference labs already pay three bills Lintel is meant to cut. Year-1 sales conv
 
 **Pricing sketch (to stress-test the SKU, not a quote).** Charge for **CI quota + admit/freeze platform + support**, optionally GPU-hours if we host. Do not charge primarily per chat turn. If the only meter is tokens, we have packaged a coding agent (C7) and will lose to DeepSeek Harness + Claude Code on price.
 
+| Band | What they buy | Order-of-magnitude list |
+|---|---|---|
+| Pilot | One op family, one engine, replay pack, solutions hours | $80–150k / year |
+| Specialize (GA) | CI quota, admit/freeze, support, on-prem/VPC | $150–350k / year |
+| Enterprise overlay | Air-gap, SSO, second adapter — **25-person company** | $400k–1M / year |
+
+Outcome-based “% latency saved” pricing waits on a real A/B platform (P20). Not year 1.
+
+## Worked unit economics (one partner, year 1)
+
+**Who.** Mid-size serving team: 2 kernel FTEs, Llama-class decode, attention is ~40% of GPU time, four model/HW drops per year.
+
+**Bill today.** 6–10 engineer-weeks per drop × 4 ≈ 24–40 weeks/year of kernel work, plus leftover perf they never get to. Fully loaded, that is ~0.5–0.8 FTE ($150–350k) *plus* the serving $ they leave on the table.
+
+**What Lintel has to show.**
+
+1. Time-to-admitted-kernel: review an admit record in **1–3 days**, not a two-week Triton archaeology.
+2. Serving \(F\): on *their* traces, **3–12% tokens/s (or TTFT) on the hot kernel**, quality parity, which is roughly **1–5% e2e** if Amdahl is honest. Hero 2× on one shape is not the sale.
+3. Cost-to-compile: tokens + GPU-hours per admitted percent of \(F\), under the published cap.
+4. Risk: last-good/classical fallback drilled; no LLM at serve.
+
+**Buy test.** Price < 0.5 kernel FTE **and** a serving delta they can put on a dashboard. If we only move a microbench, they should not buy — and we should not sell.
+
+**Our year-1 P&L sanity.** Two such partners at ~$200k and a $4M cost base is **not** a business yet. Year 1 is *proof the SKU exists*. Year 2 (second adapter + more partners) is whether it is a company. Do not hire 50 people on two logos.
+
 ## Where the money is in 1 / 2 / 3 years
 
 Survey Horizon A is 2027–28; Horizon B ~2029–31. Lintel year 1 ≈ late Horizon A entry. Years 2–3 are “control plane becomes how orgs survive O(ops × devices × generations)” — still hybrid, still not M3.
@@ -40,13 +65,14 @@ These are **not** “we are better at CUDA than NVIDIA.” Compete on **cross-to
 | **Meta TritorX / KernelEvolve / Helion** | Internal bring-up + DSL | Low externally (little public SKU) | High if they productize | We are not job (d) in year 1 |
 | **PyTorch Inductor / Triton / Helion** | Default data plane | They stay the host | They stay the host | We attach; we do not replace |
 | **FlashInfer + FlashInfer-Bench** | Kernel library + serving-trace ladder | Partner, not enemy | Standard oracle rung | Consume `apply()` as an oracle plugin |
-| **Google Magellan / MLGO / AlphaEvolve Cloud** | Offline heuristics + cloud algo search | Different job (b) / different buyer | Could eat “evolve any code” budget | Stay job (a) specialize; do not become AlphaEvolve |
+| **Google Magellan / MLGO / AlphaEvolve Cloud** | Offline heuristics + **GA cloud coding-agent search** | High for “evolve any code” budgets; low for serving-kernel admit | Could eat the wrong RFP if we sound like a generic agent | Stay job (a) specialize; we sell freeze+oracles, they sell evolutionary coding |
 
 ### Agent runtimes (easy to confuse with us — do not)
 
 | Player | Why people mention them | Why they are not the same SKU |
 |---|---|---|
 | **DeepSeek Harness** | Plugin kernel, session log, huge attention | No compiler oracles; C7. We may **mount on** it later. |
+| **AlphaEvolve Cloud** | Sold evolutionary coding agent | Job (b)/generic search. Different buyer than inference-kernel freeze. |
 | **Claude Code / Cursor / Copilot** | Engineers already live there | SCM UX. Miscompile risk. We sell admit/freeze, not tab-complete. |
 | **Auto / FlowCompile / AgentFlow** | Workflow compile / ADG / freeze spans | Substrate ideas for year 2–3 T10; not a kernel admit product today. |
 
@@ -76,7 +102,7 @@ If a slide cannot say that sentence, it is selling the wrong company.
 
 ## Design-partner profile (year 1)
 
-**Yes:** serving team with ≥1 full-time kernel/compiler person, SGLang or vLLM in production, NVIDIA fleet, a written SLO, willingness to put artifacts in git.
+**Yes:** serving team with ≥1 full-time kernel/compiler person, SGLang or vLLM in production, a written SLO, artifacts in git. NVIDIA is the default fleet; if their fleet is already something else, that is the Q1 adapter — still one vendor.
 
 **No:** “we want an agent to write our compiler”; pre-product model labs with no serving stack; companies whose only metric is KernelBench `fast_p`.
 

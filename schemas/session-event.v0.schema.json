@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zackc6/lintel/schemas/session-event.v0.schema.json",
+  "title": "LintelSessionEvent",
+  "description": "Append-only session log. Model-visible context must be reconstructable from this stream (DeepSeek Harness invariant).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "seq",
+    "ts",
+    "session_id",
+    "kind",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": { "const": "session-event.v0" },
+    "event_id": { "type": "string", "minLength": 1 },
+    "seq": { "type": "integer", "minimum": 0 },
+    "ts": { "type": "string", "format": "date-time" },
+    "session_id": { "type": "string", "minLength": 1 },
+    "parent_session_id": {
+      "type": ["string", "null"],
+      "description": "Set on fork. Resume keeps the same session_id."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "session.start",
+        "triage",
+        "propose",
+        "gate",
+        "measure",
+        "admit",
+        "freeze",
+        "fallback",
+        "fork",
+        "resume"
+      ]
+    },
+    "payload": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "gate" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["seam", "passed"],
+            "properties": {
+              "seam": {
+                "type": "string",
+                "enum": ["llm", "tools", "session", "sandbox", "adapter", "oracle", "serving"]
+              },
+              "passed": { "type": "boolean" },
+              "reject": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["where", "reason"],
+                "properties": {
+                  "where": { "type": "string", "minLength": 1 },
+                  "reason": { "type": "string", "minLength": 1 },
+                  "hint": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

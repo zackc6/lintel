@@ -76,3 +76,26 @@ They will not pay for: a better chat window, a research IR, or “we beat hipBLA
 - Job (d) ASIC bring-up / Zomboss-class mapping (**C9** needs a second shipping vendor; not a 10-person year-1).
 - Autonomous tape-out (**C10** — survey rejects).
 - Multi-month *default-path* A/B as a marketing claim (**C2** still open industry-wide; we *instrument* it, we do not claim settlement).
+
+## Survey commercial checklist (year-1 status)
+
+From survey §5.7. Full P/T/C map: [SURVEY_MAP.md](SURVEY_MAP.md).
+
+| # | Checklist | Year-1 status |
+|---|---|---|
+| 1 | Typed tools + admit traces | **v0 schema in-repo** |
+| 2 | VCS artifacts as product truth | Freeze URI in admit record; customer git |
+| 3 | Orchestrator + specialists + FSM | `lintel.fsm`; no swarms |
+| 4 | CI/hot-path → freeze | Q1 internal, Q2 partner |
+| 5 | Layered oracles + false-neg owners | Required field; unnamed owner ⇒ not a GA gate |
+| 6 | CODEOWNERS + signed provenance + sandbox + rollback | Template now; signing Q3; fire-drill every quarter |
+| 7 | Joint pins (policy + compiler + HW + model) | `pins` object |
+| 8 | Eval + cost-to-compile | `fitness.usd_per_compile`; partner traces |
+| 9 | A/B before “production default” | Q2 seam; marketing never says default-all |
+| 10 | HITL capacity | Auto-merge only narrow enums that passed admit |
+| 11 | SKU = artifacts + CI quota | Specialize SKU; not chat |
+| 12 | Customer owns outputs; pluggable models + replay | GA DoD; `llm` seam |
+| 13 | Multi-DSL; coverage then perf for new silicon | One live adapter; stub #2 in Q3; coverage SKU is job (d) — out |
+| 14 | Tenancy / residency | Customer CI / VPC; no multi-tenant searcher |
+| 15 | Support: replay packs, spend caps, oracle-miss severity | Q3–Q4 |
+| 16 | Token envelope (P23) | Q2 kill switch if $/admitted %\(F\) unknown |

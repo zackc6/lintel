@@ -12,8 +12,8 @@ Year 1 is **done** only if all of the following are true. Missing any one means 
 3. **Layered admit** with named false-negative owners; classical or last-good **fallback** exercised in a fire drill.
 4. **Replay**: same cache key after a model swap produces the same admit decision or a hard fail (never a silent new kernel).
 5. **Reported \(F\)** on partner traces: serving metric + quality parity + **$/compile** (tokens + GPU-hours). No hero-kernel press release as the SKU story.
-6. **Support**: replay pack, spend cap, severity for oracle miss (survey P15).
-7. **Contract**: customer owns outputs; telemetry opt-in (P12).
+6. **Support**: replay pack, spend cap, severity for oracle miss (survey §5.7 checklist #15).
+7. **Contract**: customer owns outputs; telemetry opt-in (P13).
 
 **Not** year-1 done: KernelBench rank, a public Cake-class IR, an AMD port, “agents are the default compiler.”
 
@@ -34,7 +34,41 @@ Hire for **seams**, not for “more kernel researchers.”
 | Job (c) lite / support | 0 | 0 | 3 |
 | **Total** | **10** | **25** | **50** |
 
-**Rule.** A 10-person team ships **one** GPU family (NVIDIA), **one** agent surface (Triton), **one** serving engine (pick SGLang *or* vLLM in week 1). A 25-person team adds the second surface *or* the second engine, not both in the same quarter. A 50-person team is year-1 only if you already have pipeline and partners; otherwise it is year 2.
+**Rule.** A 10-person team ships **one** GPU family, **one** agent surface, **one** serving engine. Default: NVIDIA + Triton + (SGLang *xor* vLLM, pick in week 1). If the home fleet is not NVIDIA, swap the adapter — do not dual-track. A 25-person team adds the second surface *or* the second engine, not both in the same quarter. A 50-person team is year-1 only if Q1 already exited with the core 10; otherwise it is year 2.
+
+## Hiring order (the 10)
+
+Do not hire “kernel researchers” first. Hire so Q1 can freeze one artifact.
+
+| When | Role | Count | Why this week |
+|---|---|---|---|
+| Week 0 | Founder-eng | 1 | Pins week-1 decisions; owns kill switches |
+| Week 0–2 | Control-plane | 2 | Schema, session log, FSM, seams |
+| Week 2–6 | Adapter + localized gates | 2 | Triton (or home-fleet equivalent) |
+| Week 2–8 | Oracles | 2 | Golden + numerical first; serving A/B from Q2 |
+| Week 4–8 | Artifact / CI / replay | 1 | Cache keys, partner replay pack |
+| Week 1–12 | Product + solutions | 2 | Partners from week 1 — not after the demo |
+
+If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 oracle, 1 solutions. Delay the second adapter engineer and the second oracle until after M1.
+
+## Week-1 decisions (write them down)
+
+1. **Home GPU family** — NVIDIA default; swap if the team already serves on something else.
+2. **Serving engine** — SGLang **or** vLLM, not both.
+3. **Op family** — attention **or** GEMM; prefer the first partner’s hot path.
+4. **SKU vs lab** — CLI `--mode=sku|lab` exists on day one. Lab is not the demo.
+
+## Q1 week-by-week (months 0–3)
+
+| Weeks | Build | Exit this slice |
+|---|---|---|
+| 1 | Pins above; admit schema freeze (already v0 in this repo); sqlite session log | `lintel-validate` in CI |
+| 2–4 | FSM + seams + sandbox that can run generated Triton | One propose → gate → fallback path on a toy kernel |
+| 5–8 | Triton adapter + golden + numerical oracles on a pinned shape grid | First **internal** freeze (faster on the grid or documented miss) |
+| 9–10 | Cache key + replay after an intentional model-id swap | Replay hard-fails on silent decision change |
+| 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log |
+
+**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR, SMT, AMD-as-second-live-adapter, serving A/B (that is Q2).
 
 ## Quarter plan (10-person critical path)
 
@@ -42,14 +76,14 @@ Hire for **seams**, not for “more kernel researchers.”
 
 **Build**
 
-- Admit-record schema v0 + session log (append-only; fork/resume).
-- Seams: `llm`, `tools`, `sandbox`, `adapter=triton`, `oracle={golden,numerical}`.
+- Admit-record schema v0 is **already in this repo**; Q1 implements the session store + FSM on top of it.
+- Seams: `llm`, `tools`, `sandbox`, `adapter` (Triton default; home-fleet swap is week 1), `oracle={golden,numerical}`.
 - FSM: triage (manual allowlist of ops) → propose → gate → measure → freeze | fallback.
 - One internal model, one hot op family (attention **or** GEMM — pick by partner, not by paper).
 
 **Do not build**
 
-- Web IDE. Multi-agent swarms. Cake IR. SMT. AMD.
+- Web IDE. Multi-agent swarms. Cake IR. SMT. A *second* GPU vendor.
 
 **Exit**
 
@@ -104,11 +138,29 @@ Hire for **seams**, not for “more kernel researchers.”
 
 **50.** From Q2: NVIDIA + AMD (HIP/GEAK-class workflow as an adapter, not a rewrite); enterprise SSO/air-gap; a small job (c) “oracle comment on kernel PRs” — still not llvm-project replacement. Only do this if Q1 exit already happened with the core 10. A 50-person team that starts on Cake IR + a coding-agent UI will miss GA.
 
-## Budget shape (order-of-magnitude, not a finance model)
+## Partner GTM (starts week 1)
 
-For a 10-person year: most cash is **people + partner GPU**. Token spend must be treated as **OpEx per admitted %\(F\)**, with a published cap. Overnight/CI specialize is the default; interactive search is a labeled lab tier (P18).
+Commercial DoD needs two design partners. Q1 is internal technically, **not** commercially idle.
 
-If tokens per admitted percent cannot be shown by end of Q2, **stop hiring** and fix Amdahl cut + freeze. That is the survey P23 envelope, not a vibe.
+| Quarter | Solutions work |
+|---|---|
+| Q1 | 10 conversations → 3 serious → 1 written pilot MoU (their traces, their CI, NVIDIA-or-home fleet, SGLang or vLLM already in prod) |
+| Q2 | Partner #1: Lintel job in their CI; one frozen artifact on a non-prod canary |
+| Q3 | Partner #2 **or** partner #1 production on a *named* hot path |
+| Q4 | Support runbooks; SKU sheet; no extra logos as a substitute for freeze |
+
+**Yes profile.** ≥1 kernel/compiler FTE, written SLO, artifacts allowed in git. **No.** “Write our compiler”; KernelBench-only labs; no serving stack.
+
+## Budget shape (order-of-magnitude, USD, 2026 — not a quote)
+
+| Line | 10-person year | Notes |
+|---|---|---|
+| People (fully loaded) | $2.5–4.5M | Mix of regions; 50 people is $12–20M and is not the default |
+| Partner / lab GPU | $0.4–1.2M | Prefer customer GPU for the partner loop |
+| Tokens + extra model APIs | **cap $150–400k** | OpEx per admitted %\(F\); not a research slush |
+| **Total to GA** | **~$3.5–6M** | If Q2 cannot name $/admitted %\(F\), **stop hiring** |
+
+Overnight/CI specialize is the default. Interactive search is a labeled lab tier (P18). That is the survey P23 envelope, not a vibe.
 
 ## Milestone table (falsifiable)
 

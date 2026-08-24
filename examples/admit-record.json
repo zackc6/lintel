@@ -1,0 +1,54 @@
+{
+  "schema_version": "admit-record.v0",
+  "record_id": "rec_q1_internal_attn_001",
+  "prev_hash": null,
+  "created_at": "2026-09-15T12:00:00Z",
+  "commentary": "Internal Q1 loop. Optional prose; oracles and digest are the contract.",
+  "region": {
+    "region_id": "attn.prefill.qkv",
+    "graph_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "op_family": "attention"
+  },
+  "pins": {
+    "hw_id": "nvidia.b200.80gb",
+    "compiler_ver": "triton==3.3.0",
+    "adapter_id": "triton.v0",
+    "model_id": "internal.frontier.v1",
+    "policy_id": "lintel.specialize.v0"
+  },
+  "actions": [
+    {
+      "kind": "propose_schedule",
+      "enum_id": "triton.attn.num_warps=8.block_m=128"
+    }
+  ],
+  "oracles": [
+    {
+      "name": "golden",
+      "version": "0.1.0",
+      "result": "pass",
+      "false_neg_owner": "oracles@lintel"
+    },
+    {
+      "name": "numerical",
+      "version": "0.1.0",
+      "result": "pass",
+      "false_neg_owner": "oracles@lintel",
+      "detail": "max_abs_err<1e-3 on pinned shape grid"
+    }
+  ],
+  "artifact": {
+    "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "kind": "triton_kernel",
+    "uri": "git://example/kernels.git@deadbeef"
+  },
+  "fitness": {
+    "F_name": "serving.tokens_per_s * quality_parity",
+    "baseline": 1.0,
+    "delta": 0.08,
+    "usd_per_compile": 42.0,
+    "traces": ["internal.shape_grid.v0"]
+  },
+  "decision": "freeze",
+  "fallback": "last_good"
+}
