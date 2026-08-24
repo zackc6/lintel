@@ -148,7 +148,7 @@ Serve still `lookup(%k)` → previous digest.
 | **Now** | Spec + examples; record lowering includes `%k` |
 | **Q1** | Interpret one block; `store[%k]`; replay law |
 | **Q3** | Second adapter = new enum / `adapter_id` (new keys), not a new IR |
-| **Year 2–3** | Optional compile-the-plan (T10). Same `%k` |
+| **Year 2–3** | Optional CFG, cost-as-gate, compile-the-plan (T10). Same kernel `%k`. [LATER.md](LATER.md) |
 
 ## Non-goals
 
@@ -157,3 +157,4 @@ Serve still `lookup(%k)` → previous digest.
 - Not a year-1 MLIR dialect in this plan repo.
 - Not putting the LLM in `lookup(%k)`.
 - Not re-interpreting this IR on the serve path.
+- Not CFG / `cost` / `compile plan` in v0 (those are sketches in [LATER.md](LATER.md)).

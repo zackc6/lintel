@@ -8,4 +8,4 @@
 | Copying the survey into this tree | Link [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey); keep it separate |
 | Naming the control-plane IR AdmitIR / LandIR / SpecIR / ReplayIR | **Lintel IR**. Cake IR is the schedule plane. Do not invent another XIR |
 | Fork Cake IR or DeepSeek Harness as the product | Seams + Lintel IR; take mechanisms, not brands |
-| pytest / `lintel-validate` / `src/` / `pyproject.toml` | Docs first; schemas are the contract. No package in this repo |
+| Folding CFG / cost / T10 into `lintel-ir.v0` | Later sketches live in `docs/LATER.md` + `examples/later/`. Year 1 interprets one block |

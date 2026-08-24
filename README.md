@@ -26,4 +26,5 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Read the docs; `schemas/
 | [docs/SURVEY_MAP.md](docs/SURVEY_MAP.md) | Jobs, C1–C10, T1–T10, P1–P23 → year-1 choice |
 | [docs/ADMIT_RECORD.md](docs/ADMIT_RECORD.md) | Annotated admit record (landed + reverted) |
 | [docs/LINTEL_IR.md](docs/LINTEL_IR.md) | Lintel IR: land / revert / reject + cache_key |
+| [docs/LATER.md](docs/LATER.md) | CFG, cost, T10 sketches — not year-1 GA |
 | `schemas/` | Lintel IR, admit record, session event, cache key (v0) |

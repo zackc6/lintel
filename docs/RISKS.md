@@ -6,7 +6,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 
 | Bet | Survey | If we are wrong |
 |---|---|---|
-| Hybrid control plane (C6-B) | Agents search; compilers lower/admit/fallback | We are in the wrong business. Do not pivot to M3. |
+| Hybrid control plane (C6-B) | Agents search; compilers lower/admit/fallback | We are in the wrong business. Do not pivot to survey M3 (LLM-as-compiler). |
 | Narrow actions (C3-B) | Cake/Argus/HintPilot beat free rewrite | Widen enums *behind* admit; keep oracles |
 | Multi-DSL (C4 open) | Triton stays primary; Tile/Cake/Argus rise | Adapters; portable schema was the hedge |
 | Freeze-before-serve (C5 path) | Commercial default is CI → artifact | If customers demand always-on LLM compile, charge lab-tier only |
@@ -40,6 +40,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 - Argus-class SMT as an `oracle` provider.
 - Cake-class schedule IR as an `adapter` if a tree exists or a customer funds it.
 - DSH bundle packaging if `dsh-plugin` is the distribution ABI.
+- CFG / cost-as-gate / T10 compile-the-plan after year-1 DoD ([LATER.md](LATER.md)).
 - Job (c) comments on kernel PRs (never “we review llvm-project”).
 - Second vendor (AMD) after NVIDIA freeze is boring.
 

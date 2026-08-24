@@ -1,0 +1,47 @@
+// NOT lintel-ir.v0. Do not interpret on the SLA path.
+// Phase 3 / T10 sketch: compile the specialize plan to a frozen ADG at %w.
+// %w is the controller key. Kernel jobs still use %k. Serve is lookup(%k).
+// Lowers to examples/later/wf_acme_specialize.adg.json
+
+module @wf_acme_specialize_v3 version "lintel-workflow.v1-sketch" {
+
+  pins {
+    controller = "lintel.specialize.v1"
+    oracles    = { golden = "0.1.0", numerical = "0.1.0", serving_ab = "0.1.0" }
+    F          = "serving.tokens_per_s * quality_parity"
+    budget     = { usd = 50, gpu_hours = 2 }
+  }
+
+  plan @compile_controller {
+  ^entry:
+    %w = cache_key @policy.specialize, pins
+    compile plan @specialize {
+      nodes = [
+        triage,
+        propose,
+        gate.golden,
+        gate.numerical,
+        cost,
+        gate.serving_ab,
+        fitness
+      ]
+      edges = [
+        triage          -hot->  propose
+        triage          -cold-> revert
+        propose         -->     gate.golden
+        gate.golden     -ok->   gate.numerical
+        gate.golden     -fail-> propose.next | revert
+        gate.numerical  -ok->   cost
+        gate.numerical  -fail-> revert
+        cost            -pay->  gate.serving_ab
+        cost            -skip-> revert
+        gate.serving_ab -ok->   fitness
+        gate.serving_ab -fail-> propose.next | revert
+        fitness         -win->  land
+        fitness         -lose-> revert
+      ]
+      agent_slots = [ propose.enum_id, triage.region ]
+    }
+    land @specialize under %w or_else last_good_workflow
+  }
+}

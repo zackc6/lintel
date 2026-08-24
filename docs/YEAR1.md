@@ -68,7 +68,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 | 9–10 | Cache key + replay after an intentional model-id swap | Replay hard-fails on silent decision change |
 | 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log |
 
-**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR, SMT, AMD-as-second-live-adapter, serving A/B (that is Q2).
+**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR, SMT, AMD-as-second-live-adapter, serving A/B (that is Q2), CFG / cost / T10 ([LATER.md](LATER.md)).
 
 ## Quarter plan (10-person critical path)
 
@@ -83,7 +83,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 **Do not build**
 
-- Web IDE. Multi-agent swarms. Cake IR. SMT. A *second* GPU vendor.
+- Web IDE. Multi-agent swarms. Cake IR. SMT. A *second* GPU vendor. CFG / cost / T10 ([LATER.md](LATER.md)).
 
 **Exit**
 
@@ -125,12 +125,12 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 - GA hardening: install, pins (compiler + HW + policy + model), runbooks, canary rollback.
 - Public-facing *method* (how we measure \(F\)), not a fake p50 industry claim.
-- Year-2 RFC: Argus-class SMT oracle plugin; second serving engine; optional DSH-bundle packaging.
+- Year-2 RFC: Argus-class SMT oracle plugin; second serving engine; optional DSH-bundle packaging. CFG / cost / T10: [LATER.md](LATER.md) — not this quarter.
 
 **Exit (GA)**
 
 - Commercial definition of done above.
-- Written **no** list for year 2 so sales cannot sell job (d) or M3.
+- Written **no** list for year 2 so sales cannot sell job (d) or survey M3 (LLM-as-compiler). YEAR1 M3 (Q3 replay) is in-scope.
 
 ## 25- and 50-person overlays (same year, only if funded)
 

@@ -1,0 +1,43 @@
+// NOT lintel-ir.v0. Do not interpret on the SLA path.
+// Phase 1 sketch: same F as v0, budget gates whether we spend serving A/B.
+// Kernel %k unchanged. Serve is still lookup(%k).
+
+module @rec_acme_attn_prefill_cost version "lintel-ir.v1-sketch" {
+
+  region @attn_prefill {
+    region_id = "attn.prefill.qkv"
+    graph     = sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0
+    op_family = attention
+  }
+
+  pins {
+    hw       = "nvidia.b200.80gb"
+    compiler = "triton==3.3.0+cu128"
+    adapter  = @triton.v0
+    model    = "vendor.frontier.2026-10-20"
+    policy   = @lintel.specialize.v1
+  }
+
+  plan @specialize {
+  ^entry:
+    %k  = cache_key @attn_prefill, pins
+    %r  = triage @attn_prefill
+    %p  = propose propose_schedule "triton.attn.num_warps=8.block_m=128"
+    %g0 = gate golden     %p owner @kernels.acme
+    %g1 = gate numerical  %p owner @kernels.acme { max_abs_err = 1e-3 }
+    %c  = cost %p vs last_good {
+      F      = serving.tokens_per_s * quality_parity    // must equal policy.F
+      prior  = last_good.F
+      budget = { usd = 50, gpu_hours = 2 }
+    }
+    cond %c.worth_measure, ^ab, ^skip
+
+  ^skip:
+    revert last_good under %k
+
+  ^ab:
+    %g2 = gate serving_ab %p owner @serving.acme
+    %f  = fitness %g2 vs last_good { F = %c.F }
+    land %p, %f under %k or_else last_good
+  }
+}

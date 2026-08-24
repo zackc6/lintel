@@ -1,0 +1,72 @@
+// NOT lintel-ir.v0. Do not interpret on the SLA path.
+// Phase 2 sketch: policy-owned CFG. Agent fills enum_id only.
+// Edges are localized rejects, not chat retries.
+// Kernel %k unchanged. Serve is still lookup(%k).
+
+module @rec_acme_attn_prefill_cfg version "lintel-ir.v1-sketch" {
+
+  region @attn_prefill {
+    region_id = "attn.prefill.qkv"
+    graph     = sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0
+    op_family = attention
+  }
+
+  pins {
+    hw       = "nvidia.b200.80gb"
+    compiler = "triton==3.3.0+cu128"
+    adapter  = @triton.v0
+    model    = "vendor.frontier.2026-10-20"
+    policy   = @lintel.specialize.v1
+  }
+
+  plan @specialize {
+  ^entry:
+    %k  = cache_key @attn_prefill, pins
+    %r  = triage @attn_prefill
+    cond %r.hot, ^try0, ^cold
+
+  ^cold:
+    revert last_good under %k
+
+  ^try0:
+    %p0 = propose propose_schedule "triton.attn.num_warps=8.block_m=128"
+    %g0 = gate golden %p0 owner @kernels.acme
+    cond %g0.ok, ^num0, ^try1
+      // fail { seam = adapter, where = golden, reason = "ref mismatch" }
+
+  ^try1:
+    %p1 = propose propose_schedule "triton.attn.num_warps=16.block_m=64"
+    %g1 = gate golden %p1 owner @kernels.acme
+    cond %g1.ok, ^num1, ^giveup
+
+  ^giveup:
+    revert last_good under %k
+
+  ^num0:
+    %n0 = gate numerical  %p0 owner @kernels.acme { max_abs_err = 1e-3 }
+    %c0 = cost %p0 vs last_good { F = serving.tokens_per_s * quality_parity, budget.usd = 50 }
+    cond %c0.worth_measure, ^ab0, ^try1
+
+  ^num1:
+    %n1 = gate numerical  %p1 owner @kernels.acme { max_abs_err = 1e-3 }
+    %c1 = cost %p1 vs last_good { F = serving.tokens_per_s * quality_parity, budget.usd = 50 }
+    cond %c1.worth_measure, ^ab1, ^giveup
+
+  ^ab0:
+    %a0 = gate serving_ab %p0 owner @serving.acme
+    cond %a0.ok, ^fit0, ^try1
+      // fail { seam = serving, where = serving.output_parity, reason = "3/1000 mismatch" }
+
+  ^ab1:
+    %a1 = gate serving_ab %p1 owner @serving.acme
+    cond %a1.ok, ^fit1, ^giveup
+
+  ^fit0:
+    %f0 = fitness %a0 vs last_good
+    land %p0, %f0 under %k or_else last_good
+
+  ^fit1:
+    %f1 = fitness %a1 vs last_good
+    land %p1, %f1 under %k or_else last_good
+  }
+}

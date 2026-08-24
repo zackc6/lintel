@@ -91,7 +91,7 @@ land %p, %f under %k or_else last_good
      | reject {where, reason}
 ```
 
-Spec and examples: [LINTEL_IR.md](LINTEL_IR.md).
+Spec and examples: [LINTEL_IR.md](LINTEL_IR.md). CFG / cost / T10 sketches (not GA): [LATER.md](LATER.md).
 
 ### 3. Admit record (lowering / merge ticket)
 
@@ -144,7 +144,7 @@ FSM (SLA): `triage → propose → gate → measure → fitness → land | rever
 | **C5** vendors name ACF workflows | Integrate; we stay the admit/freeze layer |
 | **C6-A** no classical fallback | **Do not follow** |
 | Cake or Argus open-source | Provider, not a rewrite |
-| DSH plugin ABI wins | Oracles + Lintel IR interpreter as `dsh-plugin`s |
+| DSH plugin ABI wins | Oracles + Lintel IR interpreter as `dsh-plugin`s; T10 ADG freeze is [LATER.md](LATER.md) |
 
 Wrong adapter is recoverable. Wrong “we are the compiler” story is not. `%k` + Lintel IR are the Q1 bets.
 
@@ -154,7 +154,8 @@ This plan repo is `docs/` + `schemas/` + `examples/`. The tree below is the prod
 
 ```text
 schemas/                 # lintel-ir, admit-record, cache-key, session
-examples/lintel-ir/      # text + JSON programs
+examples/lintel-ir/      # text + JSON programs (v0)
+examples/later/          # CFG / cost / T10 sketches — not SLA
 examples/admit-record*   # lowerings
 src/lintel/              # hash %k, replay law, FSM, seams
 adapters/                # year-1 triton/   later tile/ hip/ cake_ir/
@@ -168,7 +169,7 @@ Week-1 pins (in `%k` or audit): GPU family, serving engine, op family. Changing 
 
 ## Non-goals
 
-- One universal cost model for L1–L7.
+- One universal cost model for L1–L7. A pinned \(F\)+budget `cost` op is year 2 ([LATER.md](LATER.md)), not v0.
 - One mega-IR / Cake IR as the SKU.
 - Always-on frontier model at every customer compile.
 - Serving a proposal before \(F\)-admit.

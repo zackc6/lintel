@@ -76,6 +76,7 @@ They will not pay for: a better chat window, a research IR, or “we beat hipBLA
 - Job (d) ASIC bring-up / Zomboss-class mapping (**C9** needs a second shipping vendor; not a 10-person year-1).
 - Autonomous tape-out (**C10** — survey rejects).
 - Multi-month *default-path* A/B as a marketing claim (**C2** still open industry-wide; we *instrument* it, we do not claim settlement).
+- CFG, cost-as-gate, T10 compile-the-plan ([LATER.md](LATER.md) — year 2–3 sketches, not GA).
 
 ## Survey commercial checklist (year-1 status)
 

@@ -1,0 +1,36 @@
+{
+  "schema_version": "lintel-workflow.v1-sketch",
+  "workflow_id": "wf_acme_specialize_v3",
+  "commentary": "T10 lowering: git reviews this ADG, not chat. Not lintel-ir.v0. Serve does not run this.",
+  "pins": {
+    "controller": "lintel.specialize.v1",
+    "F": "serving.tokens_per_s * quality_parity",
+    "budget": { "usd": 50, "gpu_hours": 2 }
+  },
+  "cache_key": {
+    "schema_version": "workflow-key.v1-sketch",
+    "controller": "lintel.specialize.v1",
+    "policy_id": "lintel.specialize.v1",
+    "oracle_bundle_id": "golden.0.1.0+numerical.0.1.0+serving_ab.0.1.0",
+    "F_id": "serving.tokens_per_s * quality_parity"
+  },
+  "agent_slots": ["propose.enum_id", "triage.region"],
+  "adg": [
+    { "id": "triage", "ok": "propose", "fail": "revert", "pred": "hot" },
+    { "id": "propose", "ok": "gate.golden", "slots": ["enum_id"] },
+    { "id": "gate.golden", "ok": "gate.numerical", "fail": "propose.next", "owner": "kernels@acme" },
+    { "id": "gate.numerical", "ok": "cost", "fail": "revert", "owner": "kernels@acme" },
+    { "id": "cost", "ok": "gate.serving_ab", "fail": "revert", "pred": "worth_measure" },
+    { "id": "gate.serving_ab", "ok": "fitness", "fail": "propose.next", "owner": "serving@acme" },
+    { "id": "fitness", "ok": "land", "fail": "revert" }
+  ],
+  "terminators": {
+    "land": { "under": "kernel %k", "or_else": "last_good" },
+    "revert": { "under": "kernel %k", "target": "last_good" }
+  },
+  "decision": "freeze",
+  "artifact": {
+    "kind": "workflow_adg",
+    "note": "Partner CI runs this graph. Kernel cubin is still store[%k]."
+  }
+}

@@ -43,7 +43,7 @@ Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), repl
 | **T7** open multi-IR corpora | Out (not a data company) | Consume KernelBook-class data if it helps the Triton adapter |
 | **T8** unified ladder | Refuse KernelBench as GA metric; partner ladder + cost-to-compile | Public method note, not a fake industry p50 |
 | **T9** provenance / CODEOWNERS | Q3 | Air-gap / SSO at 25–50 people |
-| **T10** workflow compile | DSH *pattern* (plugins + session log) now | Bundle as `dsh-plugin` if that ABI wins; ADG/freeze of the controller is Horizon B |
+| **T10** workflow compile | DSH *pattern* (plugins + session log) now | [LATER.md](LATER.md): cost → CFG → ADG freeze at `%w`; still `lookup(%k)` on serve |
 
 ## Commercial problems (P1–P23)
 
