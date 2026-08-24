@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/zackc6/lintel/schemas/land-ir.v0.schema.json",
-  "title": "LintelLandIR",
-  "description": "Control-plane program. Terminators are land | revert | reject. Does not encode kernel text.",
+  "$id": "https://github.com/zackc6/lintel/schemas/lintel-ir.v0.schema.json",
+  "title": "LintelIR",
+  "description": "Lintel IR: control-plane specialize plan. Terminators are land | revert | reject. Does not encode kernel text.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "module_id", "region", "pins", "plan"],
   "properties": {
-    "schema_version": { "const": "land-ir.v0" },
+    "schema_version": { "const": "lintel-ir.v0" },
     "module_id": { "type": "string", "minLength": 1 },
     "region": {
       "type": "object",

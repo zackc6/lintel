@@ -8,7 +8,7 @@
 Vendors already ship **data planes** (Inductor, XLA, Triton, TensorRT-LLM, FlashInfer). They are starting to ship **fragments** of a control plane (CompileIQ ACFs, GEAK v4 e2e A/B, TRT-LLM agent skills). What nobody sells as a *vendor-neutral, money-grade product* is the joint of:
 
 1. A **plugin agent runtime** (session log, seams, sandbox, replay) — DeepSeek Harness-class.
-2. A **typed agent↔compiler contract** (**LandIR**: land / revert / reject + localized `gate`) — Cake-class *mechanism*, not Cake IR.
+2. A **typed agent↔compiler contract** (**Lintel IR**: land / revert / reject + localized `gate`) — Cake-class *mechanism*, not Cake IR.
 3. A **layered admit + deterministic fallback** that release engineering will trust — survey T2 / C6-B / P5.
 4. A **freeze-before-serve** artifact (control file / kernel / schedule) with cache keys — survey T3 / P4.
 

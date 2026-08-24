@@ -1,8 +1,8 @@
-// Same %k as acme_attn_prefill.land.
+// Same %k as acme_attn_prefill.lintel.
 // serving_ab fails parity → terminator is revert, not land.
 // Lowers to examples/admit-record.fallback.json
 
-module @rec_acme_attn_prefill_015 version "land-ir.v0" {
+module @rec_acme_attn_prefill_015 version "lintel-ir.v0" {
 
   region @attn_prefill {
     region_id = "attn.prefill.qkv"

@@ -1,5 +1,5 @@
 {
-  "schema_version": "land-ir.v0",
+  "schema_version": "lintel-ir.v0",
   "module_id": "rec_acme_attn_prefill_014",
   "region": {
     "region_id": "attn.prefill.qkv",

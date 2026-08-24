@@ -1,10 +1,12 @@
-# LandIR — land / revert / reject (control-plane IR)
+# Lintel IR — control plane
 
-**AdmitIR** is a bad name for compiler engineers. They do not “admit.” They **land** a change, **revert** it, or **reject** it in review.
+**Lintel IR** is the control-plane IR. Cake IR is a schedule IR. Triton / Tile / HIP / Cake IR plug in behind `adapter`. They are not Lintel IR.
 
-**LandIR** is that dialect. Cake IR is a *schedule* IR (data plane). LandIR is the *“does this specialize job land?”* IR (control plane). Triton / Tile / HIP / Cake IR stay adapter IRs behind a seam.
+A module is one specialize plan at a cache key `%k`. The agent fills enumerated slots. The compiler owns lowering, measurement, and fallback. Serve does not interpret Lintel IR. Serve is `lookup(%k)`.
 
-| LandIR terminator | Compiler reflex | Lowers to admit-record |
+Terminators are ordinary English verbs: **land**, **revert**, **reject**.
+
+| Terminator | Compiler reflex | Lowers to admit-record |
 |---|---|---|
 | `land %p under %k` | The patch landed; pin the `.o` | `decision: freeze` |
 | `revert last_good under %k` | Revert; keep last good | `decision: fallback` |
@@ -16,7 +18,7 @@ E2E stack: [ARCHITECTURE.md](ARCHITECTURE.md). Merge ticket: [ADMIT_RECORD.md](A
   Agent fills ENUMERATED slots only
               │
               ▼
-     LandIR   (this document)          ← control plane
+     Lintel IR (this document)         ← control plane
               │  %k = cache_key(...)
               │  interpret (year 1)
               ▼
@@ -31,18 +33,7 @@ E2E stack: [ARCHITECTURE.md](ARCHITECTURE.md). Merge ticket: [ADMIT_RECORD.md](A
      classical lowering → serve
 ```
 
-**Invariant.** LandIR never lowers to CUDA/HIP/PTX. Serve never interprets LandIR — it only `lookup(%k)`.
-
-### Why not the other names
-
-| Name | Why not |
-|---|---|
-| AdmitIR | “Admit” is not compiler vocabulary |
-| GateIR | Only the `gate` op; misses land/revert/`%k` |
-| LegalIR / LegalizeIR | Sounds like Alive2 / legalize, not the merge |
-| ControlIR | Means CFG / control-flow, not this |
-| FreezeIR | Same sell problem as “admit/freeze” |
-| Cake IR | Wrong plane. We do not fork it |
+**Invariant.** Lintel IR never lowers to CUDA/HIP/PTX.
 
 ## Opcodes (v0)
 
@@ -82,16 +73,16 @@ cache_key_digest = sha256(canonical_json)
 | | `enum_id` / kernel bytes (value *at* the key) |
 | | commentary, SSA temps, `$/compile` |
 
-**Replay.** Same `%k` ⇒ same terminator and, if `land`, same digest. Else **hard fail**. Model swap + same policy = same `%k`. Compiler bump = new `%k` (must re-land).
+**Replay law.** Same `%k` ⇒ same terminator and, if `land`, same digest. Else **hard fail**. Model swap + same policy = same `%k`. Compiler bump = new `%k` (must re-land).
 
 **Serve.** `lookup(%k)`. Miss or hard-fail → last_good or classical. No LLM.
 
 ## Acme example (`land`)
 
-[examples/land-ir/acme_attn_prefill.land](../examples/land-ir/acme_attn_prefill.land) → [examples/admit-record.json](../examples/admit-record.json).
+[examples/lintel-ir/acme_attn_prefill.lintel](../examples/lintel-ir/acme_attn_prefill.lintel) → [examples/admit-record.json](../examples/admit-record.json).
 
 ```text
-module @rec_acme_attn_prefill_014 version "land-ir.v0" {
+module @rec_acme_attn_prefill_014 version "lintel-ir.v0" {
 
   region @attn_prefill {
     region_id = "attn.prefill.qkv"
@@ -123,7 +114,7 @@ module @rec_acme_attn_prefill_014 version "land-ir.v0" {
 
 `%k` digest: `sha256:ec25e38a28d690828ecd63234173704d013c7062aa3e919ba5d31765831c35d7`.
 
-Revert (parity fail) — same `%k`, terminator `revert`: [examples/land-ir/acme_attn_prefill.revert.land](../examples/land-ir/acme_attn_prefill.revert.land).
+Revert (parity fail) — same `%k`, terminator `revert`: [examples/lintel-ir/acme_attn_prefill.revert.lintel](../examples/lintel-ir/acme_attn_prefill.revert.lintel).
 
 ```text
     %g2 = gate serving_ab %p owner @serving.acme
@@ -165,3 +156,4 @@ Serve still `lookup(%k)` → previous digest.
 - Not one agent IR for all vendors (**C4**).
 - Not a year-1 MLIR dialect in this plan repo.
 - Not putting the LLM in `lookup(%k)`.
+- Not re-interpreting this IR on the serve path.

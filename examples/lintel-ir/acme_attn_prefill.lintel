@@ -1,8 +1,8 @@
-// LandIR v0 — control plane only. Does not lower to CUDA.
+// Lintel IR v0 — control plane only. Does not lower to CUDA.
 // Terminator `land` lowers to admit-record decision=freeze.
 // Lowers to examples/admit-record.json
 
-module @rec_acme_attn_prefill_014 version "land-ir.v0" {
+module @rec_acme_attn_prefill_014 version "lintel-ir.v0" {
 
   region @attn_prefill {
     region_id = "attn.prefill.qkv"
