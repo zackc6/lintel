@@ -24,5 +24,6 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Read the docs; `schemas/
 | [docs/MARKET.md](docs/MARKET.md) | Business value, unit economics, competitors over 1–3 years |
 | [docs/RISKS.md](docs/RISKS.md) | Kill switches tied to survey checkpoints |
 | [docs/SURVEY_MAP.md](docs/SURVEY_MAP.md) | Jobs, C1–C10, T1–T10, P1–P23 → year-1 choice |
+| [docs/ADMIT_RECORD.md](docs/ADMIT_RECORD.md) | Annotated admit record (freeze + fallback) |
 | `schemas/` | Admit record, session event, cache key (v0) |
 | `src/lintel/` | Validate, replay invariant, FSM, seam names |

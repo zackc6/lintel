@@ -1,9 +1,9 @@
 {
   "schema_version": "admit-record.v0",
-  "record_id": "rec_acme_attn_prefill_014",
+  "record_id": "rec_acme_attn_prefill_015",
   "prev_hash": "sha256:87930123062e3573ae3c9fa5f8662e25981b9b140ddc27a5eb158969f8dfa66d",
-  "created_at": "2026-11-03T04:12:08Z",
-  "commentary": "Optional prose for humans. Oracles, digest, and decision are the contract — not this sentence.",
+  "created_at": "2026-11-03T06:40:11Z",
+  "commentary": "Faster on two microbench shapes; serving parity failed. Do not serve. Keep last_good.",
   "region": {
     "region_id": "attn.prefill.qkv",
     "graph_hash": "sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0",
@@ -19,7 +19,7 @@
   "actions": [
     {
       "kind": "propose_schedule",
-      "enum_id": "triton.attn.num_warps=8.block_m=128"
+      "enum_id": "triton.attn.num_warps=16.block_m=64"
     }
   ],
   "oracles": [
@@ -34,28 +34,28 @@
       "version": "0.1.0",
       "result": "pass",
       "false_neg_owner": "kernels@acme",
-      "detail": "max_abs_err<1e-3 on shape_grid.attn.prefill.v3 (12 shapes)"
+      "detail": "max_abs_err<1e-3 on shape_grid.attn.prefill.v3"
     },
     {
       "name": "serving_ab",
       "version": "0.1.0",
-      "result": "pass",
+      "result": "fail",
       "false_neg_owner": "serving@acme",
-      "detail": "sglang canary: output_parity=1, tokens_per_s +8.1% vs last_good, n=4h"
+      "detail": "output_parity=0 on 3/1000 decode samples; tokens_per_s +11% on kernel bench (ignored)"
     }
   ],
   "artifact": {
     "digest": "sha256:0e0ecbefe475d49eb85f80e704642376a3e52371d08ca370cd0071d9736290f9",
     "kind": "triton_kernel",
-    "uri": "git://acme/serving-kernels.git@c0ffee / kernels/attn_prefill_qkv.py"
+    "uri": "git://acme/serving-kernels.git@last_good / kernels/attn_prefill_qkv.py"
   },
   "fitness": {
     "F_name": "serving.tokens_per_s * quality_parity",
     "baseline": 1.0,
-    "delta": 0.081,
-    "usd_per_compile": 38.4,
-    "traces": ["acme.prod.decode.2026-10.sample", "acme.shape_grid.attn.prefill.v3"]
+    "delta": 0.0,
+    "usd_per_compile": 41.0,
+    "traces": ["acme.prod.decode.2026-10.sample"]
   },
-  "decision": "freeze",
+  "decision": "fallback",
   "fallback": "last_good"
 }

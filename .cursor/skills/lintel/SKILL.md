@@ -48,6 +48,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 | `docs/MARKET.md` | Value, pricing, competitors |
 | `docs/RISKS.md` | Kill switches |
 | `docs/SURVEY_MAP.md` | P/T/C → year-1 choice |
+| `docs/ADMIT_RECORD.md` | Annotated admit record for humans |
 | `schemas/` `examples/` | v0 admit / session / cache key |
 
 Keep the hybrid bet: agents search; compilers lower; this product is admit + freeze + replay. Cake and DeepSeek Harness are **mechanisms**, not forks.
