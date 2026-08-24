@@ -10,6 +10,8 @@ This repository is a **year-1 plan** (plus a written v0 contract in `schemas/` /
 
 **What we refuse to sell in year 1.** “LLM replaces the compiler.” “Default-on for every build.” “One agent IR for all vendors.”
 
+**Maintainer git.** Commit and push `main` directly. No feature branches, no PRs — see [`.cursor/skills/lintel/SKILL.md`](.cursor/skills/lintel/SKILL.md). This repo has no GitHub Actions.
+
 ## Start Monday
 
 Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Read the docs; `schemas/` and `examples/` are the written contract, not a package to test in this repo.
