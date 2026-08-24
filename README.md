@@ -19,7 +19,7 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). The year-1 executable IR
 | Path | What it is |
 |---|---|
 | [docs/PRODUCT.md](docs/PRODUCT.md) | What we sell, and why Cake+DSH alone is the wrong SKU |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Seams, FSM, repo layout; year 2–3 survey shifts are adapters |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Seams, FSM, L1–L7 map, repo layout |
 | [docs/YEAR1.md](docs/YEAR1.md) | Quarters, 10/25/50 staffing, week-by-week Q1, hiring order, GTM |
 | [docs/MARKET.md](docs/MARKET.md) | Business value, unit economics, competitors over 1–3 years |
 | [docs/RISKS.md](docs/RISKS.md) | Kill switches tied to survey checkpoints |
