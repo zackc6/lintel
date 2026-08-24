@@ -27,4 +27,3 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Read the docs; `schemas/
 | [docs/ADMIT_RECORD.md](docs/ADMIT_RECORD.md) | Annotated admit record (landed + reverted) |
 | [docs/LINTEL_IR.md](docs/LINTEL_IR.md) | Lintel IR: land / revert / reject + cache_key |
 | `schemas/` | Lintel IR, admit record, session event, cache key (v0) |
-| `src/lintel/` | Validate, replay invariant, FSM, seam names |

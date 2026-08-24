@@ -35,7 +35,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 
 - No `.github/workflows/`. Do not add Actions, pytest gates, or “start Monday” test commands.
 - Customer CI in `docs/` is the **product SKU**, not this repository.
-- `schemas/` and `examples/` are the written v0 contract to read. Optional `src/lintel/` is a sketch, not a package we ship from this repo.
+- `schemas/` and `examples/` are the written v0 contract to read. Do not add `src/`, `pyproject.toml`, or a validator package.
 - Do not add `lintel-year1-plan.tar.gz` or `scripts/publish-to-github.sh`.
 
 ## What to edit

@@ -150,6 +150,8 @@ Wrong adapter is recoverable. Wrong “we are the compiler” story is not. `%k`
 
 ## Repo layout (what 10 people grow)
 
+This plan repo is `docs/` + `schemas/` + `examples/`. The tree below is the product repo they grow.
+
 ```text
 schemas/                 # lintel-ir, admit-record, cache-key, session
 examples/lintel-ir/      # text + JSON programs

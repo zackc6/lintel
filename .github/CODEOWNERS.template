@@ -4,6 +4,5 @@
 #
 # *                    @lintel/founders
 # schemas/             @lintel/control-plane
-# src/lintel/          @lintel/control-plane
 # adapters/            @lintel/compiler
 # oracles/             @lintel/oracles
