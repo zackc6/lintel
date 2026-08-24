@@ -33,6 +33,12 @@ def validate_admit_record(record: Mapping[str, Any]) -> None:
     owners = [o.get("false_neg_owner", "") for o in record.get("oracles", [])]
     if any(not str(o).strip() for o in owners):
         raise ValueError("every oracle must name a false-negative owner")
+    if "cache_key" in record:
+        computed = cache_key_fields(record)
+        if dict(record["cache_key"]) != computed:
+            raise ValueError("cache_key does not match region+pins")
+        if record.get("cache_key_digest") and record["cache_key_digest"] != cache_key(record):
+            raise ValueError("cache_key_digest does not match cache_key")
 
 
 def validate_session_event(event: Mapping[str, Any]) -> None:

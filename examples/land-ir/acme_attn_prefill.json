@@ -1,0 +1,47 @@
+{
+  "schema_version": "land-ir.v0",
+  "module_id": "rec_acme_attn_prefill_014",
+  "region": {
+    "region_id": "attn.prefill.qkv",
+    "graph_hash": "sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0",
+    "op_family": "attention"
+  },
+  "pins": {
+    "hw_id": "nvidia.b200.80gb",
+    "compiler_ver": "triton==3.3.0+cu128",
+    "adapter_id": "triton.v0",
+    "model_id": "vendor.frontier.2026-10-20",
+    "policy_id": "lintel.specialize.v0"
+  },
+  "plan": {
+    "label": "entry",
+    "ops": [
+      { "op": "cache_key", "id": "k" },
+      { "op": "triage", "id": "r" },
+      {
+        "op": "propose",
+        "id": "p",
+        "kind": "propose_schedule",
+        "enum_id": "triton.attn.num_warps=8.block_m=128"
+      },
+      { "op": "gate", "id": "g0", "oracle": "golden", "on": "p", "owner": "kernels@acme" },
+      {
+        "op": "gate",
+        "id": "g1",
+        "oracle": "numerical",
+        "on": "p",
+        "owner": "kernels@acme",
+        "detail": "max_abs_err<1e-3"
+      },
+      { "op": "gate", "id": "g2", "oracle": "serving_ab", "on": "p", "owner": "serving@acme" },
+      { "op": "fitness", "id": "f", "on": "g2" }
+    ],
+    "term": {
+      "op": "land",
+      "cache_key": "k",
+      "proposal": "p",
+      "fitness": "f",
+      "or_else": "last_good"
+    }
+  }
+}

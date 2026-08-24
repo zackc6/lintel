@@ -13,6 +13,8 @@
     "pins",
     "actions",
     "oracles",
+    "cache_key",
+    "cache_key_digest",
     "artifact",
     "fitness",
     "decision",
@@ -91,6 +93,24 @@
           "detail": { "type": "string" }
         }
       }
+    },
+    "cache_key": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "graph_hash", "hw_id", "compiler_ver", "adapter_id", "policy_id"],
+      "properties": {
+        "schema_version": { "const": "cache-key.v0" },
+        "graph_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "hw_id": { "type": "string", "minLength": 1 },
+        "compiler_ver": { "type": "string", "minLength": 1 },
+        "adapter_id": { "type": "string", "minLength": 1 },
+        "policy_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "cache_key_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "sha256 of canonical JSON of cache_key (sorted keys). Serve is lookup(this)."
     },
     "artifact": {
       "type": "object",

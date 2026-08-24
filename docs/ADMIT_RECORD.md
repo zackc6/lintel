@@ -2,7 +2,7 @@
 
 This is the **merge ticket** for one specialize attempt. The kernel file is an attachment. If a field is not here, it did not happen.
 
-Machine JSON: [`examples/admit-record.json`](../examples/admit-record.json) (freeze) · [`examples/admit-record.fallback.json`](../examples/admit-record.fallback.json) (keep last good). Schema: [`schemas/admit-record.v0.schema.json`](../schemas/admit-record.v0.schema.json).
+The JSON is the **lowering** of a [LandIR](LAND_IR.md) module (`land` → `freeze`, `revert` → `fallback`). Machine JSON: [`examples/admit-record.json`](../examples/admit-record.json) (landed) · [`examples/admit-record.fallback.json`](../examples/admit-record.fallback.json) (reverted). Schema: [`schemas/admit-record.v0.schema.json`](../schemas/admit-record.v0.schema.json).
 
 ## Freeze (this one ships)
 
@@ -82,9 +82,10 @@ Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% o
 | `oracles[].false_neg_owner` | Who gets paged if this gate was wrong | Unnamed owner ⇒ that oracle cannot gate GA |
 | `artifact.digest` | Bytes they serve | Serve path loads this. No LLM |
 | `fitness` | Serving \(F\) vs last freeze, plus **$/compile** | Kernel microbench cannot freeze by itself |
-| `decision` / `fallback` | Merge or keep last good / classical | Searcher death does not change serve |
+| `cache_key` / `cache_key_digest` | Address of the specialize job (`%k`) | Serve is `lookup(%k)`. Model id is not in the key |
+| `decision` / `fallback` | LandIR `land` / `revert` | Searcher death does not change serve |
 
-**Cache key** (replay): `(graph_hash, hw_id, compiler_ver, adapter_id, policy_id)`. Same key after a model swap must yield the same `decision` or **hard fail**. `model_id` is audit, not an excuse to ship a new kernel quietly.
+**Cache key** `%k` is in the record (`cache_key` + `cache_key_digest`). Same key after a model swap must yield the same `decision` or **hard fail**. `model_id` is audit. Serve is `lookup(%k)`, not “run the agent again.”
 
 ## Fallback (this one does *not* ship)
 

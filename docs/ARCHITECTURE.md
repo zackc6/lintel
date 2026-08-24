@@ -1,137 +1,173 @@
-# Architecture (built to change)
+# Architecture (e2e stack + mechanisms)
 
-The survey’s 1–3 year uncertainty is **not** “will agents exist.” It is *which IR, which default flag, which vendor surface*. Lintel is therefore a **small kernel + replaceable plugins**. DeepSeek Harness is the runtime *pattern*. Cake is the *contract* pattern on one L4 surface. Neither is the monolith.
+The survey’s 1–3 year uncertainty is *which IR, which flag, which vendor surface* — not whether agents exist. Lintel is a **small control-plane IR + plugins**. Cake, DeepSeek Harness, and GEAK are **mechanisms**, not the product.
 
-## Picture
+## E2E software stack
 
-```text
-                         fitness F (customer-named front)
-                                   │
-                    ┌──────────────▼──────────────┐
-                    │     E2E search controller     │
-                    │  FSM / plan (SLA) + LLM judge │
-                    │  Amdahl cut · budget · stop   │
-                    └──────────────┬──────────────┘
-           plugins via seams       │
-     ┌────────────┬────────────────┼─────────────┬────────────┐
-     ▼            ▼                ▼             ▼            ▼
-  Session     Tool/LLM         Admit         Artifact      Serving
-  log         adapters         stack         store         A/B
-  (DSH)       (seams)          (T2)          (T3 freeze)   (T6)
-                                   │
-                    ┌──────────────▼──────────────┐
-                    │   Compiler adapters (T1)     │
-                    │  Triton · (yr2) Tile/HIP     │
-                    │  optional Schedule-IR plugin │
-                    │  (Cake-class, not required)  │
-                    └──────────────┬──────────────┘
-                                   ▼
-                    classical lowering / libs
-                    (Inductor · Triton · vendor)
-                    Lintel never replaces this
-```
-
-**Invariant.** If the controller, the LLM, or a plugin dies, the last **admitted freeze** still serves. That is the commercial sentence.
-
-## Four product objects (do these first)
-
-These are the only objects year-1 code must make boring. Everything else is a plugin.
-
-### 1. Admit record (the contract)
-
-Versioned, hash-chained, customer-owned:
+Two paths. Same cache key. The specialize path may use an LLM. The serve path must not.
 
 ```text
-{
-  region_id, graph_hash, hw_id, compiler_ver,
-  action[],            // enumerated — not free text
-  oracles[],           // name, version, result, false-neg owner
-  artifact_digest,
-  F_delta,             // vs frozen baseline, on named traces
-  policy_id, model_id,
-  fallback             // last_good | classical
-}
+ MODEL / FRAMEWORK          torch.compile · exported graph
+        │
+        │  regions · fingerprints · Amdahl rank
+        ▼
+ fitness F = serving tokens/s (or TTFT) · quality parity · $/compile
+        │
+ ┌──────┴───────────────────────────────────────────────────────────┐
+ │  LINTEL CONTROL PLANE                                            │
+ │                                                                  │
+ │   LandIR   (cache_key / propose / gate / land|revert|reject)    │
+ │      %k = cache_key(graph, hw, compiler, adapter, policy)        │
+ │                                                                  │
+ │   session log = interpretation trace     (DSH pattern)           │
+ │   seams: llm · tools · sandbox · adapter · oracle · serving      │
+ └──────┬───────────────────────────────┬───────────────────────────┘
+        │ SPECIALIZE (CI / overnight)   │ SERVE (production)
+        │ interpret LandIR             │ lookup %k
+        │ LLM fills enum slots only     │
+        ▼                               ▼
+ admit record (lowering)          hit: artifact.digest
+ land under %k                    miss / replay-fail:
+        │                           last_good | classical
+        ▼                               │
+ adapter IR  Triton (yr1)               │  NO LLM
+   Tile / HIP / Cake IR (later)         │
+        │                               │
+        ▼                               ▼
+ classical lowering / vendor libs ──► SGLang xor vLLM ──► GPU
 ```
 
-Natural language is optional commentary. If it is not in the record, it did not happen (DeepSeek Harness rule: **model-visible ⇒ logged**).
+**Invariant.** If the controller, the LLM, or a plugin dies, `lookup(%k)` still serves the last freeze (or classical). That is the commercial sentence.
 
-### 2. Artifact + cache key (freeze)
+**Year-1 width.** One GPU family, one adapter, one serving engine. Default: NVIDIA + Triton + (SGLang xor vLLM). Home fleet is a kickoff **swap**, not a second live path.
 
-Content-addressed: `(IR/region hash, HW, compiler ver, agent policy) → artifact`.  
-Golden **replay** when the model or compiler upgrades (survey T3 missing cell). If replay fails, **do not serve** the new proposal.
+## Mechanisms (what we take, where they sit)
 
-### 3. Seams (DeepSeek Harness idea, compiler-shaped)
+| Mechanism | From | In this stack | We discard |
+|---|---|---|---|
+| Typed agent contract + **localized reject** | Cake | `propose` enum + `gate` `{where, seam, reason}` | Cake IR as the kernel language; 80M-token clean-start UX |
+| Plugin **seams** + append-only session log | DeepSeek Harness | Runtime around LandIR; model-visible ⇒ logged | Coding-agent UX as the SKU; free tool-calling on the SLA path |
+| Amdahl on a **warm** server + A/B + parity | GEAK v4 | `triage` + `gate serving_ab` + \(F\) | Instinct-only marketing; hero-kernel as “default agent compile” |
+| Artifact-in-VCS / control file | CompileIQ-class | `land %p under %k` → customer git | Vendor-only ACF as the ABI |
+| **Cache key + replay** | Survey T3 (missing as a product) | `%k = cache_key(...)`; same key ⇒ same terminator or hard fail | Silent retune on model swap |
+| LandIR | This product | Control-plane IR; JSON record is a **lowering** | Mega-IR; “one agent IR for all vendors” |
 
-Each capability is definition + provider + consumer:
+Adapters (Triton / Tile / HIP / Cake IR) are **data-plane IRs**. They plug into `adapter`. They are not LandIR.
 
-| Seam | Year-1 provider | Swappable later without rewrite |
+## LandIR objects (year-1 kernel)
+
+Five things must be boring. Everything else is a plugin.
+
+### 1. Cache key `%k` (address of the specialize job)
+
+Canonical fields — **not** the kernel text, **not** the model id, **not** the enum:
+
+```text
+cache_key.v0 = hash( graph_hash, hw_id, compiler_ver, adapter_id, policy_id )
+```
+
+| In the key | Out of the key (on purpose) |
+|---|---|
+| Which region/graph | `model_id` (audit only) |
+| Which HW + compiler + adapter | `enum_id` / proposal body (payload at `%k`) |
+| Which **policy** (which gates, which \(F\)) | Commentary, SSA temps, token spend |
+
+**Replay law.** Re-interpret under the same `%k`. If the terminator (`land`/`revert`/`reject`) or the landed digest changes, **hard fail — do not serve.** A model swap with the same policy is the same `%k`. A compiler bump is a new `%k` and must re-land.
+
+Serve is `lookup(%k)`, not “run the agent again.”
+
+### 2. LandIR plan (the program)
+
+Linear block year 1. Agent fills enumerated slots. Agent does not add opcodes.
+
+```text
+%k  = cache_key @region, pins
+%r  = triage @region
+%p  = propose propose_schedule "<enum_id>"
+%g  = gate <oracle> %p owner @team     // fail → {where, seam, reason}
+%f  = fitness %g vs last_good
+land %p, %f under %k or_else last_good
+     | revert last_good under %k
+     | reject {where, reason}
+```
+
+Spec and examples: [LAND_IR.md](LAND_IR.md).
+
+### 3. Admit record (lowering / merge ticket)
+
+Closed module → versioned JSON in customer git. Humans review this, not the chat. [ADMIT_RECORD.md](ADMIT_RECORD.md).
+
+### 4. Seams (DSH pattern, compiler-shaped)
+
+| Seam | Year-1 provider | Later, no rewrite |
 |---|---|---|
-| `llm` | One frontier + one small specialist | Any OpenAI-class / local model |
-| `tools` | `propose` / `verify` / `bench` / `profile` | MCP-class servers |
-| `session` | Append-only event log + fork/resume | Same log, different store (sqlite → customer object store) |
-| `sandbox` | Landlock / container for generated code | Customer air-gap runner |
-| `adapter` | Triton (primary) | Tile, HIP, Helion, Cake-class schedule IR, Argus-class tags |
-| `oracle` | Golden + numerical + shape-grid | Alive2, SMT, FlashInfer-Bench `apply()`, GEAK-style warm A/B |
-| `serving` | One of SGLang **or** vLLM (pick in Q1, do not dual-path) | The other engine as a second provider |
+| `llm` | One frontier + one small specialist | Any OpenAI-class / local |
+| `tools` | `propose` / `verify` / `bench` / `profile` | MCP-class |
+| `session` | Append-only log (sqlite ok) | Customer object store |
+| `sandbox` | Container / Landlock | Air-gap runner |
+| `adapter` | Triton | Tile, HIP, Helion, Cake-class, Argus-class |
+| `oracle` | Golden + numerical + shape-grid | Alive2, SMT, FlashInfer-Bench `apply()`, GEAK A/B |
+| `serving` | SGLang **xor** vLLM | The other engine |
 
-**Do not** hard-code Cake IR or DSH packages. Implement *seams*. If DeepSeek Harness becomes the industry plugin ABI, Lintel mounts as a **bundle** (oracles + adapters) rather than competing on generic coding UX. If Cake IR (or Argus DSL, or Tile) wins a customer, it is an `adapter` provider.
+### 5. Localized reject (Cake idea, portable)
 
-### 4. Localized reject (Cake idea, portable)
+A failed `gate` is not a bit. It names **where** and **which seam**. Recurring failures become a new oracle plugin or a tighter enum (test-gated). That is T5-lite — not silicon codesign.
 
-Agents must not get a single bit. Every failed gate returns **where** (thread / op / schedule field / program point) and **which seam** failed. That is how the harness *evolves*: recurring failures become a new oracle plugin or a tighter action enum — test-gated on a corpus — not a prompt paragraph.
-
-This is survey **T5-lite** (toolchain evolution). It is not job (d) silicon codesign.
-
-## Controller: FSM first
-
-Survey P22 / TritorX / GEAK v4: **deterministic orchestration + LLM judgment**. Year-1 controller is an explicit state machine:
+## Two paths in one picture
 
 ```text
-triage → propose → pre-compile gates → measure → F-admit → freeze | fallback
+ SPECIALIZE                          SERVE
+ ──────────                          ─────
+ LandIR                             lookup(%k)
+   │                                   │
+   ├─ %k = cache_key                   ├─ hit  → artifact.digest
+   ├─ propose enum                     ├─ miss → last_good | classical
+   ├─ gate* (owned)                    └─ replay-fail → do not serve new
+   ├─ fitness F
+   └─ land | revert | reject
+         │
+         ▼
+   admit record + session trace
+   artifact stored at %k
 ```
 
-LLM may choose *among enumerated actions* and write rationales. It may not invent a new tool mid-flight on the SLA path. Lab/Creator mode (DSH-like) can be looser and is **not** the SKU.
+FSM (SLA): `triage → propose → gate → measure → fitness → land | revert`. Same states as LandIR ops. Lab mode may be looser; it cannot `land` without the SLA plan.
 
 ## How this survives survey-driven change
 
 | If this settles in 2027–28 | Lintel change |
 |---|---|
-| **C3-A** — free IR rewrite beats advisors on a public suite | Widen the action enum *behind admit*; do not drop oracles |
-| **C3-B** holds (current lean) | Keep narrow actions; sell that as the safety story |
-| **C4** — Tile / Cake IR / Argus fragment the surface | Ship another `adapter`; portable schema was the year-1 investment |
-| **C2** — someone publishes default-path p50/p90 | Turn our private partner traces into the same report format; do not fake it earlier |
-| **C5** — vendor release notes name ACF workflows | Integrate; we become the *cross-vendor* admit/freeze layer |
-| **C6-A** — production default with no classical fallback | We **do not follow**. That is a different company and a rejected survey bet. |
-| **C7** — compiler-oracle review becomes default in llvm-project | Optional year-2 job (c) plugin; not year-1 GA |
+| **C3-A** free rewrite wins a public suite | Widen enums *behind* gates; keep LandIR |
+| **C3-B** constrained actions hold | Keep narrow enums; sell that |
+| **C4** Tile / Cake IR / Argus fragment | New `adapter` enum; same `%k` schema |
+| **C2** someone publishes default-path p50 | Report partner traces in that format |
+| **C5** vendors name ACF workflows | Integrate; we stay the admit/freeze layer |
+| **C6-A** no classical fallback | **Do not follow** |
 | Cake or Argus open-source | Provider, not a rewrite |
-| DSH plugin ABI wins | Lintel oracles ship as `dsh-plugin`s |
+| DSH plugin ABI wins | Oracles + LandIR interpreter as `dsh-plugin`s |
 
-The **portable admit schema + seams** are the only things that must be right in Q1. Wrong IR choice is recoverable. Wrong “we are the compiler” story is not.
+Wrong adapter is recoverable. Wrong “we are the compiler” story is not. `%k` + LandIR are the Q1 bets.
 
 ## Repo layout (what 10 people grow)
 
 ```text
-schemas/                 # v0 contract (do this first; already here)
-examples/                # golden admit + session log
-src/lintel/              # validate, replay, FSM, seam names
-adapters/                # year-1: triton/  year-2: tile/ hip/ cake_ir/
-oracles/                 # golden / numerical / shape_grid / serving_ab
-serving/                 # one provider (sglang XOR vllm)
-cli/                     # lintel run --mode=sku|lab
-docs/                    # this plan
+schemas/                 # land-ir, admit-record, cache-key, session
+examples/land-ir/        # text + JSON programs
+examples/admit-record*   # lowerings
+src/lintel/              # hash %k, replay law, FSM, seams
+adapters/                # year-1 triton/   later tile/ hip/ cake_ir/
+oracles/ serving/ cli/
+docs/
 ```
 
-Do not put Cake IR or DeepSeek Harness sources in-tree. If a customer funds a Cake-class adapter, it lives under `adapters/` and speaks the same admit record.
+## Kickoff
 
-## Kickoff: home fleet is a config, not a fork
+Week-1 pins (in `%k` or audit): GPU family, serving engine, op family. Changing them later is a new provider or a new `%k`, not a fork.
 
-Default year-1 adapter is **Triton on NVIDIA** because that is where Cake / CompileIQ / FlashInfer-Bench evidence is densest. If this team’s production fleet is already AMD, Ascend, or another vendor, **swap the Q1 adapter** and keep the schema. Do not run two live adapters until M2 (partner A/B) is green.
+## Non-goals
 
-Week-1 picks (recorded in the first admit `pins`): GPU family, serving engine, op family. Changing them later is an `adapter`/`serving` provider, not a rewrite.
-
-## Explicit non-goals (architecture)
-
-- One universal cost model for L1–L7 (survey §5.1.1: no).
-- One mega-IR (survey A6/S6: no).
-- Always-on frontier model at every customer compile (P23: no).
-- Serving the proposal before \(F\)-admit.
+- One universal cost model for L1–L7.
+- One mega-IR / Cake IR as the SKU.
+- Always-on frontier model at every customer compile.
+- Serving a proposal before \(F\)-admit.
+- Putting `model_id` or free text into `%k`.

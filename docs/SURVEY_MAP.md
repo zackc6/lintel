@@ -34,9 +34,9 @@ Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), repl
 
 | T | Year-1 | Year-2 door |
 |---|---|---|
-| **T1** typed agent↔compiler interface | Admit schema v0 + enumerated actions + localized reject | More adapters; still one schema |
+| **T1** typed agent↔compiler interface | **LandIR** (`land`/`revert`/`reject`) + admit-record lowering + localized reject | More adapters; still one LandIR |
 | **T2** admit / fallback | Layered oracles + last_good / classical | SMT / Alive2 as `oracle` providers |
-| **T3** freeze + replay | Cache key in `lintel.schema.cache_key`; golden replay test | Policy bundles |
+| **T3** freeze + replay | LandIR `%k = cache_key(...)`; serve is `lookup(%k)` | Policy bundles |
 | **T4** in-tree advisors | Out | Out unless a customer funds job (b) |
 | **T5** dialect/ISA feedback | **Lite only:** recurring failures → new oracle plugin or tighter enum (test-gated) | Not ISA RFCs |
 | **T6** serving A/B | One engine, partner traces | Second engine |

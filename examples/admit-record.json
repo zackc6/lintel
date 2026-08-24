@@ -22,6 +22,15 @@
       "enum_id": "triton.attn.num_warps=8.block_m=128"
     }
   ],
+  "cache_key": {
+    "schema_version": "cache-key.v0",
+    "graph_hash": "sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0",
+    "hw_id": "nvidia.b200.80gb",
+    "compiler_ver": "triton==3.3.0+cu128",
+    "adapter_id": "triton.v0",
+    "policy_id": "lintel.specialize.v0"
+  },
+  "cache_key_digest": "sha256:ec25e38a28d690828ecd63234173704d013c7062aa3e919ba5d31765831c35d7",
   "oracles": [
     {
       "name": "golden",
