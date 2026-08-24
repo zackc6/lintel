@@ -1,6 +1,4 @@
-// NOT lintel-ir.v0. Do not interpret on the SLA path.
-// Phase 1 sketch: same F as v0, budget gates whether we spend serving A/B.
-// Kernel %k unchanged. Serve is still lookup(%k).
+// Coverage sketch: cost-only slice. PoC already includes cost inside the CFG.
 
 module @rec_acme_attn_prefill_cost version "lintel-ir.v1-sketch" {
 

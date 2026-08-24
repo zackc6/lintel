@@ -1,7 +1,7 @@
 # Year-1 plan (doable, commercial)
 
 **Clock:** 12 months from kickoff (~2026-09 → 2027-08).  
-**Staffing:** designed for **10**, with a clean scale-up to **25** and **50**. Do not hire 50 on day one.
+**IR:** Build the [PoC](POC.md) first — CFG + cost-as-gate + compile-to-ADG on one region. Linear `lintel-ir.v0` is a degenerate one-block CFG, not the Q1 target. Staffing does not cap that set.
 
 ## Definition of done (commercial, not demo)
 
@@ -15,11 +15,11 @@ Year 1 is **done** only if all of the following are true. Missing any one means 
 6. **Support**: replay pack, spend cap, severity for oracle miss (survey §5.7 checklist #15).
 7. **Contract**: customer owns outputs; telemetry opt-in (P13).
 
-**Not** year-1 done: KernelBench rank, a public Cake-class IR, an AMD port, “agents are the default compiler.”
+**Not** year-1 done: KernelBench rank, a public Cake-class IR, an AMD port, “agents are the default compiler,” linear-only interpret with no CFG/cost/ADG.
 
 ## What 10 / 25 / 50 people actually do
 
-Hire for **seams**, not for “more kernel researchers.”
+Hire for **seams** and for the [PoC](POC.md) interpreter (ADG walk, cost, compile). Headcount tables below are overlays, not a reason to ship a linear script first.
 
 | Role | 10 (GA-minimum) | 25 (two surfaces) | 50 (enterprise + 2nd vendor) |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Hire for **seams**, not for “more kernel researchers.”
 | Job (c) lite / support | 0 | 0 | 3 |
 | **Total** | **10** | **25** | **50** |
 
-**Rule.** A 10-person team ships **one** GPU family, **one** agent surface, **one** serving engine. Default: NVIDIA + Triton + (SGLang *xor* vLLM, pick in week 1). If the home fleet is not NVIDIA, swap the adapter — do not dual-track. A 25-person team adds the second surface *or* the second engine, not both in the same quarter. A 50-person team is year-1 only if Q1 already exited with the core 10; otherwise it is year 2.
+**Width (product cut, not a headcount cap).** Year 1 ships **one** GPU family, **one** agent surface, **one** serving engine. Default: NVIDIA + Triton + (SGLang *xor* vLLM, pick in week 1). If the home fleet is not NVIDIA, swap the adapter — do not dual-track. A later overlay adds the second surface *or* the second engine, not both in the same quarter.
 
 ## Hiring order (the 10)
 
@@ -43,7 +43,7 @@ Do not hire “kernel researchers” first. Hire so Q1 can freeze one artifact.
 | When | Role | Count | Why this week |
 |---|---|---|---|
 | Week 0 | Founder-eng | 1 | Pins week-1 decisions; owns kill switches |
-| Week 0–2 | Control-plane | 2 | Schema, session log, FSM, seams |
+| Week 0–2 | Control-plane | 2 | PoC schema, ADG compile, session log, seams |
 | Week 2–6 | Adapter + localized gates | 2 | Triton (or home-fleet equivalent) |
 | Week 2–8 | Oracles | 2 | Golden + numerical first; serving A/B from Q2 |
 | Week 4–8 | Artifact / CI / replay | 1 | Cache keys, partner replay pack |
@@ -62,32 +62,32 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 | Weeks | Build | Exit this slice |
 |---|---|---|
-| 1 | Pins above; admit schema freeze (already v0 in this repo); sqlite session log | Schema v0 frozen in-repo |
-| 2–4 | FSM + seams + sandbox that can run generated Triton | One propose → gate → fallback path on a toy kernel |
-| 5–8 | Triton adapter + golden + numerical oracles on a pinned shape grid | First **internal** freeze (faster on the grid or documented miss) |
-| 9–10 | Cache key + replay after an intentional model-id swap | Replay hard-fails on silent decision change |
-| 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log |
+| 1 | Pins above; [PoC](POC.md) schema + Acme CFG in-repo; sqlite session log | `lintel-ir.poc` frozen |
+| 2–4 | Compile module → ADG; interpret ADG; sandbox runs generated Triton | Walk `^try0` land **and** a revert edge on a toy kernel |
+| 5–8 | Triton adapter + golden + numerical on a pinned shape grid; `cost` uses `last_good.F` | First **internal** freeze through the PoC CFG |
+| 9–10 | Cache key + replay after an intentional model-id swap; ADG digest pinned | Replay hard-fails on silent decision or ADG change |
+| 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log + ADG |
 
-**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR, SMT, AMD-as-second-live-adapter, serving A/B (that is Q2), CFG / cost / T10 ([LATER.md](LATER.md)).
+**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT, AMD-as-second-live-adapter, a second live GPU vendor. **Do** build CFG, cost, and ADG compile ([POC.md](POC.md)). Serving A/B nodes in the CFG may stub until Q2 — do not stub `cond` or `cost`.
 
-## Quarter plan (10-person critical path)
+## Quarter plan (critical path)
 
 ### Q1 — Contract and one closed loop (months 0–3)
 
 **Build**
 
-- Admit-record schema v0 is **already in this repo**; Q1 implements the session store + FSM on top of it.
-- Seams: `llm`, `tools`, `sandbox`, `adapter` (Triton default; home-fleet swap is week 1), `oracle={golden,numerical}`.
-- FSM: triage (manual allowlist of ops) → propose → gate → measure → freeze | fallback.
+- Admit-record schema v0 is **already in this repo**; Q1 implements session store + **PoC ADG interpreter** on top of it ([POC.md](POC.md)).
+- Seams: `llm`, `tools`, `sandbox`, `adapter` (Triton default; home-fleet swap is week 1), `oracle={golden,numerical}`; `cost` is a control op, not a new seam.
+- Control FSM = walk the Acme CFG (blocks + `cond`), not a single linear block.
 - One internal model, one hot op family (attention **or** GEMM — pick by partner, not by paper).
 
 **Do not build**
 
-- Web IDE. Multi-agent swarms. Cake IR. SMT. A *second* GPU vendor. CFG / cost / T10 ([LATER.md](LATER.md)).
+- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT. A *second* GPU vendor.
 
 **Exit**
 
-- Internal CI produces a frozen Triton artifact that is numerically admitted and **faster on a pinned shape grid**, with a replayable log. Fallback path demonstrated.
+- Internal CI compiles the PoC module to an ADG, walks it, and produces a frozen Triton artifact that is numerically admitted (or a documented revert edge), with a replayable log. Fallback path demonstrated.
 
 ### Q2 — Serving \(F\) and first partner (months 3–6)
 
@@ -125,14 +125,14 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 - GA hardening: install, pins (compiler + HW + policy + model), runbooks, canary rollback.
 - Public-facing *method* (how we measure \(F\)), not a fake p50 industry claim.
-- Year-2 RFC: Argus-class SMT oracle plugin; second serving engine; optional DSH-bundle packaging. CFG / cost / T10: [LATER.md](LATER.md) — not this quarter.
+- Year-2 RFC: Argus-class SMT oracle plugin; second serving engine; optional DSH-bundle packaging. Coverage after PoC: [LATER.md](LATER.md) (`%w`, policy-hash, more edges).
 
 **Exit (GA)**
 
 - Commercial definition of done above.
 - Written **no** list for year 2 so sales cannot sell job (d) or survey M3 (LLM-as-compiler). YEAR1 M3 (Q3 replay) is in-scope.
 
-## 25- and 50-person overlays (same year, only if funded)
+**25 / 50 overlays** (same year, only if funded — not an IR gate)
 
 **25.** Parallel track from Q2: second `adapter` *or* second `serving` provider; dedicated on-prem; two more solutions engineers. Still one GPU vendor.
 
@@ -153,7 +153,7 @@ Commercial DoD needs two design partners. Q1 is internal technically, **not** co
 
 ## Budget shape (order-of-magnitude, USD, 2026 — not a quote)
 
-| Line | 10-person year | Notes |
+| Line | Year-1 GA | Notes |
 |---|---|---|
 | People (fully loaded) | $2.5–4.5M | Mix of regions; 50 people is $12–20M and is not the default |
 | Partner / lab GPU | $0.4–1.2M | Prefer customer GPU for the partner loop |
@@ -166,7 +166,7 @@ Overnight/CI specialize is the default. Interactive search is a labeled lab tier
 
 | When | Milestone | Survey hook |
 |---|---|---|
-| M1 (Q1) | Closed loop on one op, freeze + fallback | T1/T2 |
+| M1 (Q1) | PoC ADG walk on one op, freeze + fallback | T1/T2/T10-lite |
 | M2 (Q2) | Warm-server A/B + parity on partner traces | T6, C2 *instrumented* |
 | M3 (Q3) | Two artifacts in partner VCS; replay after model swap | T3, C5 *path* |
 | M4 (Q4) | GA SKU; customer-owned outputs; support runbooks | P11–P15 |

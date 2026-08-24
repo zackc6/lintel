@@ -16,14 +16,14 @@ Two paths. Same cache key. The specialize path may use an LLM. The serve path mu
  ┌──────┴───────────────────────────────────────────────────────────┐
  │  LINTEL CONTROL PLANE                                            │
  │                                                                  │
- │   Lintel IR (cache_key / propose / gate / land|revert|reject)    │
+ │   Lintel IR (CFG · cost · cache_key · land|revert|reject)       │
  │      %k = cache_key(graph, hw, compiler, adapter, policy)        │
  │                                                                  │
  │   session log = interpretation trace     (DSH pattern)           │
  │   seams: llm · tools · sandbox · adapter · oracle · serving      │
  └──────┬───────────────────────────────┬───────────────────────────┘
         │ SPECIALIZE (CI / overnight)   │ SERVE (production)
-        │ interpret Lintel IR           │ lookup %k
+        │ compile → ADG; walk ADG      │ lookup %k
         │ LLM fills enum slots only     │
         ▼                               ▼
  admit record (lowering)          hit: artifact.digest
@@ -78,7 +78,7 @@ Serve is `lookup(%k)`, not “run the agent again.”
 
 ### 2. Lintel IR plan (the program)
 
-Linear block year 1. Agent fills enumerated slots. Agent does not add opcodes.
+Linear block is a **degenerate** CFG. Year-1 executable: [POC.md](POC.md). Coverage: [LATER.md](LATER.md).
 
 ```text
 %k  = cache_key @region, pins
@@ -91,7 +91,7 @@ land %p, %f under %k or_else last_good
      | reject {where, reason}
 ```
 
-Spec and examples: [LINTEL_IR.md](LINTEL_IR.md). CFG / cost / T10 sketches (not GA): [LATER.md](LATER.md).
+Spec and examples: [LINTEL_IR.md](LINTEL_IR.md). PoC (CFG + cost + ADG): [POC.md](POC.md). Coverage: [LATER.md](LATER.md).
 
 ### 3. Admit record (lowering / merge ticket)
 
@@ -121,8 +121,10 @@ A failed `gate` is not a bit. It names **where** and **which seam**. Recurring f
  Lintel IR                           lookup(%k)
    │                                   │
    ├─ %k = cache_key                   ├─ hit  → artifact.digest
-   ├─ propose enum                     ├─ miss → last_good | classical
-   ├─ gate* (owned)                    └─ replay-fail → do not serve new
+   ├─ cond (hot / ok / worth_measure)  ├─ miss → last_good | classical
+   ├─ propose enum                     └─ replay-fail → do not serve new
+   ├─ gate* (owned)
+   ├─ cost (same F + budget)
    ├─ fitness F
    └─ land | revert | reject
          │
@@ -131,7 +133,7 @@ A failed `gate` is not a bit. It names **where** and **which seam**. Recurring f
    artifact stored at %k
 ```
 
-FSM (SLA): `triage → propose → gate → measure → fitness → land | revert`. Same states as Lintel IR ops. Lab mode may be looser; it cannot `land` without the SLA plan.
+FSM (SLA): walk the PoC ADG (`cond` on hot / ok / worth_measure) → `land | revert`. Lab mode may be looser; it cannot `land` without the SLA graph.
 
 ## How this survives survey-driven change
 
@@ -144,7 +146,7 @@ FSM (SLA): `triage → propose → gate → measure → fitness → land | rever
 | **C5** vendors name ACF workflows | Integrate; we stay the admit/freeze layer |
 | **C6-A** no classical fallback | **Do not follow** |
 | Cake or Argus open-source | Provider, not a rewrite |
-| DSH plugin ABI wins | Oracles + Lintel IR interpreter as `dsh-plugin`s; T10 ADG freeze is [LATER.md](LATER.md) |
+| DSH plugin ABI wins | Oracles + ADG interpreter as `dsh-plugin`s; `%w` freeze is [LATER.md](LATER.md) |
 
 Wrong adapter is recoverable. Wrong “we are the compiler” story is not. `%k` + Lintel IR are the Q1 bets.
 
@@ -154,9 +156,9 @@ This plan repo is `docs/` + `schemas/` + `examples/`. The tree below is the prod
 
 ```text
 schemas/                 # lintel-ir, admit-record, cache-key, session
-examples/lintel-ir/      # text + JSON programs (v0)
-examples/later/          # CFG / cost / T10 sketches — not SLA
-examples/admit-record*   # lowerings
+examples/lintel-ir/      # degenerate linear modules
+examples/poc/            # CFG + cost + ADG (year-1 executable)
+examples/later/          # coverage after PoC (%w, richer graphs)
 src/lintel/              # hash %k, replay law, FSM, seams
 adapters/                # year-1 triton/   later tile/ hip/ cake_ir/
 oracles/ serving/ cli/
@@ -169,7 +171,7 @@ Week-1 pins (in `%k` or audit): GPU family, serving engine, op family. Changing 
 
 ## Non-goals
 
-- One universal cost model for L1–L7. A pinned \(F\)+budget `cost` op is year 2 ([LATER.md](LATER.md)), not v0.
+- One universal cost model for L1–L7. PoC `cost` is the same pinned \(F\) + a budget ([POC.md](POC.md)).
 - One mega-IR / Cake IR as the SKU.
 - Always-on frontier model at every customer compile.
 - Serving a proposal before \(F\)-admit.

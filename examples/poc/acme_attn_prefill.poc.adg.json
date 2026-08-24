@@ -1,0 +1,61 @@
+{
+  "schema_version": "lintel-adg.poc",
+  "module_id": "rec_acme_attn_prefill_poc",
+  "commentary": "T10 lite: compile of examples/poc/acme_attn_prefill.poc.json. SLA interprets this ADG. Serve does not.",
+  "entry": "entry",
+  "agent_slots": ["propose.enum_id", "triage.region"],
+  "kernel_cache_key_note": "%k = hash(graph, hw, compiler, adapter, policy) — unchanged",
+  "adg": [
+    { "id": "entry", "ops": ["cache_key", "triage"], "ok": "try0", "fail": "cold", "pred": "hot" },
+    { "id": "cold", "term": "revert" },
+    {
+      "id": "try0",
+      "ops": ["propose", "gate.golden"],
+      "ok": "num0",
+      "fail": "try1",
+      "enum_id": "triton.attn.num_warps=8.block_m=128",
+      "owner": "kernels@acme"
+    },
+    {
+      "id": "try1",
+      "ops": ["propose", "gate.golden"],
+      "ok": "num1",
+      "fail": "giveup",
+      "enum_id": "triton.attn.num_warps=16.block_m=64",
+      "owner": "kernels@acme"
+    },
+    { "id": "giveup", "term": "revert" },
+    {
+      "id": "num0",
+      "ops": ["gate.numerical", "cost"],
+      "ok": "ab0",
+      "fail": "try1",
+      "pred": "worth_measure",
+      "owner": "kernels@acme"
+    },
+    {
+      "id": "num1",
+      "ops": ["gate.numerical", "cost"],
+      "ok": "ab1",
+      "fail": "giveup",
+      "pred": "worth_measure",
+      "owner": "kernels@acme"
+    },
+    {
+      "id": "ab0",
+      "ops": ["gate.serving_ab"],
+      "ok": "fit0",
+      "fail": "try1",
+      "owner": "serving@acme"
+    },
+    {
+      "id": "ab1",
+      "ops": ["gate.serving_ab"],
+      "ok": "fit1",
+      "fail": "giveup",
+      "owner": "serving@acme"
+    },
+    { "id": "fit0", "ops": ["fitness"], "term": "land", "proposal": "p0" },
+    { "id": "fit1", "ops": ["fitness"], "term": "land", "proposal": "p1" }
+  ]
+}

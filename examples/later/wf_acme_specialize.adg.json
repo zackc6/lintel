@@ -1,7 +1,7 @@
 {
   "schema_version": "lintel-workflow.v1-sketch",
   "workflow_id": "wf_acme_specialize_v3",
-  "commentary": "T10 lowering: git reviews this ADG, not chat. Not lintel-ir.v0. Serve does not run this.",
+  "commentary": "Coverage T10: %w workflow key. PoC ADG is examples/poc/acme_attn_prefill.poc.adg.json. Serve does not run this.",
   "pins": {
     "controller": "lintel.specialize.v1",
     "F": "serving.tokens_per_s * quality_parity",

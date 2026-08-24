@@ -40,7 +40,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 - Argus-class SMT as an `oracle` provider.
 - Cake-class schedule IR as an `adapter` if a tree exists or a customer funds it.
 - DSH bundle packaging if `dsh-plugin` is the distribution ABI.
-- CFG / cost-as-gate / T10 compile-the-plan after year-1 DoD ([LATER.md](LATER.md)).
+- CFG / cost-as-gate / T10 **coverage** (`%w`, policy-hash, placement) after the [PoC](POC.md) ADG walk is real ([LATER.md](LATER.md)).
 - Job (c) comments on kernel PRs (never “we review llvm-project”).
 - Second vendor (AMD) after NVIDIA freeze is boring.
 

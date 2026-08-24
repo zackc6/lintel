@@ -2,7 +2,7 @@
 
 **Lintel IR** is the control-plane IR. Cake IR is a schedule IR. Triton / Tile / HIP / Cake IR plug in behind `adapter`. They are not Lintel IR.
 
-A module is one specialize plan at a cache key `%k`. The agent fills enumerated slots. The compiler owns lowering, measurement, and fallback. Serve does not interpret Lintel IR. Serve is `lookup(%k)`.
+A module is one specialize plan at a cache key `%k`. Year-1 **executable** modules are the [PoC](POC.md) (CFG + `cost` + compile to ADG). A linear block is a CFG with one `^entry`. The agent fills enumerated slots. The compiler owns lowering, measurement, and fallback — and **compiles this plan to an ADG**. Serve does not interpret Lintel IR. Serve is `lookup(%k)`.
 
 Terminators are ordinary English verbs: **land**, **revert**, **reject**.
 
@@ -46,13 +46,15 @@ E2E stack: [ARCHITECTURE.md](ARCHITECTURE.md). Merge ticket: [ADMIT_RECORD.md](A
 | `measure` | Bench / serving A/B | Not invent a number |
 | `fitness` | Score vs last_good under pinned \(F\) | Not change \(F\) on the SLA path |
 
-**Terminators** (exactly one) — all **under `%k`**:
+**Terminators** (exactly one per path) — all **under `%k`**:
 
 | Terminator | Meaning |
 |---|---|
 | `land %p, %f under %k or_else last_good\|classical` | `store[%k] = digest(%p)`; that is what serves |
 | `revert last_good\|classical under %k` | Keep previous `store[%k]` (or classical); this module is audit |
 | `reject {where, reason} under %k` | Illegal program; serve path unchanged |
+
+PoC adds `cost`, `cond`, and named blocks. Spec: [POC.md](POC.md). Linear v0 is one block with a terminator.
 
 ## Cache key (first-class)
 
@@ -145,10 +147,10 @@ Serve still `lookup(%k)` → previous digest.
 
 | When | Work |
 |---|---|
-| **Now** | Spec + examples; record lowering includes `%k` |
-| **Q1** | Interpret one block; `store[%k]`; replay law |
+| **Now** | Linear v0 (degenerate) + [PoC](POC.md) CFG/cost/ADG |
+| **Q1** | Compile PoC module → ADG; interpret ADG; `store[%k]`; replay |
 | **Q3** | Second adapter = new enum / `adapter_id` (new keys), not a new IR |
-| **Year 2–3** | Optional CFG, cost-as-gate, compile-the-plan (T10). Same kernel `%k`. [LATER.md](LATER.md) |
+| **After PoC exit** | Coverage: `%w`, policy-hash, more edges ([LATER.md](LATER.md)). Same kernel `%k` |
 
 ## Non-goals
 
@@ -157,4 +159,4 @@ Serve still `lookup(%k)` → previous digest.
 - Not a year-1 MLIR dialect in this plan repo.
 - Not putting the LLM in `lookup(%k)`.
 - Not re-interpreting this IR on the serve path.
-- Not CFG / `cost` / `compile plan` in v0 (those are sketches in [LATER.md](LATER.md)).
+- Not shipping linear-only interpret as the year-1 IR. The executable contract is [POC.md](POC.md). Coverage is [LATER.md](LATER.md).

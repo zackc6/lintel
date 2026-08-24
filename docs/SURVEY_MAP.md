@@ -6,7 +6,7 @@ Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compil
 
 | Job | Survey | Year 1 | Why |
 |---|---|---|---|
-| **(a) online/CI specialize** | Horizon A ships for *some* products, not silent default | **GA SKU** | Only job a 10-person team can sell with serving \(F\) |
+| **(a) online/CI specialize** | Horizon A ships for *some* products, not silent default | **GA SKU** | Only job we sell in year 1 with serving \(F\) |
 | **(b) offline heuristic synthesis** | Magellan vs MLGO (**C1**) | Out | Different buyer; Google's fight |
 | **(c) oracle PR review** | C7; llvm-harness / Archer | Out of GA; 50-person overlay comments on *kernel* PRs only | Generic SCM review is the wrong SKU |
 | **(d) ASIC bring-up / codesign** | C9; TritorX / Zomboss | Out | Needs a second shipping vendor and a coverage SLA; not Cake+DSH |
@@ -34,7 +34,7 @@ Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), repl
 
 | T | Year-1 | Year-2 door |
 |---|---|---|
-| **T1** typed agent↔compiler interface | **Lintel IR** (`land`/`revert`/`reject`) + admit-record lowering + localized reject | More adapters; still one Lintel IR |
+| **T1** typed agent↔compiler interface | **Lintel IR** + [PoC](POC.md) CFG/`cost`/ADG + admit-record lowering | Coverage [LATER.md](LATER.md); still one Lintel IR |
 | **T2** admit / fallback | Layered oracles + last_good / classical | SMT / Alive2 as `oracle` providers |
 | **T3** freeze + replay | Lintel IR `%k = cache_key(...)`; serve is `lookup(%k)` | Policy bundles |
 | **T4** in-tree advisors | Out | Out unless a customer funds job (b) |
@@ -43,7 +43,7 @@ Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), repl
 | **T7** open multi-IR corpora | Out (not a data company) | Consume KernelBook-class data if it helps the Triton adapter |
 | **T8** unified ladder | Refuse KernelBench as GA metric; partner ladder + cost-to-compile | Public method note, not a fake industry p50 |
 | **T9** provenance / CODEOWNERS | Q3 | Air-gap / SSO at 25–50 people |
-| **T10** workflow compile | DSH *pattern* (plugins + session log) now | [LATER.md](LATER.md): cost → CFG → ADG freeze at `%w`; still `lookup(%k)` on serve |
+| **T10** workflow compile | [PoC](POC.md): compile one CFG to ADG; interpret ADG | [LATER.md](LATER.md): `%w`, policy-hash, more edges; still `lookup(%k)` on serve |
 
 ## Commercial problems (P1–P23)
 

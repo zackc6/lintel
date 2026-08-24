@@ -46,9 +46,9 @@ Survey Horizon A is 2027–28; Horizon B ~2029–31. Lintel year 1 ≈ late Hori
 
 | Window | What customers will pay for | Lintel offer | What we refuse |
 |---|---|---|---|
-| **Year 1 (now→~2027-08)** | Hot-path specialize they can freeze and audit | Lintel Specialize (Triton + one engine) | Default-all, new mega-IR |
-| **Year 2 (~2027-09→2028-08)** | Second surface (Tile/HIP) + on-prem + reported p50 on *their* fleet | Adapter #2; optional SMT/oracle plugin; DSH-bundle if that ABI wins | Claiming C2 industry settlement |
-| **Year 3 (~2028-09→2029-08)** | Compiled control plane: workflow freeze, placement, multi-SKU | T10 productization ([LATER.md](LATER.md): ADG/FSM as artifacts); still classical lowering | Autonomous tape-out; LLM-as-`opt` |
+| **Year 1 (now→~2027-08)** | Hot-path specialize they can freeze and audit | Lintel Specialize: Triton + one engine + PoC ADG ([POC.md](POC.md)) | Default-all, new mega-IR, survey M3 |
+| **Year 2 (~2027-09→2028-08)** | Second surface (Tile/HIP) + on-prem + reported p50 on *their* fleet | Adapter #2; coverage [LATER.md](LATER.md) (`%w`, policy-hash); optional SMT | Claiming C2 industry settlement |
+| **Year 3 (~2028-09→2029-08)** | Compiled control plane: placement, multi-SKU | T10 coverage (placement after `%w` is boring); still classical lowering | Autonomous tape-out; LLM-as-`opt` |
 
 If year 1 does not produce frozen customer-owned artifacts, year 2–3 stories are fiction.
 

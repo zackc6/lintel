@@ -73,10 +73,10 @@ They will not pay for: a better chat window, a research IR, or “we beat hipBLA
 
 - Job (b) Magellan-class LLVM heuristic evolution (**C1** is Google’s fight).
 - Job (c) llvm-harness / Archer as a product (different buyer; true-fix still &lt;22%).
-- Job (d) ASIC bring-up / Zomboss-class mapping (**C9** needs a second shipping vendor; not a 10-person year-1).
+- Job (d) ASIC bring-up / Zomboss-class mapping (**C9** needs a second shipping vendor; out of this SKU).
 - Autonomous tape-out (**C10** — survey rejects).
 - Multi-month *default-path* A/B as a marketing claim (**C2** still open industry-wide; we *instrument* it, we do not claim settlement).
-- CFG, cost-as-gate, T10 compile-the-plan ([LATER.md](LATER.md) — year 2–3 sketches, not GA).
+- Coverage items in [LATER.md](LATER.md) (`%w` as a second key, placement, multi-SKU) before the [PoC](POC.md) ADG walk is real.
 
 ## Survey commercial checklist (year-1 status)
 
@@ -84,7 +84,7 @@ From survey §5.7. Full P/T/C map: [SURVEY_MAP.md](SURVEY_MAP.md).
 
 | # | Checklist | Year-1 status |
 |---|---|---|
-| 1 | Typed tools + admit traces | **v0 schema in-repo** |
+| 1 | Typed tools + admit traces | **v0 + poc schemas in-repo** |
 | 2 | VCS artifacts as product truth | Freeze URI in admit record; customer git |
 | 3 | Orchestrator + specialists + FSM | `lintel.fsm`; no swarms |
 | 4 | CI/hot-path → freeze | Q1 internal, Q2 partner |

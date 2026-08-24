@@ -8,4 +8,4 @@
 | Copying the survey into this tree | Link [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey); keep it separate |
 | Naming the control-plane IR AdmitIR / LandIR / SpecIR / ReplayIR | **Lintel IR**. Cake IR is the schedule plane. Do not invent another XIR |
 | Fork Cake IR or DeepSeek Harness as the product | Seams + Lintel IR; take mechanisms, not brands |
-| Folding CFG / cost / T10 into `lintel-ir.v0` | Later sketches live in `docs/LATER.md` + `examples/later/`. Year 1 interprets one block |
+| Folding CFG / cost / T10 into “later because 10 people” | Year-1 executable is docs/POC.md. Coverage is LATER.md. Linear v0 is degenerate |

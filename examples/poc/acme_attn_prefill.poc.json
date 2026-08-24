@@ -1,0 +1,158 @@
+{
+  "schema_version": "lintel-ir.poc",
+  "module_id": "rec_acme_attn_prefill_poc",
+  "region": {
+    "region_id": "attn.prefill.qkv",
+    "graph_hash": "sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0",
+    "op_family": "attention"
+  },
+  "pins": {
+    "hw_id": "nvidia.b200.80gb",
+    "compiler_ver": "triton==3.3.0+cu128",
+    "adapter_id": "triton.v0",
+    "model_id": "vendor.frontier.2026-10-20",
+    "policy_id": "lintel.specialize.poc"
+  },
+  "plan": {
+    "label": "specialize",
+    "entry": "entry",
+    "blocks": [
+      {
+        "id": "entry",
+        "ops": [
+          { "op": "cache_key", "id": "k" },
+          { "op": "triage", "id": "r" }
+        ],
+        "cond": { "pred": "r.hot", "then": "try0", "else": "cold" }
+      },
+      {
+        "id": "cold",
+        "ops": [],
+        "term": { "op": "revert", "cache_key": "k", "target": "last_good" }
+      },
+      {
+        "id": "try0",
+        "ops": [
+          {
+            "op": "propose",
+            "id": "p0",
+            "kind": "propose_schedule",
+            "enum_id": "triton.attn.num_warps=8.block_m=128"
+          },
+          { "op": "gate", "id": "g0", "oracle": "golden", "on": "p0", "owner": "kernels@acme" }
+        ],
+        "cond": {
+          "pred": "g0.ok",
+          "then": "num0",
+          "else": "try1",
+          "seam": "adapter",
+          "where": "golden",
+          "reason": "ref mismatch"
+        }
+      },
+      {
+        "id": "try1",
+        "ops": [
+          {
+            "op": "propose",
+            "id": "p1",
+            "kind": "propose_schedule",
+            "enum_id": "triton.attn.num_warps=16.block_m=64"
+          },
+          { "op": "gate", "id": "g1", "oracle": "golden", "on": "p1", "owner": "kernels@acme" }
+        ],
+        "cond": { "pred": "g1.ok", "then": "num1", "else": "giveup" }
+      },
+      {
+        "id": "giveup",
+        "ops": [],
+        "term": { "op": "revert", "cache_key": "k", "target": "last_good" }
+      },
+      {
+        "id": "num0",
+        "ops": [
+          {
+            "op": "gate",
+            "id": "n0",
+            "oracle": "numerical",
+            "on": "p0",
+            "owner": "kernels@acme",
+            "detail": "max_abs_err<1e-3"
+          },
+          {
+            "op": "cost",
+            "id": "c0",
+            "on": "p0",
+            "F": "serving.tokens_per_s * quality_parity",
+            "budget_usd": 50
+          }
+        ],
+        "cond": { "pred": "c0.worth_measure", "then": "ab0", "else": "try1" }
+      },
+      {
+        "id": "num1",
+        "ops": [
+          {
+            "op": "gate",
+            "id": "n1",
+            "oracle": "numerical",
+            "on": "p1",
+            "owner": "kernels@acme",
+            "detail": "max_abs_err<1e-3"
+          },
+          {
+            "op": "cost",
+            "id": "c1",
+            "on": "p1",
+            "F": "serving.tokens_per_s * quality_parity",
+            "budget_usd": 50
+          }
+        ],
+        "cond": { "pred": "c1.worth_measure", "then": "ab1", "else": "giveup" }
+      },
+      {
+        "id": "ab0",
+        "ops": [
+          { "op": "gate", "id": "a0", "oracle": "serving_ab", "on": "p0", "owner": "serving@acme" }
+        ],
+        "cond": {
+          "pred": "a0.ok",
+          "then": "fit0",
+          "else": "try1",
+          "seam": "serving",
+          "where": "serving.output_parity",
+          "reason": "3/1000 mismatch"
+        }
+      },
+      {
+        "id": "ab1",
+        "ops": [
+          { "op": "gate", "id": "a1", "oracle": "serving_ab", "on": "p1", "owner": "serving@acme" }
+        ],
+        "cond": { "pred": "a1.ok", "then": "fit1", "else": "giveup" }
+      },
+      {
+        "id": "fit0",
+        "ops": [{ "op": "fitness", "id": "f0", "on": "a0" }],
+        "term": {
+          "op": "land",
+          "cache_key": "k",
+          "proposal": "p0",
+          "fitness": "f0",
+          "or_else": "last_good"
+        }
+      },
+      {
+        "id": "fit1",
+        "ops": [{ "op": "fitness", "id": "f1", "on": "a1" }],
+        "term": {
+          "op": "land",
+          "cache_key": "k",
+          "proposal": "p1",
+          "fitness": "f1",
+          "or_else": "last_good"
+        }
+      }
+    ]
+  }
+}

@@ -14,7 +14,7 @@ This repository is a **year-1 plan** (plus a written v0 contract in `schemas/` /
 
 ## Start Monday
 
-Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Read the docs; `schemas/` and `examples/` are the written contract, not a package to test in this repo.
+Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). The year-1 executable IR is [docs/POC.md](docs/POC.md), not the linear v0 examples.
 
 | Path | What it is |
 |---|---|
@@ -26,5 +26,6 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Read the docs; `schemas/
 | [docs/SURVEY_MAP.md](docs/SURVEY_MAP.md) | Jobs, C1–C10, T1–T10, P1–P23 → year-1 choice |
 | [docs/ADMIT_RECORD.md](docs/ADMIT_RECORD.md) | Annotated admit record (landed + reverted) |
 | [docs/LINTEL_IR.md](docs/LINTEL_IR.md) | Lintel IR: land / revert / reject + cache_key |
-| [docs/LATER.md](docs/LATER.md) | CFG, cost, T10 sketches — not year-1 GA |
-| `schemas/` | Lintel IR, admit record, session event, cache key (v0) |
+| [docs/POC.md](docs/POC.md) | Year-1 hard kernel: CFG + cost + ADG compile |
+| [docs/LATER.md](docs/LATER.md) | Coverage after PoC (`%w`, policy-hash, more edges) |
+| `schemas/` | v0 linear + poc CFG/cost; admit record, session, cache key |

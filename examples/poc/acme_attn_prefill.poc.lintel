@@ -1,7 +1,9 @@
-// Coverage sketch after PoC. Year-1 executable is examples/poc/.
-// Same CFG family; this file is the source if PoC and coverage diverge.
+// PoC — lintel-ir.poc. SLA interprets the compiled ADG, not this text.
+// CFG + cost + two enums. Policy owns the graph. Agent fills enum_id only.
+// Compile → examples/poc/acme_attn_prefill.poc.adg.json
+// Serve is lookup(%k). Not survey M3.
 
-module @rec_acme_attn_prefill_cfg version "lintel-ir.v1-sketch" {
+module @rec_acme_attn_prefill_poc version "lintel-ir.poc" {
 
   region @attn_prefill {
     region_id = "attn.prefill.qkv"
@@ -14,7 +16,7 @@ module @rec_acme_attn_prefill_cfg version "lintel-ir.v1-sketch" {
     compiler = "triton==3.3.0+cu128"
     adapter  = @triton.v0
     model    = "vendor.frontier.2026-10-20"
-    policy   = @lintel.specialize.v1
+    policy   = @lintel.specialize.poc
   }
 
   plan @specialize {
@@ -41,12 +43,12 @@ module @rec_acme_attn_prefill_cfg version "lintel-ir.v1-sketch" {
     revert last_good under %k
 
   ^num0:
-    %n0 = gate numerical  %p0 owner @kernels.acme { max_abs_err = 1e-3 }
+    %n0 = gate numerical %p0 owner @kernels.acme { max_abs_err = 1e-3 }
     %c0 = cost %p0 vs last_good { F = serving.tokens_per_s * quality_parity, budget.usd = 50 }
     cond %c0.worth_measure, ^ab0, ^try1
 
   ^num1:
-    %n1 = gate numerical  %p1 owner @kernels.acme { max_abs_err = 1e-3 }
+    %n1 = gate numerical %p1 owner @kernels.acme { max_abs_err = 1e-3 }
     %c1 = cost %p1 vs last_good { F = serving.tokens_per_s * quality_parity, budget.usd = 50 }
     cond %c1.worth_measure, ^ab1, ^giveup
 
