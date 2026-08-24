@@ -1,6 +1,6 @@
 # Architecture (e2e stack + mechanisms)
 
-The survey’s 1–3 year uncertainty is *which IR, which flag, which vendor surface* — not whether agents exist. Lintel is a **small control-plane IR + plugins**. Cake, DeepSeek Harness, and GEAK are **mechanisms**, not the product.
+The survey’s 1–3 year uncertainty is *which IR, which flag, which vendor surface* — not whether agents exist. Lintel is a **small control-plane IR + plugins**. Cake, DeepSeek Harness, and GEAK are **mechanisms**, not the product. Why this IR exists and how the Acme walks hit L1–L7: [WHY.md](WHY.md).
 
 ## E2E software stack
 
@@ -61,7 +61,7 @@ Survey [§5.1.2](https://github.com/zackc6/ai-compiler-survey/blob/main/docs/SUR
   ADG walk   (specialize)          lookup(%k) (serve)
 ```
 
-Worked example: [examples/poc/acme_attn_prefill.poc.lintel](../examples/poc/acme_attn_prefill.poc.lintel). Same `%k`. Each op touches one band (or none — control only).
+Worked example: [examples/poc/acme_attn_prefill.poc.lintel](../examples/poc/acme_attn_prefill.poc.lintel). Same `%k`. Each op touches one band (or none — control only). Step-by-step walks (land / revert / cost skip / cold / replay): [WHY.md](WHY.md).
 
 | PoC op | Band | What happens | What Lintel IR does **not** do |
 |---|---|---|---|

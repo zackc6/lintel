@@ -14,10 +14,11 @@ This repository is a **year-1 plan** (plus a written v0 contract in `schemas/` /
 
 ## Start Monday
 
-Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). The year-1 executable IR is [docs/POC.md](docs/POC.md), not the linear v0 examples.
+Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Why this IR and the Acme walks: [docs/WHY.md](docs/WHY.md). The year-1 executable IR is [docs/POC.md](docs/POC.md), not the linear v0 examples.
 
 | Path | What it is |
 |---|---|
+| [docs/WHY.md](docs/WHY.md) | Why the IR, what we benefit, Acme walks (L1–L7) |
 | [docs/PRODUCT.md](docs/PRODUCT.md) | What we sell, and why Cake+DSH alone is the wrong SKU |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Seams, FSM, L1–L7 map, repo layout |
 | [docs/YEAR1.md](docs/YEAR1.md) | Quarters, 10/25/50 staffing, week-by-week Q1, hiring order, GTM |

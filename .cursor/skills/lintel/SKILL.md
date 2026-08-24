@@ -42,6 +42,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 
 | Path | Role |
 |---|---|
+| `docs/WHY.md` | Why the IR (it already compiles without us); \(F\), tokens, walks |
 | `docs/PRODUCT.md` | SKU |
 | `docs/ARCHITECTURE.md` | Seams / FSM / adapters |
 | `docs/YEAR1.md` | 10/25/50, quarters, GTM |

@@ -2,7 +2,7 @@
 
 Linear `lintel-ir.v0` is too simple: the compiler only type-checks and interprets one block. **Year 1 builds the hard kernel first**, on a small set, then [extends coverage](LATER.md). Headcount is not a scope cap.
 
-Serve is still `lookup(%k)`. Survey **M3** (LLM replaces the compiler) stays out. The classical compiler still lowers the **adapter IR**. This PoC is what the control-plane compiler *does* to Lintel IR: **walk a CFG, evaluate cost, compile the plan to an ADG**.
+Serve is still `lookup(%k)`. Survey **M3** (LLM replaces the compiler) stays out. The classical compiler still lowers the **adapter IR**. This PoC is what the control-plane compiler *does* to Lintel IR: **walk a CFG, evaluate cost, compile the plan to an ADG**. Why that is worth doing: [WHY.md](WHY.md).
 
 ## Small set (proof)
 

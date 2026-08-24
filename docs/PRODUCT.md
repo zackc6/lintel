@@ -67,6 +67,8 @@ They pay for:
 3. **Audit**: who admitted what, with which oracles, under which compiler/HW pin (T9).
 4. **No-LLM serve path** after freeze (P23).
 
+Worked examples (land / revert / cost skip / cold / replay): [WHY.md](WHY.md).
+
 They will not pay for: a better chat window, a research IR, or “we beat hipBLASLt on three shapes.”
 
 ## Scope we will not expand in year 1

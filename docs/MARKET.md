@@ -2,7 +2,7 @@
 
 ## The value in cash language
 
-Inference labs already pay three bills Lintel is meant to cut. Year-1 sales conversations should use these, not “AI compiler” as a slogan.
+Inference labs already pay three bills Lintel is meant to cut. Year-1 sales conversations should use these, not “AI compiler” as a slogan. Worked walks: [WHY.md](WHY.md).
 
 | Bill today | What Lintel changes | How we prove it in year 1 |
 |---|---|---|
