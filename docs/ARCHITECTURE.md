@@ -41,6 +41,46 @@ Two paths. Same cache key. The specialize path may use an LLM. The serve path mu
 
 **Year-1 width.** One GPU family, one adapter, one serving engine. Default: NVIDIA + Triton + (SGLang xor vLLM). Home fleet is a kickoff **swap**, not a second live path.
 
+## Lintel IR vs survey L1–L7
+
+Survey [§5.1.2](https://github.com/zackc6/ai-compiler-survey/blob/main/docs/SURVEY.md): L1–L7 are **data-plane bands**. Agents sit **above** them via tools. Lintel IR is that control plane. It is **not** L8 and **not** a replacement for any band. One cost model across L1–L7 stays a non-goal.
+
+```text
+  L1  Framework graph     torch.compile / exported module
+  L2  Portable graph IR   graph_hash in %k (StableHLO-class when present)
+  L3  Mid-IR / dialects   Inductor / MLIR / HLO — classical, not proposed in PoC
+  L4  Kernel DSL          adapter: Triton (yr1) · Tile / HIP / Cake IR (later)
+  L5  Backend / ISA       PTX / SASS — classical lowering of L4
+  L6  Runtime / serving   SGLang xor vLLM · CUDA Graphs · lookup(%k)
+  L7* Fleet / cluster     out of PoC; later placement plugin, not a FleetIR SKU
+  L0* CPU / LLVM          job (b) — out
+        │
+        │  control plane talks *to* bands through seams
+        ▼
+  Lintel IR  triage / propose / gate / cost / land   ← this product
+  ADG walk   (specialize)          lookup(%k) (serve)
+```
+
+Worked example: [examples/poc/acme_attn_prefill.poc.lintel](../examples/poc/acme_attn_prefill.poc.lintel). Same `%k`. Each op touches one band (or none — control only).
+
+| PoC op | Band | What happens | What Lintel IR does **not** do |
+|---|---|---|---|
+| `region` + `graph = sha256:bbcd57…` | **L1→L2** | Fingerprint of the captured attn-prefill subgraph | Rewrite the torch graph; invent a portable IR |
+| `triage` · `cond %r.hot` | **L1** (cut) + Amdahl | Skip cold regions (`^cold` → `revert`) | Fuse ops at L3; change the export boundary |
+| `pins.compiler` / `adapter = @triton.v0` | **L3/L4 pin** | Which classical stack must replay | Run InstCombine / Inductor passes |
+| `%p0 = propose … num_warps=8.block_m=128` | **L4** | Fill a Triton schedule enum | Emit Triton AST, Cake IR, or CUDA |
+| `gate golden` / `gate numerical` | **L4 after L5 lower** | Oracle on the cubin the adapter produced | Legalize PTX; allocate registers |
+| `cost … budget.usd = 50` | **control** (survey: economics are not a band) | Skip L6 A/B if it cannot pay back | A universal L1–L7 analytical model |
+| `gate serving_ab` · `fitness F = tokens/s × parity` | **L6** | Warm-server A/B + output parity | Own CUDA Graphs / KV cache / the engine |
+| `land %p0 under %k` | **L6 freeze** | `store[%k] = digest`; serve is `lookup(%k)` | Re-run Lintel IR on the hot path |
+| *(not in PoC)* `place` | **L7** | Later plugin ([LATER.md](LATER.md) coverage) | Ship FleetIR |
+
+**C4** (Triton vs Tile vs Cake IR) is an **L4** fight. Year 1 picks one L4 adapter. A second DSL is a new `adapter_id` (new `%k`), not a new Lintel IR.
+
+**T5-lite** (recurring fail → new check) may later name an **L5** `where` (`ptx.barrier`). That grows an oracle plugin. It does not grow an ISA dialect in this company.
+
+**L0 / job (b)** (Magellan / MLGO) never appears in Lintel IR.
+
 ## Mechanisms (what we take, where they sit)
 
 | Mechanism | From | In this stack | We discard |
@@ -150,7 +190,7 @@ FSM (SLA): walk the PoC ADG (`cond` on hot / ok / worth_measure) → `land | rev
 
 Wrong adapter is recoverable. Wrong “we are the compiler” story is not. `%k` + Lintel IR are the Q1 bets.
 
-## Repo layout (what 10 people grow)
+## Repo layout (product tree they grow)
 
 This plan repo is `docs/` + `schemas/` + `examples/`. The tree below is the product repo they grow.
 
