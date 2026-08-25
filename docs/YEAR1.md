@@ -15,7 +15,7 @@ Year 1 is **done** only if all of the following are true. Missing any one means 
 6. **Support**: replay pack, spend cap, severity for oracle miss (survey §5.7 checklist #15).
 7. **Contract**: customer owns outputs; telemetry opt-in (P13).
 
-**Not** year-1 done: KernelBench rank, a public Cake-class IR we own, an AMD port, “agents are the default compiler,” linear-only interpret with no CFG/cost/ADG, opaque-string autotune with no `{where}`.
+**Not** year-1 done: KernelBench rank, a public Cake-class IR we own, an AMD port, “agents are the default compiler,” linear-only interpret with no CFG/cost/ADG, opaque-string autotune with no `{where}`, a Lintel **IR-LLM** pretrained on LLVM IR.
 
 ## What 10 / 25 / 50 people actually do
 
@@ -68,7 +68,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 | 9–10 | Cache key + replay after an intentional model-id swap; ADG digest pinned | Replay hard-fails on silent decision or ADG change |
 | 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log + ADG + typed schedule in the admit record |
 
-**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT, AMD-as-second-live-adapter, a second live GPU vendor. **Do** build CFG, cost, ADG compile, and the typed Triton schedule + `{where}` ([POC.md](POC.md), [DATA_PLANE.md](DATA_PLANE.md)). Serving A/B nodes in the CFG may stub until Q2 — do not stub `cond`, `cost`, or `adapter_gate`.
+**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT, AMD-as-second-live-adapter, a second live GPU vendor, an IR-LLM / neural compile path. **Do** build CFG, cost, ADG compile, and the typed Triton schedule + `{where}` ([POC.md](POC.md), [DATA_PLANE.md](DATA_PLANE.md), [LLM_IR.md](LLM_IR.md)). Serving A/B nodes in the CFG may stub until Q2 — do not stub `cond`, `cost`, or `adapter_gate`.
 
 ## Quarter plan (critical path)
 
@@ -83,7 +83,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 **Do not build**
 
-- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT. A *second* GPU vendor. Dual live L4.
+- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT. A *second* GPU vendor. Dual live L4. IR-LLM pretrain / neural compile.
 
 **Exit**
 

@@ -66,7 +66,7 @@ Worked examples: [examples/poc/acme_attn_prefill.triton-schedule.json](../exampl
 - Compiling Cake IR in-house as the default path.
 - Dual live adapters (Triton + Cake, or Triton + Tile) before first partner canary. Q3 = **empty stub** second `adapter_id` only ([YEAR1.md](YEAR1.md)).
 - One cost model across L1–L7 ([ARCHITECTURE.md](ARCHITECTURE.md)). Adapter may expose **L4-only** cost hints to Lintel `cost` (later).
-- Agent-written raw Triton **source** as the SKU. Enum/schedule in, compiler out. (Agent may propose source **inside** the adapter later; year-1 PoC is schedule fields.)
+- Agent-written raw Triton **source** as the SKU. Enum/schedule in, compiler out. (Agent may propose source **inside** the adapter later; year-1 PoC is schedule fields.) The JSON schema **is** the grammar constraint; we do not constrained-decode CUDA ([LLM_IR.md](LLM_IR.md)).
 
 ---
 

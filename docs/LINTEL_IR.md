@@ -33,7 +33,7 @@ E2E stack: [ARCHITECTURE.md](ARCHITECTURE.md). Merge ticket: [ADMIT_RECORD.md](A
      classical lowering → serve
 ```
 
-**Invariant.** Lintel IR never lowers to CUDA/HIP/PTX.
+**Invariant.** Lintel IR never lowers to CUDA/HIP/PTX. SLA `propose` is a **Selector** (allowlisted schedule), not a Translator of IR/CUDA. Pins from the LLM-oriented IR survey: [LLM_IR.md](LLM_IR.md).
 
 ## Opcodes (v0)
 

@@ -30,6 +30,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 - KernelBench rank without cost-to-compile.
 - A Cake IR prototype that only we can compile.
 - “Cake v2” as a new kernel language (the adapter contract is already the PoC).
+- Designing Lintel IR as a Meta-LLM-Compiler **LLVM IR** rewrite surface, or adding neural compile / decompile opcodes ([LLM_IR.md](LLM_IR.md)).
 - A DeepSeek Harness skin with no `verify` seam.
 - “15% vendor-headline” charts (survey C2 tension).
 - Headcount 50 before M2 (partner A/B).

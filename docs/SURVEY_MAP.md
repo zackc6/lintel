@@ -97,3 +97,20 @@ Survey lean is the default. Year-1 choice is the productization of that lean.
 | 16 | Resource envelope | YEAR1 Q2 kill switch |
 
 If this map and the code disagree, **the map is wrong** — fix the doc, do not weaken replay.
+
+## LLM-oriented IR survey → Lintel pins
+
+Source: survey §0.2 + §5.1.1–5.1.2, from *The New Compiler Stack* (arXiv:2601.02045). Design write-up: [LLM_IR.md](LLM_IR.md). Do not collapse Lintel IR to their NL / PL / LLVM-IR map.
+
+| Their claim | Year-1 product choice |
+|---|---|
+| Selector is the safe LLM role | SLA `propose` = allowlisted Triton **schedule**. Widen only behind admit (**C3-A**). |
+| Translator has the correctness problem | `paste_cuda` / free IR rewrite **illegal** on SLA. Lab may be looser; still no `land` without gates. |
+| Generator of *inspectable* artifacts beats chat | Payload is `adapter-proposal.v0` + admit record. Commentary is not truth. Magellan Generator (new passes) stays job (b) **out**. |
+| Train an IR-LLM (Meta Compiler on LLVM IR) | Later `llm` **provider**. Not a new Lintel dialect. P12. |
+| Intra-level rewrite at LLVM IR / ASM | Classical **L0/L5**. No `propose` there in year 1. |
+| Cross-level neural compile / decompile | Survey **M3**. Out. |
+| KernelBench / CA@k / `-Oz` size as SOTA | Not GA. Serving **\(F\)** + $/compile. |
+| Constrained decoding / grammar-guided CUDA | JSON **schema** on the schedule is the constraint. |
+| LEGO-style basic-block split for LLM compile | Out. Scale = Amdahl `triage`, not neural compile. |
+| Hybrid systems are the near-term path | Already the company. Kill switch: fallback never drilled (**C6-B**). |
