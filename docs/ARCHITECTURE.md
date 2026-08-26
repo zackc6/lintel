@@ -78,7 +78,7 @@ Worked example: [examples/poc/acme_attn_prefill.poc.lintel](../examples/poc/acme
 
 **C4** (Triton vs Tile vs Cake IR) is an **L4 sink** fight. Year 1 picks one L4 **face** (Choreo) and one printer. A second DSL is a new `adapter_id` or printer (new `%k`), not a new Lintel IR.
 
-**T5-lite** (recurring fail → new check) may later name an **L5** `where` (`ptx.barrier`). That grows an oracle plugin. It does not grow an ISA dialect in this company.
+**T5-lite** (recurring fail → compiler change) is Lintel routing evidence into a **PR on `choreoir`**, not Choreo noticing and adding a keyword. After merge, `check` is still an ordinary function. An L5 `where` (`ptx.barrier`) may later grow as an **oracle plugin** here. It does not grow an ISA dialect in *this* company. Spec: [CHOREO.md](CHOREO.md) Undergo.
 
 **L0 / job (b)** (Magellan / MLGO) never appears in Lintel IR.
 
@@ -153,7 +153,7 @@ Closed module → versioned JSON in customer git. Humans review this, not the ch
 
 ### 5. Localized reject (Cake idea, portable)
 
-A failed `gate` is not a bit. It names **where** and **which seam**. Adapter fails name a **node hint** (`c0`). Recurring failures become a new `choreoir.check` rule or a tighter allowlist (test-gated). That is T5-lite — not silicon codesign.
+A failed `gate` is not a bit. It names **where** and **which seam**. Adapter fails name a **node hint** (`c0`). Recurring failures become a **choreo PR** (new `check` rule, or a sink that actually lowers `Pipeline.depth`) or a tighter allowlist — merged by Lintel, not by the searcher. That is T5-lite — not silicon codesign, and not Choreo rewriting itself.
 
 ## Two paths in one picture
 

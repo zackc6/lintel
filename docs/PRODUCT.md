@@ -29,7 +29,7 @@ That joint is Lintel. The compiler stays classical. The agent stays a searcher. 
 
 | Source | Mechanism we keep | What we discard |
 |---|---|---|
-| **Cake** | Typed agent-facing *schedule/contract*; localized pre-compile gates; harness evolves from recurring failures | Cake IR as the only dialect; 80M-token clean-start as the product UX; NVIDIA lock-in. Year-1 face is **Choreo**, not a Cake fork. |
+| **Cake** | Typed agent-facing *schedule/contract*; localized pre-compile gates; harness evolves from recurring failures (**Lintel** is the loop; **choreoir** is the PR target) | Cake IR as the only dialect; 80M-token clean-start as the product UX; NVIDIA lock-in; Choreo rewriting itself at search time. Year-1 face is **Choreo**, not a Cake fork. |
 | **DeepSeek Harness** | Everything-is-a-plugin; capability **seams** (definition / provider / consumer); append-only session log as the source of model-visible context; resume / fork / replay | Coding-agent UX as the SKU; unbounded tool-calling as the SLA path; no compiler oracles |
 | **GEAK v4** (must add) | Amdahl triage on a *warm* serving stack; A/B + output parity; JS/FSM workflow not free chat | Instinct-only marketing; hero-kernel blogs as “default agent compile” |
 | **Argus** (year 2 plugin, not year-1 critical path) | Tag/assert + compile-time SMT counterexamples | Claiming library-class peak on three families as C2 settlement |

@@ -95,7 +95,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 - Amdahl triage on a **warm** server (GEAK v4 pattern: do not burn search on cold kernels).
 - Serving seam: shadow or A/B + **output parity** on the chosen engine.
-- T5-lite: grow Choreo `check` rules from recurring `{where}` fails (test-gated in the choreo repo).
+- T5-lite: Lintel routes recurring `{where}` into a **choreo PR** (new `check` rule or a printer that consumes the schedule), human-merged, `compiler_ver` bumped ([CHOREO.md](CHOREO.md) Undergo).
 - Artifact cache keys + partner-facing replay pack.
 
 **Staffing note.** If you can hire toward 15, the extra five go to solutions + serving oracles, not a second IR.

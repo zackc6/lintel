@@ -29,7 +29,7 @@ Their three strata (NL / high-level PL / LLVM IR+ASM) are **too coarse** for us.
 
 4. **Do not import LEGO-Compiler decomposition** (basic-block split for neural compile). That helps translation, not joint \(F\)-search. Our scale cut is Amdahl `triage` on a **region**, already in the PoC CFG.
 
-5. **Self-improving = T5-lite, not a new `opt`.** Recurring `{where}` → tighter allowlist or a new `choreoir.check` rule (test-gated in choreo). Do not staff “Translator finds a trick → we emit a new LLVM pass.”
+5. **Self-improving = T5-lite, not a new `opt`.** Recurring `{where}` → Lintel decides (tighter allowlist, cost-cal, tactic) and, when the compiler must change, a **PR into `choreoir`** (new `check` rule or a sink that consumes the schedule). After merge, `check` / print are ordinary functions — no LLM. The agent does not mutate the dialect at runtime. Do not staff “Translator finds a trick → we emit a new LLVM pass.” Spec: [CHOREO.md](CHOREO.md) Undergo.
 
 ---
 

@@ -46,7 +46,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 | `docs/PRODUCT.md` | SKU |
 | `docs/ARCHITECTURE.md` | Seams / FSM / adapters |
 | `docs/DATA_PLANE.md` | Choreo Kernel AST as year-1 L4; Triton is the printer, **not** Cake v2 the language |
-| `docs/CHOREO.md` | Verdict + vs Cake / Argus / TIRx / LLM-oriented IR; remaining Lintel work. Do not copy zackc6/choreo here |
+| `docs/CHOREO.md` | Verdict + vs Cake / Argus / TIRx; Undergo (Lintel decides, PRs land on choreoir). Do not copy zackc6/choreo here |
 | `docs/LLM_IR.md` | New Compiler Stack (Selector / stratum) → year-1 pins. Do not make Lintel IR an LLVM-IR LLM |
 | `docs/LLM_ORIENTED_IR.md` | Independent LLM-oriented IR survey (program vs decision vs freeze vs control). Primary papers, not ai-compiler-survey |
 | `docs/ADAPTERS.md` | Live / stub / later `adapter_id`s |
@@ -61,3 +61,29 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 | `schemas/` `examples/` | v0 linear (degenerate), poc CFG+Choreo Kernel, later coverage |
 
 Keep the hybrid bet: agents search; compilers lower; this product is admit + freeze + replay. Cake and DeepSeek Harness are **mechanisms**, not forks. Year-1 L4 is Choreo Kernel AST, not Cake IR and not Triton knobs.
+
+## Codesign (Lintel × Choreo)
+
+Write-up: [docs/CHOREO.md](docs/CHOREO.md) (verdict, vs Cake/TIRx, **Undergo**). Sibling compiler: [zackc6/choreo](https://github.com/zackc6/choreo) — **read there, do not copy**.
+
+Cake (arXiv:2608.12629) splits in three. Only one is a Lintel object:
+
+| Cake job | Who |
+|---|---|
+| (1) Typed IR the agent edits | **Choreo** Kernel AST (kind 1). Year-1 SLA still two allowlisted records (kind-2 cardinality). |
+| (2) Lowering that **derives** barrier addresses, phase bits, TMEM offsets, then emits a cubin/NPU bin | **Sink**, not this repo. Wrap TIRx/Triton/CUTLASS (`@tirx.v0`) or TileLang-Ascend (`@tilelang.ascend`). `print_triton` that comments `Pipeline.depth` is **not** a sink. |
+| (3) Outer loop: evidence → new gate / cost cal / tactic / compiler PR → freeze | **Lintel** (kind 4 + kind 3). Merge gate, workload contract, `%k`, serving \(F\). |
+
+**Undergo:** Choreo is the *artifact that changes*, not the process that decides. Compiler evolution = PRs into `choreoir` (`check.py`, a printer that consumes the schedule, occasional AST spec bump). After merge, `check` / lower are ordinary functions: Kernel in, findings or a binary out. **No LLM on that path.** Choreo does not notice recurring fails, does not land/revert/freeze/\(F\), and the agent does not mutate the dialect at runtime. Lintel runs the loop and merges the PR.
+
+**Do not:**
+
+- Average Cake hide-layout + Argus Z3 + TIRx D/R/O into one dialect (copy *signals*, pick one cell per fight).
+- Unify NVIDIA and Ascend in the AST (`tmem` ≠ `L0C`). Two **sinks** under one control plane; spaces/roles are valid-for-`hw_id`.
+- Put `Kernel.target` in `%k`. Admission is W/`compile_ok` against `pins.hw_id`.
+- Dual-live a second face or a second vendor before one measured binary. Year-1: one family, NVIDIA default; Ascend is a later wrap after NVIDIA freeze is boring.
+- Beat Cake on NVIDIA KDA / 400-shape KNN. Wedge is vendor-neutral freeze + (later) GPU+Ascend SKU. Ascend bar is TileLang-Ascend / Ascend C (~0.95–1.0× FA), not Cake.
+- Claim Cake’s 1.144× from `role`, or \(F\) from `check() == []`.
+- Race TIRx/Cake as a compiler company. Demo is serving \(F\). M2 kill: no cubin sink → `@triton.v0` knobs.
+
+T5-lite = this loop, not “Choreo self-improves.” TIRx ≠ TritorX.

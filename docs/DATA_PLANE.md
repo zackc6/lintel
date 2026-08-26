@@ -13,7 +13,7 @@
 | **Choreo as the SKU** | Sell a kernel language; demo is “we compiled Choreo” | **Out.** Same kill as Cake v2 the company ([C4](RISKS.md)). |
 | **One agent IR for all vendors** | Same Kernel AST → NVIDIA + AMD as one compiler | **Out.** New vendor = new sink / `adapter_id`. |
 | **Choreo as the live L4 face** | Agent fills a **Kernel AST**; `choreoir.check` rejects with `{where: W\|L\|S\|V}`; classical **printer** lowers to Triton (first sink) | **In.** This is the data-plane PoC. |
-| **Cake / Argus mechanisms** | Typed schedule, localized pre-compile fail, layout CEX, evolving harness | **In**, *implemented by Choreo*, not by forking Cake. |
+| **Cake / Argus mechanisms** | Typed schedule, localized pre-compile fail, layout CEX, evolving harness | **In.** Lintel runs the outer loop; compiler PRs land on `choreoir` ([CHOREO.md](CHOREO.md) Undergo). Not a Cake fork. Not Choreo rewriting itself. |
 
 We do not copy the `choreoir` package into this tree.
 

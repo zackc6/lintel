@@ -50,7 +50,7 @@ Raising the agent from CUDA/CUTLASS text to a small typed surface improves **cor
 
 Clean-start Flash-KMeans on B200 at an 80M-token budget: Cake IR median **1.144×** the tuned FlashML baseline vs CUDA/PTX **0.928×**. Beyond that: Kimi Delta Attention **2.05×** geometric mean vs official FlashKDA, validated in serving. NVIDIA Ampere–Blackwell only. The IR **evolves from a kernel corpus**, not from a committee language design.
 
-Year-1 Lintel take: the **mechanisms** (typed schedule, `{where}` reject, evolving harness as T5-lite). The live face is **Choreo**, not Cake v2 the language. Choreo copies signals and picks cells; it does not glue Cake IR to Argus/TIRx ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)).
+Year-1 Lintel take: the **mechanisms** (typed schedule, `{where}` reject, evolving harness as T5-lite: Lintel decides, PRs land on `choreoir`). The live face is **Choreo**, not Cake v2 the language. Choreo copies signals and picks cells; it does not glue Cake IR to Argus/TIRx ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)).
 
 ### A2. Public hardware-native compiler (kind 1)
 

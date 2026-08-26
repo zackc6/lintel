@@ -38,7 +38,7 @@ Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), repl
 | **T2** admit / fallback | Layered oracles + last_good / classical | SMT / Alive2 as `oracle` providers |
 | **T3** freeze + replay | Lintel IR `%k = cache_key(...)`; serve is `lookup(%k)` | Policy bundles |
 | **T4** in-tree advisors | Out | Out unless a customer funds job (b) |
-| **T5** dialect/ISA feedback | **Lite:** PoC `adapter_gate` `{where: W\|L\|S\|V}`; recurring fails → new `choreoir.check` rule (test-gated in choreo) | Not ISA RFCs; L5 `where` is an oracle plugin |
+| **T5** dialect/ISA feedback | **Lite:** PoC `adapter_gate` `{where: W\|L\|S\|V}`; recurring fails → Lintel opens a `choreoir` PR (test-gated there) or a tighter allowlist. Choreo does not self-modify. | Not ISA RFCs; L5 `where` is an oracle plugin |
 | **T6** serving A/B | One engine, partner traces | Second engine |
 | **T7** open multi-IR corpora | Out (not a data company) | Consume KernelBook-class data if it helps the Choreo adapter |
 | **T8** unified ladder | Refuse KernelBench as GA metric; partner ladder + cost-to-compile | Public method note, not a fake industry p50 |
