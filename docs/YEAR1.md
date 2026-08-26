@@ -34,7 +34,7 @@ Hire for **seams** and for the [PoC](POC.md) interpreter (ADG walk, cost, compil
 | Job (c) lite / support | 0 | 0 | 3 |
 | **Total** | **10** | **25** | **50** |
 
-**Width (product cut, not a headcount cap).** Year 1 ships **one** GPU family, **one** agent surface, **one** serving engine. Default: NVIDIA + **Choreo** (Triton printer) + (SGLang *xor* vLLM, pick in week 1). If the home fleet is not NVIDIA, swap the **sink** — do not dual-track the face. A later overlay adds the second surface *or* the second engine, not both in the same quarter.
+**Width (product cut, not a headcount cap).** Year 1 ships **one** GPU family, **one** agent surface, **one** serving engine. Default: NVIDIA + **Choreo** face + one GPU **sink** that consumes the schedule (not a `print_triton` stencil) + (SGLang *xor* vLLM, pick in week 1). If the home fleet is not NVIDIA, swap the **sink** — do not dual-track the face. Ascend (`@tilelang.ascend`) waits until one NVIDIA cubin has landed.
 
 ## Hiring order (the 10)
 
@@ -44,7 +44,7 @@ Do not hire “kernel researchers” first. Hire so Q1 can freeze one artifact.
 |---|---|---|---|
 | Week 0 | Founder-eng | 1 | Pins week-1 decisions; owns kill switches |
 | Week 0–2 | Control-plane | 2 | PoC schema, ADG compile, session log, seams |
-| Week 2–6 | Adapter + localized gates | 2 | Choreo check + Triton printer (or home-fleet sink) |
+| Week 2–6 | Adapter + localized gates | 2 | Choreo check + a GPU **sink** that consumes `Pipeline.depth` (or `@triton.v0` knobs if M2 kill) |
 | Week 2–8 | Oracles | 2 | Golden + numerical first; serving A/B from Q2 |
 | Week 4–8 | Artifact / CI / replay | 1 | Cache keys, partner replay pack |
 | Week 1–12 | Product + solutions | 2 | Partners from week 1 — not after the demo |
@@ -77,7 +77,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 **Build**
 
 - Admit-record schema v0 is **already in this repo**; Q1 implements session store + **PoC ADG interpreter** on top of it ([POC.md](POC.md)).
-- Seams: `llm`, `tools`, `sandbox`, `adapter` (**Choreo** Kernel AST + `choreoir.check`; Triton printer as sink; home-fleet sink swap is week 1), `oracle={golden,numerical}`; `cost` is a control op, not a new seam. `adapter_gate` is the adapter seam, not a new IR.
+- Seams: `llm`, `tools`, `sandbox`, `adapter` (**Choreo** Kernel AST + `choreoir.check`; GPU sink must consume the schedule; home-fleet sink swap is week 1), `oracle={golden,numerical}`; `cost` is a control op, not a new seam. `adapter_gate` is the adapter seam, not a new IR.
 - Control FSM = walk the Acme CFG (blocks + `cond`), not a single linear block.
 - One internal model, one hot op family (attention **or** GEMM — pick by partner, not by paper).
 

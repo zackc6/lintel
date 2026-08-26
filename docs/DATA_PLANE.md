@@ -11,7 +11,7 @@
 | Reading | What it is | Year-1 |
 |---|---|---|
 | **Choreo as the SKU** | Sell a kernel language; demo is “we compiled Choreo” | **Out.** Same kill as Cake v2 the company ([C4](RISKS.md)). |
-| **One agent IR for all vendors** | Same Kernel AST → NVIDIA + AMD as one compiler | **Out.** New vendor = new sink / `adapter_id`. |
+| **One agent IR for all vendors** | Same Kernel AST → NVIDIA + AMD + Ascend as one compiler (`tmem` = `L0C`) | **Out.** Two **sinks** under one control plane. Spaces/roles are valid-for-`hw_id`. Do not add `Kernel.target` to `%k`. |
 | **Choreo as the live L4 face** | Agent fills a **Kernel AST**; `choreoir.check` rejects with `{where: W\|L\|S\|V}`; classical **printer** lowers to Triton (first sink) | **In.** This is the data-plane PoC. |
 | **Cake / Argus mechanisms** | Typed schedule, localized pre-compile fail, layout CEX, evolving harness | **In.** Lintel runs the outer loop; compiler PRs land on `choreoir` ([CHOREO.md](CHOREO.md) Undergo). Not a Cake fork. Not Choreo rewriting itself. |
 
@@ -21,7 +21,7 @@ We do not copy the `choreoir` package into this tree.
 
 ## Year-1 data-plane PoC (build with the control PoC)
 
-**Live L4:** one adapter, `@choreo.v0` ([choreo](https://github.com/zackc6/choreo) `choreoir==0.1.0`). First **device sink:** Triton printer (choreo’s v1 choice, not this repo). Not Cake IR. Not Tile. Not HIP as a second live path.
+**Live L4:** one adapter, `@choreo.v0` ([choreo](https://github.com/zackc6/choreo) `choreoir==0.1.0`). Year-1: **one NVIDIA binary first.** A printer that comments `Barrier` / `Pipeline.depth` is **not** a sink — Acme `choreo.attn.d3.w4` must lower to a 3-stage producer-consumer kernel (or we flip to `@triton.v0` knobs at M2). Not Cake IR. Not Tile. Not HIP/Ascend as a second live path.
 
 **What the agent fills:** a complete **Kernel** (buffers, layout×stride, partitions/roles, Copy / Barrier / Mma / Pipeline). Year-1 still **allowlists two complete records** (C3-B). Typed ≠ unbounded AST search. The type exists so a reject can name `{where, hint}` and so git can read roles, barriers, and pipeline depth.
 
@@ -48,9 +48,9 @@ cond %s0.ok, ^gold0, ^try1
 
 Fail is a CFG **edge** (`^try0` → `^try1`), not terminator `reject`. The next allowlisted Kernel runs.
 
-**Lowering:** Choreo printer → Triton (or week-1 sink) → vendor compiler. Lintel never emits PTX. Until the printer exists, `serving_ab` may stub (Q2); **do not stub `adapter_gate`.** Golden/numerical run **after** adapter compile, same as control PoC.
+**Lowering:** a **sink** consumes the Kernel (roles, barriers, `Pipeline.depth`, spaces) and emits a cubin or NPU bin. Year-1 hoped path: choreo GPU sink → Triton/TIRx/CUTLASS. Lintel never emits PTX. `print_triton` today is a stencil. Until a real sink exists, `serving_ab` may stub (Q2); **do not stub `adapter_gate`.** Golden/numerical run **after** adapter compile.
 
-**`%k`:** still `hash(graph, hw, compiler, adapter_id, policy)`. The Kernel AST is inside the artifact / admit-record, **not** a fifth key axis that includes model id. `compiler_ver` names **both** `choreoir` and the sink (`choreoir==0.1.0;triton==3.3.0+cu128`). Bump either → new `%k`.
+**`%k`:** `hash(graph, hw, compiler, adapter_id, policy)`. Kernel AST is the value *at* the key. **Not** in the key: `model_id`, `enum_id`, **`Kernel.target`**. Instruction admission is W/`compile_ok` against `pins.hw_id`. `compiler_ver` names **both** `choreoir` and the sink (`choreoir==0.1.0;triton==3.3.0+cu128`). Bump either → new `%k`.
 
 **Fitness:** still serving F on the pinned kernel. `check() == []` is not F.
 
@@ -65,7 +65,8 @@ Worked examples: [examples/poc/acme_attn_prefill.choreo.json](../examples/poc/ac
 - One cost model across L1–L7. Choreo V-sim is a tiny-tile filter, not serving F.
 - Agent-written raw Triton / CUDA **source** as the SLA payload. Kernel AST in, printer+compiler out.
 - Argus Z3 inside Lintel. That is Choreo v2, consumed as an `oracle` later.
-- Claiming FA3-class peak from a straight-line Copy+Mma tile.
+- Claiming FA3-class peak from a straight-line Copy+Mma tile, or Cake’s 1.144× from `role`.
+- Averaging NVIDIA `tmem` and Ascend `L0C` into one `onchip` space. Staffing `@tilelang.ascend` before one NVIDIA cubin.
 
 ---
 
@@ -75,16 +76,17 @@ Same rule as control: **after** one partner graph lands with an allowlisted Chor
 
 | Later | What | Why wait |
 |---|---|---|
-| Triton / CUDA printer | choreo v1 deliverable | Without it, no serving F |
+| GPU sink that **consumes** `Pipeline.depth` | choreo PR; TIRx/Triton/CUTLASS wrap | Stencil `print_triton` is not this |
 | `@tile.v0` / `@hip.v0` stub | Empty provider, same `propose` Kernel shape, different printer | Q3 hedge; not two live compilers |
 | `@triton.v0` schedule knobs | Degenerate L4 (five integers) | Fallback if Choreo has no sink by M2 |
 | `@cake.v0` | Wrap if a public Cake tree exists **or** a customer funds it | Optional; C4 still applies if this becomes the product |
-| `@tirx.v0` | Wrap TVM TIRx if a partner already lives there | Same door as Cake; do not dual-live with `@choreo.v0` before first canary |
-| Gluon / TLX / TileLang / HIP printers | Choreo v2 plugins | Same Lintel IR |
+| `@tirx.v0` | Wrap TVM TIRx if a partner already lives there | GPU sink; new `%k`; not a second live *face* |
+| `@tilelang.ascend` | Wrap TileLang-Ascend / Ascend C after NVIDIA freeze is boring | Second **sink**, not a second AST. Spaces valid-for-`hw_id`. Sketch: [examples/later/tilelang-ascend.sketch.md](../examples/later/tilelang-ascend.sketch.md) |
+| Gluon / TLX / HIP printers | Choreo v2 plugins | Same Lintel IR |
 | Argus-class SMT | `oracle` on layouts, **after** or **beside** `check` | Research; not year-1 compile |
 | Agent-authored kernel **text** | Adapter ingests Triton/HIP source under the same gate+oracle | After AST-only PoC works |
 
-Cake wrap sketch (unchanged door): [examples/later/cake-adapter.sketch.md](../examples/later/cake-adapter.sketch.md).
+Cake wrap sketch: [examples/later/cake-adapter.sketch.md](../examples/later/cake-adapter.sketch.md). Ascend sink sketch: [examples/later/tilelang-ascend.sketch.md](../examples/later/tilelang-ascend.sketch.md).
 
 ---
 
@@ -94,10 +96,11 @@ Cake wrap sketch (unchanged door): [examples/later/cake-adapter.sketch.md](../ex
 Lintel IR (control)     propose / adapter_gate / oracle / land
         │
         ▼
-adapter @choreo.v0      Kernel AST → check W/L/S/V → printer → vendor compiler
-        │
+adapter @choreo.v0      Kernel AST → check W/L/S/V → **sink** (must consume schedule)
+        │                   gpu → cubin (@tirx.v0 / Triton / CUTLASS)
+        │                   ascend → NPU bin (@tilelang.ascend)  — later, after NVIDIA
         ▼
-L4 binary               cubin / Triton artifact
+L4 binary               cubin xor NPU bin
         │
         ▼
 L6 serve                lookup(%k)  — no LLM, no Choreo interpret

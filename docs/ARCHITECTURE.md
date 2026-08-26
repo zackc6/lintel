@@ -39,7 +39,7 @@ Two paths. Same cache key. The specialize path may use an LLM. The serve path mu
 
 **Invariant.** If the controller, the LLM, or a plugin dies, `lookup(%k)` still serves the last freeze (or classical). That is the commercial sentence.
 
-**Year-1 width.** One GPU family, one adapter, one serving engine. Default: NVIDIA + **Choreo** (Triton printer) + (SGLang xor vLLM). Home fleet is a kickoff **sink swap**, not a second live face.
+**Year-1 width.** One GPU family, one adapter, one serving engine. Default: NVIDIA + **Choreo** face + one GPU **sink** that consumes the schedule (Triton/TIRx/CUTLASS — a stencil that comments `Pipeline.depth` is not it) + (SGLang xor vLLM). Home fleet is a kickoff **sink swap**, not a second live face. Ascend is a later second sink.
 
 ## Lintel IR vs survey L1–L7
 
@@ -49,7 +49,7 @@ Survey [§5.1.2](https://github.com/zackc6/ai-compiler-survey/blob/main/docs/SUR
   L1  Framework graph     torch.compile / exported module
   L2  Portable graph IR   graph_hash in %k (StableHLO-class when present)
   L3  Mid-IR / dialects   Inductor / MLIR / HLO — classical, not proposed in PoC
-  L4  Kernel DSL          adapter: Choreo Kernel AST (yr1) · Triton printer · Tile / HIP / Cake IR (later wrap)
+  L4  Kernel DSL          adapter: Choreo Kernel AST (yr1) · GPU sink · Tile / HIP / `@tirx.v0` / `@tilelang.ascend` / Cake (later wraps)
   L5  Backend / ISA       PTX / SASS — classical lowering of L4
   L6  Runtime / serving   SGLang xor vLLM · CUDA Graphs · lookup(%k)
   L7* Fleet / cluster     out of PoC; later placement plugin, not a FleetIR SKU

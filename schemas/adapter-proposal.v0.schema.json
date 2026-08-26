@@ -13,7 +13,10 @@
       "description": "Year-1 live: choreo.v0. Degenerate: triton.v0 schedule knobs. Later: tile.v0, hip.v0, cake.v0, …"
     },
     "graph_hash": { "type": "string" },
-    "hw_id": { "type": "string" },
+    "hw_id": {
+      "type": "string",
+      "description": "Named target for instruction admission (e.g. nvidia.b200.80gb). W/compile_ok check spaces/roles against this. Not a Kernel.target field; not a fifth %k axis beyond this pin."
+    },
     "compiler_ver": {
       "type": "string",
       "description": "Pin choreoir and the device sink, e.g. choreoir==0.1.0;triton==3.3.0+cu128"
@@ -112,7 +115,11 @@
             "required": ["name", "space", "layout", "dtype"],
             "properties": {
               "name": { "type": "string" },
-              "space": { "type": "string", "enum": ["gmem", "smem", "tmem", "regs"] },
+              "space": {
+                "type": "string",
+                "enum": ["gmem", "smem", "tmem", "regs"],
+                "description": "Year-1 NVIDIA-shaped. Valid-for-hw_id. Do not alias Ascend L0C as tmem."
+              },
               "dtype": { "type": "string", "enum": ["f16", "bf16", "f32", "f8"] },
               "layout": { "$ref": "#/$defs/layout" }
             }

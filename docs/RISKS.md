@@ -42,7 +42,8 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 
 - Argus-class SMT as an `oracle` provider.
 - `@cake.v0` **wrap** (their compiler) if a public tree exists or a customer funds it — not a Lintel Cake dialect. Year-1 L4 face is **Choreo** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)).
-- `@tirx.v0` **wrap** if a partner already lives in Apache TVM / TIRx. Same door as Cake; TIRx is the public compiler substitute, not a second live face in year 1.
+- `@tirx.v0` **wrap** if a partner already lives in Apache TVM / TIRx. GPU sink; not a second live face in year 1.
+- `@tilelang.ascend` **wrap** after one NVIDIA cubin and a partner who serves on NPU. Second sink, not a second AST (`tmem` ≠ `L0C`).
 - DSH bundle packaging if `dsh-plugin` is the distribution ABI.
 - CFG / cost-as-gate / T10 **coverage** (`%w`, policy-hash, placement) after the [PoC](POC.md) ADG walk is real ([LATER.md](LATER.md)).
 - Job (c) comments on kernel PRs (never “we review llvm-project”).

@@ -1,6 +1,6 @@
 # Adapters — data-plane plugins
 
-An **adapter** is a compiler Lintel does not own. Year-1 it accepts a **Choreo Kernel AST**, runs `choreoir.check`, and (once a printer exists) lowers on one GPU family. Returns an artifact + gate/oracle facts.
+An **adapter** is a compiler Lintel does not own. Year-1 it accepts a **Choreo Kernel AST**, runs `choreoir.check`, and (once a **sink** consumes the schedule) lowers on one GPU family. Returns an artifact + gate/oracle facts.
 
 Year-1: **one** live adapter. Coverage: more `adapter_id`s, never one IR for all of them.
 
@@ -33,7 +33,8 @@ Stub = schema + `adapter_id` in `%k` + reject `unsupported`. Not a second perfor
 | `adapter_id` | When |
 |---|---|
 | `@cake.v0` | Public Cake compiler **or** funded customer. Wrap; do not fork as Lintel Cake. |
-| `@tirx.v0` | Partner already in Apache TVM / TIRx. Wrap their FFI + `tir_pipeline="tirx"`; new `%k`. Not year-1 live. |
+| `@tirx.v0` | Partner already in Apache TVM / TIRx. GPU **sink** (must consume `Pipeline.depth`). Wrap FFI + `tir_pipeline="tirx"`; new `%k`. Not year-1 live. |
+| `@tilelang.ascend` | Partner already serves on Ascend **and** one NVIDIA cubin has landed. Second sink, not a second AST. Sketch: [examples/later/tilelang-ascend.sketch.md](../examples/later/tilelang-ascend.sketch.md). |
 | `@helion.*` / CuTe / CUTLASS templates | If a partner already lives there |
 | `@inductor` | Only if we ever propose **L3** schedules (year-1: pin `compiler_ver`, do not search Inductor) |
 
@@ -43,8 +44,8 @@ Stub = schema + `adapter_id` in `%k` + reject `unsupported`. Not a second perfor
 
 1. **Input:** Kernel AST (required year-1 live) or degenerate schedule record / later kernel text.
 2. **`adapter_gate`:** pass/fail + `{where}` + optional `hint` node/field + Finding JSON.
-3. **Compile:** Choreo printer + vendor toolchain. Timeout → fail closed. No printer → no cubin; still run check.
+3. **Compile:** a **sink** that consumes roles/barriers/`Pipeline.depth`/spaces + vendor toolchain. Timeout → fail closed. A stencil that comments those fields is not compile. No sink → no cubin; still run check.
 4. **Output:** artifact bytes + hashes for admit-record `artifact_hash`.
-5. **Do not** put model id in the adapter input that feeds `%k`.
+5. **Do not** put `model_id` or `Kernel.target` in the adapter input that feeds `%k`. Admission is `hw_id`.
 
 Schema: [schemas/adapter-proposal.v0.schema.json](../schemas/adapter-proposal.v0.schema.json). Pros/cons: [CHOREO.md](CHOREO.md).

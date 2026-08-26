@@ -1,6 +1,6 @@
 # Lintel IR — control plane
 
-**Lintel IR** is the control-plane IR. Year-1 L4 is a **[Choreo](https://github.com/zackc6/choreo) Kernel AST** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). Triton is the first printer/sink. Tile / HIP / Cake IR plug in behind `adapter`. They are not Lintel IR.
+**Lintel IR** is the control-plane IR. Year-1 L4 is a **[Choreo](https://github.com/zackc6/choreo) Kernel AST** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). A **sink** must consume the schedule (roles, barriers, `Pipeline.depth`) and emit a cubin/NPU bin. `print_triton` that comments those fields is not a sink. `@tirx.v0` / `@tilelang.ascend` / Cake IR plug in behind `adapter`. They are not Lintel IR.
 
 A module is one specialize plan at a cache key `%k`. Year-1 **executable** modules are the [PoC](POC.md) (CFG + `cost` + compile to ADG). A linear block is a CFG with one `^entry`. The agent fills enumerated slots. The compiler owns lowering, measurement, and fallback — and **compiles this plan to an ADG**. Serve does not interpret Lintel IR. Serve is `lookup(%k)`.
 
@@ -27,7 +27,7 @@ E2E stack: [ARCHITECTURE.md](ARCHITECTURE.md). Merge ticket: [ADMIT_RECORD.md](A
               ▼
      store[ %k ] = artifact.digest     ← serve is lookup(%k)
               │
-     adapter IR  Choreo Kernel AST · Triton printer · Tile · HIP · Cake IR (later wrap)
+     adapter IR  Choreo Kernel AST · GPU sink (Triton/TIRx/CUTLASS) · `@tilelang.ascend` later · Cake wrap later
               │
               ▼
      classical lowering → serve
@@ -73,6 +73,7 @@ cache_key_digest = sha256(canonical_json)
 |---|---|
 | This graph on this HW / compiler / adapter / policy | `model_id` (audit) |
 | | `enum_id` / kernel bytes (value *at* the key) |
+| | **`Kernel.target`** — admission is `pins.hw_id`, not a fifth key |
 | | commentary, SSA temps, `$/compile` |
 
 **Replay law.** Same `%k` ⇒ same terminator and, if `land`, same digest. Else **hard fail**. Model swap + same policy = same `%k`. Compiler bump = new `%k` (must re-land).

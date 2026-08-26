@@ -172,9 +172,9 @@ The control plane (admit, freeze, replay, serving \(F\)) is still unoccupied as 
 | Triton printer (choreo v1, not here) | Adapter compile → cubin; then golden / numerical / `serving_ab` |
 | Forbidden: F, ADG, MCP, `%k` | **This** repo |
 
-Live `adapter_id`: **`@choreo.v0`**. Year-1 still **one** live adapter. `@triton.v0` schedule fields are the **degenerate** L4 (like linear v0 on the control plane). `@tile.v0` / `@hip.v0` remain Q3 empty stubs. `@cake.v0` and `@tirx.v0` remain later wraps, not the SKU.
+Live `adapter_id`: **`@choreo.v0`**. Year-1 still **one** live adapter, **one NVIDIA binary first**. `@triton.v0` schedule fields are the **degenerate** L4 (M2 kill if no cubin sink). `@tile.v0` / `@hip.v0` remain Q3 empty stubs. `@cake.v0`, `@tirx.v0`, `@tilelang.ascend` remain later wraps, not the SKU.
 
-`%k` = `hash(graph, hw, compiler, adapter, policy)`. Kernel AST is the value *at* the key. `compiler_ver` example: `choreoir==0.1.0;triton==3.3.0+cu128`.
+`%k` = `hash(graph, hw, compiler, adapter, policy)`. Kernel AST is the value *at* the key. **Not** in `%k`: `model_id`, `enum_id`, `Kernel.target`. `compiler_ver` example: `choreoir==0.1.0;triton==3.3.0+cu128`.
 
 ---
 

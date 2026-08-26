@@ -91,7 +91,9 @@ These are **not** “we are better at CUDA than NVIDIA.” Compete on **cross-to
 |---|---|---|
 | We become “open Cake” | NVIDIA (distribution + HW) | Seams; Cake-class is optional |
 | We become “compiler Claude” | DSH / Cursor / Anthropic | C7 discipline; oracles in the merge path |
-| We become “NVIDIA-only autotuner” | CompileIQ | Second-adapter stub + admit schema |
+| We become “NVIDIA-only autotuner” | CompileIQ | Second-adapter stub + admit schema; later `@tilelang.ascend` is a sink, not Q1 |
+| We try to beat Cake on NVIDIA KDA / 400-shape KNN | NVIDIA (HW + corpus + compiler) | Sell freeze/`%k`; do not put 1.144× on a slide from `role` |
+| We average GPU+Ascend into one Choreo dialect | Nobody ships; we become a compiler company | Two sinks; spaces valid-for-`hw_id` |
 | We claim default-path agents | Reality (C2) + customer IR | Honest SKU language |
 | We take 50 people into job (d) | Meta internal tools | Year-1 job (a) only |
 
