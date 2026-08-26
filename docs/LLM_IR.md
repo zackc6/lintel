@@ -2,6 +2,8 @@
 
 Evidence (read in place, do not copy): [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) §0.2 taxonomy and §5.1.1–5.1.2 bands, from *The New Compiler Stack* ([arXiv:2601.02045](https://arxiv.org/abs/2601.02045)). That paper surveys **which IR an LLM touches**. It is not a SKU. This file is what Lintel **pins** from it.
 
+Independent cut from primary papers (Cake, Argus, Zomboss, µCUTLASS, …), not from that survey: [LLM_ORIENTED_IR.md](LLM_ORIENTED_IR.md). Keep the two files separate.
+
 Their three strata (NL / high-level PL / LLVM IR+ASM) are **too coarse** for us. CUDA, Triton, and Python are not one “PL.” LLVM IR is not our agent surface. If we designed Lintel IR as “the IR LLMs like” from that map, we would mix the control plane with Meta-LLM-Compiler rewrite and KernelBench CUDA paste.
 
 ---

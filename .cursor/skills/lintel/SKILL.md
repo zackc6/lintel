@@ -47,6 +47,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 | `docs/ARCHITECTURE.md` | Seams / FSM / adapters |
 | `docs/DATA_PLANE.md` | Cake-class Triton adapter, **not** Cake v2 the language |
 | `docs/LLM_IR.md` | New Compiler Stack (Selector / stratum) → year-1 pins. Do not make Lintel IR an LLVM-IR LLM |
+| `docs/LLM_ORIENTED_IR.md` | Independent LLM-oriented IR survey (program vs decision vs freeze vs control). Primary papers, not ai-compiler-survey |
 | `docs/ADAPTERS.md` | Live / stub / later `adapter_id`s |
 | `docs/YEAR1.md` | 10/25/50, quarters, GTM |
 | `docs/MARKET.md` | Value, pricing, competitors |

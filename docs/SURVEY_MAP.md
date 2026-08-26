@@ -102,6 +102,8 @@ If this map and the code disagree, **the map is wrong** — fix the doc, do not 
 
 Source: survey §0.2 + §5.1.1–5.1.2, from *The New Compiler Stack* (arXiv:2601.02045). Design write-up: [LLM_IR.md](LLM_IR.md). Do not collapse Lintel IR to their NL / PL / LLVM-IR map.
 
+A **separate** independent survey (primary papers, four kinds: program / decision / freeze / control) lives in [LLM_ORIENTED_IR.md](LLM_ORIENTED_IR.md). Do not merge those families into this table.
+
 | Their claim | Year-1 product choice |
 |---|---|
 | Selector is the safe LLM role | SLA `propose` = allowlisted Triton **schedule**. Widen only behind admit (**C3-A**). |

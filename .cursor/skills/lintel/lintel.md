@@ -10,3 +10,4 @@
 | Fork Cake IR or DeepSeek Harness as the product | Seams + Lintel IR; take mechanisms, not brands. “Cake v2 the language” is C4 |
 | Folding CFG / cost / T10 into “later because 10 people” | Year-1 executable is docs/POC.md. Coverage is LATER.md. Linear v0 is degenerate |
 | Treating Lintel IR as the IR an LLM rewrites (Meta Compiler / neural compile) | Control IR stays above data-plane bands. Selector on SLA. [LLM_IR.md](../../docs/LLM_IR.md) |
+| Collapsing “LLM-oriented IR” into one PL band, or copying ai-compiler-survey | Four kinds: program / decision / freeze / control. Independent cut: [LLM_ORIENTED_IR.md](../../docs/LLM_ORIENTED_IR.md). The other survey’s pins stay in LLM_IR.md |

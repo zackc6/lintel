@@ -23,6 +23,7 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Why this IR and the Acme
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Seams, FSM, L1–L7 map, repo layout |
 | [docs/DATA_PLANE.md](docs/DATA_PLANE.md) | Cake-class Triton adapter, not Cake v2 the company |
 | [docs/LLM_IR.md](docs/LLM_IR.md) | New Compiler Stack taxonomy → Selector/stratum pins |
+| [docs/LLM_ORIENTED_IR.md](docs/LLM_ORIENTED_IR.md) | Independent LLM-oriented IR survey (primary papers; not the other survey) |
 | [docs/ADAPTERS.md](docs/ADAPTERS.md) | `adapter_id` table (live / stub / later) |
 | [docs/YEAR1.md](docs/YEAR1.md) | Quarters, 10/25/50 staffing, week-by-week Q1, hiring order, GTM |
 | [docs/MARKET.md](docs/MARKET.md) | Business value, unit economics, competitors over 1–3 years |

@@ -1,6 +1,6 @@
 # Architecture (e2e stack + mechanisms)
 
-The survey’s 1–3 year uncertainty is *which IR, which flag, which vendor surface* — not whether agents exist. Lintel is a **small control-plane IR + plugins**. Cake, DeepSeek Harness, and GEAK are **mechanisms**, not the product. Why this IR exists and how the Acme walks hit L1–L7: [WHY.md](WHY.md). Data-plane PoC (typed Triton schedule, not Cake v2): [DATA_PLANE.md](DATA_PLANE.md). LLM role / stratum pins: [LLM_IR.md](LLM_IR.md).
+The survey’s 1–3 year uncertainty is *which IR, which flag, which vendor surface* — not whether agents exist. Lintel is a **small control-plane IR + plugins**. Cake, DeepSeek Harness, and GEAK are **mechanisms**, not the product. Why this IR exists and how the Acme walks hit L1–L7: [WHY.md](WHY.md). Data-plane PoC (typed Triton schedule, not Cake v2): [DATA_PLANE.md](DATA_PLANE.md). LLM role / stratum pins: [LLM_IR.md](LLM_IR.md). Independent IR survey (not that paper): [LLM_ORIENTED_IR.md](LLM_ORIENTED_IR.md).
 
 ## E2E software stack
 
