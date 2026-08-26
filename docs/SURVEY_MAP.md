@@ -30,7 +30,7 @@ Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compil
 
 ## Techniques (T1–T10)
 
-Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), replayable artifacts (T3), portable agent compile interface (T1). Lintel year 1 **is those three**, not a new IR.
+Year-1 **is those three**, plus T5-lite (compiler PRs into `choreoir`, not mid-walk mutation) and T6 on one engine. Not a new IR. How that sits on survey M1 and L1–L7: [ARCHITECTURE.md](ARCHITECTURE.md) (Survey prediction).
 
 | T | Year-1 | Year-2 door |
 |---|---|---|

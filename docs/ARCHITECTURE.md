@@ -31,7 +31,8 @@ Two paths. Same cache key. The specialize path may use an LLM. The serve path mu
         │                           last_good | classical
         ▼                               │
  adapter IR  Choreo Kernel AST (yr1) │  NO LLM
-   Triton printer / Tile / HIP / Cake  │
+   GPU sink (must consume schedule)  │
+   later: @tirx.v0 / @tilelang.ascend│
         │                               │
         ▼                               ▼
  classical lowering / vendor libs ──► SGLang xor vLLM ──► GPU
@@ -81,6 +82,45 @@ Worked example: [examples/poc/acme_attn_prefill.poc.lintel](../examples/poc/acme
 **T5-lite** (recurring fail → compiler change) is Lintel routing evidence into a **PR on `choreoir`**, not Choreo noticing and adding a keyword. After merge, `check` is still an ordinary function. An L5 `where` (`ptx.barrier`) may later grow as an **oracle plugin** here. It does not grow an ISA dialect in *this* company. Spec: [CHOREO.md](CHOREO.md) Undergo.
 
 **L0 / job (b)** (Magellan / MLGO) never appears in Lintel IR.
+
+### Survey prediction: M1 match, not M3 — L1–L7 stay bands
+
+Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) §5.1–5.1.4, §5.5, §5.8.4. This file does not copy it. **Codesign matches Horizon A’s predicted *direction*, not the whole four-job stack.**
+
+Survey §5.1.4 three merges:
+
+| Merge | Survey when | Lintel × Choreo |
+|---|---|---|
+| **M1** soft: one e2e **controller** over band *tools*; classical lower/admit stay | Horizon A matures | **This product.** Lintel IR + ADG is the controller. Choreo + sink are L4 tools. Serve is freeze. |
+| **M2** fewer agent *search* surfaces; lowers still multi-band | Contested (C4) | Choreo is *our* L4 face, not “one IR for all vendors.” Other DSLs = other `adapter_id`. |
+| **M3** agents *are* the compiler; no classical admit | **Not** predicted through ~2031 | **Out.** Kill C6-A. `choreoir.check` / sink / `lookup(%k)` stay classical. |
+
+Highest-leverage missing parts (§5.8.4) are T1+T2+T3. Year-1 **is those**, plus T5-lite and T6 on one engine. Job (a) only. Jobs (b)(c)(d), full T10 `%w`, L7 place: later or out.
+
+**Two clocks for “Choreo evolves during compilation.”** Survey T5 / Cake: the *compiler* is a target of evolution. Codesign [Undergo](CHOREO.md): that is **across jobs**, not mid-walk.
+
+| Clock | What is true | Example |
+|---|---|---|
+| **Inside one ADG walk** | `choreoir` is **pinned** (`compiler_ver` in `%k`). `check` / sink are ordinary functions. No LLM. The agent does not add a keyword. | Acme `^try0` → `gate adapter` uses `choreoir==0.1.0` for every edge. |
+| **Across CI compiles** | Recurring `{where}` → Lintel merge gate → PR into `choreoir` → bump `compiler_ver` → **new `%k`**, must re-land. L4 compiler is **not** a fixed Triton dialect. L1–L2 `graph_hash` can stay the same. | Three `{where: L}` on SmQ cover → choreo PR adds smem-budget check → next night’s specialize is a new compiler, same torch region. |
+
+If “evolve during compilation” meant rewriting `check.py` while walking `^try0`→`^try1`, that is M3-adjacent and **forbidden**.
+
+**How the controller *reshapes* the bands** (survey §5.1.3): bands stay legality/lower surfaces; **search and admit** sit under one \(F\). Year-1 is a *narrow* e2e controller (Amdahl at L1, search only at L4, admit L4→L6). Not yet bilevel fusion+place.
+
+Worked walks: [WHY.md](WHY.md). Source: [examples/poc/acme_attn_prefill.poc.lintel](../examples/poc/acme_attn_prefill.poc.lintel). Same `graph_hash` `sha256:bbcd57f9…`.
+
+| Walk | Band(s) | What the controller does | What it does **not** reshape |
+|---|---|---|---|
+| **D cold** `cond %r.hot` → `^cold` revert | **L1** cut | Skip L4–L6 spend (Amdahl / P23) | No torch rewrite, no new L2 IR |
+| **F `{where: L}`** Copy Q\[128,64\]→SmQ\[64,64\] | **L4** pre-codegen | CFG **edge** `^try0`→`^try1`; Finding names `c0` | No L1 graph edit; no PTX |
+| **A land** adapter+golden+numerical+`serving_ab` +8.1% | **L4→L5→L6** | Only \(F\) admits; then `land` under `%k` | No InstCombine; no CUDA Graphs ownership |
+| **B revert** +11% bench, parity 3/1000 | **L6** \(F\) | Microbench does not win; last_good still serves | L4 kernel is not “the optimum” |
+| **C cost skip** `worth_measure=false` | **control** (not a band) | Skip L6 canary; economics are policy | No PowerIR / CostIR dialect |
+| **E replay** model swap, same `%k` | **L6** freeze | Serve `lookup(%k)`; no LLM | L1–L2 unchanged |
+| **T5 next night** (not in the PoC file) | **L4 compiler** | New `choreoir` pin; same `graph_hash`; new `%k` | L2 portable graph is not re-authored |
+
+L1–L2 are **fingerprinted and triaged**, not searched. L3 is pinned, not proposed. L4 is the only year-1 search surface, and that *compiler* can undergo T5. L5 is the sink’s classical lower. L6 is where \(F\) and freeze live. L7 / L0 stay out of the PoC.
 
 ## Mechanisms (what we take, where they sit)
 
