@@ -80,6 +80,24 @@ Choreo is **kind 1** (agent-authored program). Lintel IR is **kind 4** (control)
 
 That is a pick per row, not Cake IR syntax glued to Argus assertions glued to TIRx D/R/O layouts.
 
+### Why worse as a compiler (v0.1, not a taste claim)
+
+“Worse compiler” means **does not lower a hardware-explicit schedule to a measurable GPU binary while preserving the decisions the agent wrote.** Cake and TIRx do. Choreo v0.1 type-checks a choreography and pretty-prints Triton. That is a checker + stencil, not a compiler.
+
+| Job a compiler owes | Cake | TIRx | Choreo v0.1 |
+|---|---|---|---|
+| Consume the schedule in codegen | Roles, barriers, pipeline stages, TMA/MMA, smem/tmem views become CUDA/PTX | Tile primitive + layout + execution scope dispatch to TMA / ldmatrix / WGMMA / `tcgen05`; then loops and addressing | `print_triton` takes the **first** `Copy` or `Mma` and emits a generic `@triton.jit`. `Barrier`, `Pipeline.depth`, partition widths, spaces (`tmem`/`smem`) become **comments** |
+| Derive mechanical metadata | Barrier addresses, phase bits, TMEM offsets, descriptors, warp identity — agent does not write them | Dispatch generates thread partitioning and native IR fragments from layouts/scope/target | None. Triton `BLOCK_*` stay constexpr parameters the sketch does not fill from the AST |
+| Instruction / target admission | Ampere–Blackwell; reject unsupported HW rather than silently retarget | Backend-specific primitive implementations; new HW enters as an intrinsic | No target, no ISA, no “this MMA is WGMMA vs `tcgen05`” |
+| Layout used by lowering | Storage/access in the schedule; compiler checks producer/consumer then emits addresses | Storage-first D/R/O on named axes **selects** the primitive implementation | `span >= numel`, copy shape/dtype, MMA \(M{\times}K,K{\times}N,M{\times}N\). Codegen mostly ignores stride |
+| Pre-GPU admit depth | Sync, memory-safety, data-flow, resource oversubscribe, instruction contract, representation compatibility; calibrated **cost model** | Wellformed, sync, race-freedom, value-sim, dispatch legality | W names/types; L rank/cover; S barrier pairing. No smem-byte budget, no thread/element race, no cost model |
+| Interpreter / sim | Plus sanitizer/profiler on generated code | Value-sim against a reference on a structured program | Nested-list CPU `Copy`/`Mma`/`Reduce`. Does not model async copy, mbarrier, stages, TMEM |
+| Evidence that lowering is real | 1.144× clean-start; 2.05× KDA **in serving**; 400+ dispatcher shapes | B200 GEMM / FA4 vs cuBLASLt / DeepGEMM / CuTeDSL (protocol + pinned commits) | `examples/copy.json`, `examples/gemm.json`. No cubin, no \(F\) |
+
+Acme `choreo.attn.d3.w4` (load/math partitions, `Pipeline.depth=3`, Copy+Barrier+Mma) is the test: a compiler would emit a 3-stage producer-consumer kernel. Choreo’s printer emits a textbook `tl.dot` GEMM and writes the pipeline in a comment. Cake’s FMHA fragment (`lm.role`, `lm.pipeline(stages=3)`, `smem_q.tma_load`, `lm.mma` into TMEM) is already the program their compiler lowers. TIRx’s `tir_pipeline="tirx"` is already `LowerTIRx` → dispatch → CUDA C++/PTX.
+
+This is **maturity and scope**, not proof that Cake’s hide-layout IR is a better *face* for Lintel. We still refuse to become the compiler company. The M2 kill (no cubin sink → `@triton.v0` knobs) exists because this table is still true.
+
 ### vs Cake IR ([arXiv:2608.12629](https://arxiv.org/abs/2608.12629))
 
 Cake is the strongest *evidence* that typed schedule + localized pre-compile `{where}` beats CUDA/PTX paste (Flash-KMeans clean-start median **1.144×** vs **0.928×** at 80M tokens; Kimi Delta Attention **2.05×** geomean vs FlashKDA, serving-validated). The secret in that paper is the **evolving harness**, not the keyword `role`.
