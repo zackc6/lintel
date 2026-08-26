@@ -60,6 +60,18 @@ Data-plane coverage (not a new Lintel IR): [DATA_PLANE.md](DATA_PLANE.md). Chore
 
 MARKET year-3 line: workflow freeze + placement. Only after partner CI runs frozen ADGs for one SKU. Still classical kernel lowering. Still not LLM-as-`opt`.
 
+### 7. Intra-session verifier bundle (gray zone — stronger T5, not M3)
+
+Year-1 T5 is a **git PR** then a new `%k` ([SURVEY_MATCH.md](SURVEY_MATCH.md) two clocks). Cake grows tactic/verifier rules *inside* a long session **as data**. That is allowed later **only** if:
+
+| Required | Forbidden |
+|---|---|
+| Extra Finding rules / allowlist / cost cal loaded from a **versioned bundle** | Rewriting `check.py` while walking `^try0`→`^try1` |
+| Bundle hash in `%k` and `%w` | Agent-authored opcodes or keywords at runtime |
+| `check` stays a **pure function**; no LLM in `check` | “Compiler is an agent” / C6-A |
+
+**Need.** `%w` boring; a real `{where}` corpus (two allowlisted kernels are not it). **Exit.** Same `%w` + same bundle hash ⇒ same extra rules, or hard fail. Until then, route evolution through choreo PRs. Safer for replay; slower than Cake’s 80M-token harness paper.
+
 ## Compiler passes on Lintel IR (coverage)
 
 PoC: check + lower to ADG. Coverage can add, still on the **control** graph:
@@ -74,6 +86,7 @@ No pass lowers Lintel IR to CUDA. No pass is InstCombine on Triton. Choreo `chec
 ## Non-goals (still)
 
 - Survey M3 / C6-A / LLM-as-`opt`.
+- Mid-walk `check.py` rewrite sold as T5 (gray-zone bundle is **data**, still a pure `check`).
 - One cost model for L1–L7.
 - Cake IR / Tile as the control IR, or as the year-1 live **face** (Choreo is the face; Triton is the printer).
 - “Cake v2 the company” or “Choreo the company.” The adapter contract is already in the PoC.

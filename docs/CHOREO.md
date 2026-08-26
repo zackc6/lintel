@@ -202,7 +202,7 @@ Same as a CPU undergoing a microcode update: the chip is updated; it is not the 
 - The agent does not mutate the dialect at runtime.
 - Lintel IR does not grow `tmem` ops or DaVinci spaces. Kind 4 does not rewrite kind 1.
 
-T5-lite is this loop, not “Choreo self-improves.”
+T5-lite is this loop, not “Choreo self-improves.” **Two clocks** ([SURVEY_MATCH.md](SURVEY_MATCH.md)): inside one ADG walk, `choreoir` is pinned in `%k` and `check` is an ordinary function; across overnight specialize, a choreo PR + `compiler_ver` bump is a **new `%k`**. Rewriting `check.py` on `^try0`→`^try1` is M3-adjacent and forbidden. “Evolve during compilation” without naming both clocks is a [slogan hazard](RISKS.md).
 
 ---
 

@@ -1,6 +1,6 @@
 # Architecture (e2e stack + mechanisms)
 
-The survey’s 1–3 year uncertainty is *which IR, which flag, which vendor surface* — not whether agents exist. Lintel is a **small control-plane IR + plugins**. Cake, DeepSeek Harness, and GEAK are **mechanisms**, not the product. Why this IR exists and how the Acme walks hit L1–L7: [WHY.md](WHY.md). Data-plane PoC (Choreo Kernel AST, Triton printer): [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md). LLM role / stratum pins: [LLM_IR.md](LLM_IR.md). Independent IR survey (not that paper): [LLM_ORIENTED_IR.md](LLM_ORIENTED_IR.md).
+The survey’s 1–3 year uncertainty is *which IR, which flag, which vendor surface* — not whether agents exist. Lintel is a **small control-plane IR + plugins**. Cake, DeepSeek Harness, and GEAK are **mechanisms**, not the product. Why this IR exists and how the Acme walks hit L1–L7: [WHY.md](WHY.md). Data-plane PoC (Choreo Kernel AST, Triton printer): [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md). LLM role / stratum pins: [LLM_IR.md](LLM_IR.md). Independent IR survey (not that paper): [LLM_ORIENTED_IR.md](LLM_ORIENTED_IR.md). Survey *direction* vs *stack*: [SURVEY_MATCH.md](SURVEY_MATCH.md).
 
 ## E2E software stack
 
@@ -83,30 +83,19 @@ Worked example: [examples/poc/acme_attn_prefill.poc.lintel](../examples/poc/acme
 
 **L0 / job (b)** (Magellan / MLGO) never appears in Lintel IR.
 
-### Survey prediction: M1 match, not M3 — L1–L7 stay bands
+### Survey prediction: M1-lite, not Horizon B
 
-Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) §5.1–5.1.4, §5.5, §5.8.4. This file does not copy it. **Codesign matches Horizon A’s predicted *direction*, not the whole four-job stack.**
+Verdict (match table, missing vs unpredicted-good, slogan hazard): [SURVEY_MATCH.md](SURVEY_MATCH.md). Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) §5.1–5.1.4. This file does not copy it.
 
-Survey §5.1.4 three merges:
+Year-1 is **Horizon A, job (a), M1-lite**: one controller, search **only L4**, admit on **L6 \(F\)**, classical lower everywhere else. It is **not** a joint policy over L2–L7.
 
 | Merge | Survey when | Lintel × Choreo |
 |---|---|---|
-| **M1** soft: one e2e **controller** over band *tools*; classical lower/admit stay | Horizon A matures | **This product.** Lintel IR + ADG is the controller. Choreo + sink are L4 tools. Serve is freeze. |
+| **M1** soft: one e2e **controller** over band *tools*; classical lower/admit stay | Horizon A matures | **This product (narrow).** Lintel IR + ADG is the controller. Choreo + sink are L4 tools. Serve is freeze. |
 | **M2** fewer agent *search* surfaces; lowers still multi-band | Contested (C4) | Choreo is *our* L4 face, not “one IR for all vendors.” Other DSLs = other `adapter_id`. |
 | **M3** agents *are* the compiler; no classical admit | **Not** predicted through ~2031 | **Out.** Kill C6-A. `choreoir.check` / sink / `lookup(%k)` stay classical. |
 
-Highest-leverage missing parts (§5.8.4) are T1+T2+T3. Year-1 **is those**, plus T5-lite and T6 on one engine. Job (a) only. Jobs (b)(c)(d), full T10 `%w`, L7 place: later or out.
-
-**Two clocks for “Choreo evolves during compilation.”** Survey T5 / Cake: the *compiler* is a target of evolution. Codesign [Undergo](CHOREO.md): that is **across jobs**, not mid-walk.
-
-| Clock | What is true | Example |
-|---|---|---|
-| **Inside one ADG walk** | `choreoir` is **pinned** (`compiler_ver` in `%k`). `check` / sink are ordinary functions. No LLM. The agent does not add a keyword. | Acme `^try0` → `gate adapter` uses `choreoir==0.1.0` for every edge. |
-| **Across CI compiles** | Recurring `{where}` → Lintel merge gate → PR into `choreoir` → bump `compiler_ver` → **new `%k`**, must re-land. L4 compiler is **not** a fixed Triton dialect. L1–L2 `graph_hash` can stay the same. | Three `{where: L}` on SmQ cover → choreo PR adds smem-budget check → next night’s specialize is a new compiler, same torch region. |
-
-If “evolve during compilation” meant rewriting `check.py` while walking `^try0`→`^try1`, that is M3-adjacent and **forbidden**.
-
-**How the controller *reshapes* the bands** (survey §5.1.3): bands stay legality/lower surfaces; **search and admit** sit under one \(F\). Year-1 is a *narrow* e2e controller (Amdahl at L1, search only at L4, admit L4→L6). Not yet bilevel fusion+place.
+**Two clocks** ([CHOREO.md](CHOREO.md) Undergo). Inside one ADG walk: `choreoir` pinned in `%k`; fail `{where: L}` → next kernel, not a new opcode. Across CI: recurring `{where}` → choreo PR → bump `compiler_ver` → **new `%k`**. Mid-walk `check.py` rewrite is M3-adjacent and **forbidden**. Do not sell “evolve during compilation” without naming both clocks ([RISKS.md](RISKS.md)).
 
 Worked walks: [WHY.md](WHY.md). Source: [examples/poc/acme_attn_prefill.poc.lintel](../examples/poc/acme_attn_prefill.poc.lintel). Same `graph_hash` `sha256:bbcd57f9…`.
 

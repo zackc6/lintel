@@ -42,7 +42,7 @@ Outcome-based “% latency saved” pricing waits on a real A/B platform (P20). 
 
 ## Where the money is in 1 / 2 / 3 years
 
-Survey Horizon A is 2027–28; Horizon B ~2029–31. Lintel year 1 ≈ late Horizon A entry. Years 2–3 are “control plane becomes how orgs survive O(ops × devices × generations)” — still hybrid, still not M3.
+Survey Horizon A is 2027–28; Horizon B ~2029–31. Lintel year 1 ≈ late Horizon A entry (**direction** match: M1-lite, job (a); **not** the joint L2–L7 architecture — [SURVEY_MATCH.md](SURVEY_MATCH.md)). Years 2–3 are “control plane becomes how orgs survive O(ops × devices × generations)” — still hybrid, still not M3.
 
 | Window | What customers will pay for | Lintel offer | What we refuse |
 |---|---|---|---|

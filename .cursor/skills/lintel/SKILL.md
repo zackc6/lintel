@@ -44,7 +44,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 |---|---|
 | `docs/WHY.md` | Why the IR (it already compiles without us); \(F\), tokens, walks |
 | `docs/PRODUCT.md` | SKU |
-| `docs/ARCHITECTURE.md` | Seams / FSM / adapters |
+| `docs/ARCHITECTURE.md` | Seams / FSM / L1–L7 walks. Survey *prediction* pointer → SURVEY_MATCH |
 | `docs/DATA_PLANE.md` | Choreo Kernel AST as year-1 L4; Triton is the printer, **not** Cake v2 the language |
 | `docs/CHOREO.md` | Verdict + vs Cake / Argus / TIRx; Undergo (Lintel decides, PRs land on choreoir). Do not copy zackc6/choreo here |
 | `docs/LLM_IR.md` | New Compiler Stack (Selector / stratum) → year-1 pins. Do not make Lintel IR an LLVM-IR LLM |
@@ -53,6 +53,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 | `docs/YEAR1.md` | 10/25/50, quarters, GTM |
 | `docs/MARKET.md` | Value, pricing, competitors |
 | `docs/RISKS.md` | Kill switches |
+| `docs/SURVEY_MATCH.md` | Survey *direction* (Horizon A, M1-lite) vs *stack*. Two-clock T5. Do not copy the survey tree. |
 | `docs/SURVEY_MAP.md` | P/T/C → year-1 choice |
 | `docs/ADMIT_RECORD.md` | Annotated admit record for humans |
 | `docs/LINTEL_IR.md` | Lintel IR laws (`%k`, land / revert / reject) |
@@ -85,5 +86,6 @@ Cake (arXiv:2608.12629) splits in three. Only one is a Lintel object:
 - Beat Cake on NVIDIA KDA / 400-shape KNN. Wedge is vendor-neutral freeze + (later) GPU+Ascend SKU. Ascend bar is TileLang-Ascend / Ascend C (~0.95–1.0× FA), not Cake.
 - Claim Cake’s 1.144× from `role`, or \(F\) from `check() == []`.
 - Race TIRx/Cake as a compiler company. Demo is serving \(F\). M2 kill: no cubin sink → `@triton.v0` knobs.
+- Rewrite `check.py` (or add a keyword) inside one ADG walk. That is M3-adjacent. T5 is a choreo PR **across** jobs, then a new `%k`.
 
-T5-lite = this loop, not “Choreo self-improves.” TIRx ≠ TritorX.
+T5-lite = this loop, not “Choreo self-improves.” **Two clocks:** pin `choreoir` *inside* an ADG walk; evolve it *across* jobs (PR → new `%k`). Mid-walk `check.py` rewrite is M3-adjacent and forbidden. Survey match: [docs/SURVEY_MATCH.md](docs/SURVEY_MATCH.md). TIRx ≠ TritorX.

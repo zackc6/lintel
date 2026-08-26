@@ -13,7 +13,7 @@ Vendors already ship **data planes** (Inductor, XLA, Triton, TensorRT-LLM, Flash
 4. A **layered admit + deterministic fallback** that release engineering will trust — survey T2 / C6-B / P5.
 5. A **freeze-before-serve** artifact (control file / kernel / schedule) with cache keys — survey T3 / P4.
 
-That joint is Lintel. The compiler stays classical. The agent stays a searcher. The **sold** layer is the control plane; year-1 data-plane work is the adapter contract under it, not a new compiler.
+That joint is Lintel. The compiler stays classical. The agent stays a searcher. The **sold** layer is the control plane; year-1 data-plane work is the adapter contract under it, not a new compiler. Survey match: **Horizon A / job (a) / M1-lite**, not joint search over L2–L7 ([SURVEY_MATCH.md](SURVEY_MATCH.md)).
 
 ## Why not “fork Cake + fork DeepSeek Harness”
 

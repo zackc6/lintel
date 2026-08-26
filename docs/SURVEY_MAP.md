@@ -2,6 +2,8 @@
 
 Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (`docs/SURVEY.md`). This file does not copy the survey. It records **what Lintel does** when a survey cell is still open. If a conflict settles, change the row — not the controller.
 
+Whether year-1 *is* the predicted future: [SURVEY_MATCH.md](SURVEY_MATCH.md) (yes for Horizon A direction; no for the full stack).
+
 ## Jobs
 
 | Job | Survey | Year 1 | Why |
@@ -21,7 +23,7 @@ Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compil
 | **C3-B** constrained actions hold (current lean) | Keep narrow enums | Sell as the safety story. |
 | **C4** Triton vs Tile vs Cake IR vs Argus | Surface fragments | Year-1 live L4 **face** is **Choreo**; Triton is the first **sink**. Another vendor = another printer / `adapter_id`, not a new Lintel IR. |
 | **C5** online vs freeze-before-serve | Vendors name ACF workflows in release notes | Integrate; we remain the cross-vendor admit/freeze layer. |
-| **C6-A** agents replace compilers | — | **Do not follow.** Wrong company. |
+| **C6-A** agents replace compilers | — | **Do not follow.** Wrong company. “Evolve during compilation” without two clocks *reads* as this cell ([SURVEY_MATCH.md](SURVEY_MATCH.md)). |
 | **C6-B** hybrid (current lean) | — | Stay. Kill switch if fallback is never drilled. |
 | **C7** SCM AI vs compiler-oracle review | llvm-project grows oracle review | Optional year-2 plugin. Not year-1 GA. |
 | **C8** “AI compiler” sense | — | We are control plane, not a new Inductor. |
@@ -30,7 +32,9 @@ Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compil
 
 ## Techniques (T1–T10)
 
-Year-1 **is those three**, plus T5-lite (compiler PRs into `choreoir`, not mid-walk mutation) and T6 on one engine. Not a new IR. How that sits on survey M1 and L1–L7: [ARCHITECTURE.md](ARCHITECTURE.md) (Survey prediction).
+Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), replayable artifacts (T3), portable agent compile interface (T1). Year-1 **is those three**, plus T5-lite (compiler PRs into `choreoir`, not mid-walk mutation) and T6 on one engine. Not a new IR.
+
+Direction vs full predicted stack: [SURVEY_MATCH.md](SURVEY_MATCH.md) (Horizon A / M1-lite; **not** joint L2–L7). Band walks: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 | T | Year-1 | Year-2 door |
 |---|---|---|
@@ -38,7 +42,7 @@ Year-1 **is those three**, plus T5-lite (compiler PRs into `choreoir`, not mid-w
 | **T2** admit / fallback | Layered oracles + last_good / classical | SMT / Alive2 as `oracle` providers |
 | **T3** freeze + replay | Lintel IR `%k = cache_key(...)`; serve is `lookup(%k)` | Policy bundles |
 | **T4** in-tree advisors | Out | Out unless a customer funds job (b) |
-| **T5** dialect/ISA feedback | **Lite:** PoC `adapter_gate` `{where: W\|L\|S\|V}`; recurring fails → Lintel opens a `choreoir` PR (test-gated there) or a tighter allowlist. Choreo does not self-modify. | Not ISA RFCs; L5 `where` is an oracle plugin |
+| **T5** dialect/ISA feedback | **Lite, two clocks:** inside a walk, `choreoir` is pinned; across jobs, recurring `{where}` → choreo PR → new `%k`. Not mid-walk `check.py` rewrite ([SURVEY_MATCH.md](SURVEY_MATCH.md)). | Intra-session **bundle** hashed in `%k`/`%w` ([LATER.md](LATER.md)); still not ISA RFCs |
 | **T6** serving A/B | One engine, partner traces | Second engine |
 | **T7** open multi-IR corpora | Out (not a data company) | Consume KernelBook-class data if it helps the Choreo adapter |
 | **T8** unified ladder | Refuse KernelBench as GA metric; partner ladder + cost-to-compile | Public method note, not a fake industry p50 |

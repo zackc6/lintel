@@ -2,7 +2,7 @@
 
 The data plane already compiles and serves without us. This note is what the **control-plane IR** is for, what cash it moves, and how the Acme PoC shows that on survey L1–L7. Year-1 L4 face is [Choreo IR](https://github.com/zackc6/choreo) ([CHOREO.md](CHOREO.md)).
 
-E2E stack and the band map: [ARCHITECTURE.md](ARCHITECTURE.md). Unit economics: [MARKET.md](MARKET.md). Executable IR: [POC.md](POC.md).
+E2E stack and the band map: [ARCHITECTURE.md](ARCHITECTURE.md). Survey direction vs stack: [SURVEY_MATCH.md](SURVEY_MATCH.md). Unit economics: [MARKET.md](MARKET.md). Executable IR: [POC.md](POC.md).
 
 ## 1. It already works without this IR
 
