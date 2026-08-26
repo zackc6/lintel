@@ -54,7 +54,7 @@ Cost-only slice: [examples/later/acme_attn_prefill.cost.lintel](../examples/late
 
 New `adapter_id` or serving provider → new `%k`. Same Lintel IR, same ADG opcodes, new **Kernel schema** per adapter. Q3 stub adapter still valid; live second surface when a partner needs it.
 
-Data-plane coverage (not a new Lintel IR): [DATA_PLANE.md](DATA_PLANE.md). Choreo remaining work: [CHOREO.md](CHOREO.md). `@cake.v0` is a **wrap** if a public tree or a customer funds it — sketch: [examples/later/cake-adapter.sketch.md](../examples/later/cake-adapter.sketch.md). Never the SKU.
+Data-plane coverage (not a new Lintel IR): [DATA_PLANE.md](DATA_PLANE.md). Choreo remaining work: [CHOREO.md](CHOREO.md). `@cake.v0` is a **wrap** if a public tree or a customer funds it — sketch: [examples/later/cake-adapter.sketch.md](../examples/later/cake-adapter.sketch.md). `@tirx.v0` is the same door for Apache TVM. Never the SKU.
 
 ### 6. Placement / multi-SKU (after `%w` is boring)
 
