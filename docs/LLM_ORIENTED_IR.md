@@ -50,7 +50,13 @@ Raising the agent from CUDA/CUTLASS text to a small typed surface improves **cor
 
 Clean-start Flash-KMeans on B200 at an 80M-token budget: Cake IR median **1.144×** the tuned FlashML baseline vs CUDA/PTX **0.928×**. Beyond that: Kimi Delta Attention **2.05×** geometric mean vs official FlashKDA, validated in serving. NVIDIA Ampere–Blackwell only. The IR **evolves from a kernel corpus**, not from a committee language design.
 
-Year-1 Lintel take: the **mechanisms** (typed schedule, `{where}` reject, growing harness). The live face is **Choreo** (Cake ∪ Argus-lite ∪ TIRx), not Cake v2 the language ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)).
+Year-1 Lintel take: the **mechanisms** (typed schedule, `{where}` reject, evolving harness as T5-lite). The live face is **Choreo**, not Cake v2 the language. Choreo copies signals and picks cells; it does not glue Cake IR to Argus/TIRx ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)).
+
+### A2. Public hardware-native compiler (kind 1)
+
+[TIRx](https://tvm.apache.org/2026/06/22/tirx) (*An Open Compiler Stack for Evolving Frontier ML Kernels*). Apache TVM’s next kernel IR: orchestration (pipeline, roles, sync, intrinsics) stays in source; layout is a **storage contract** (shard/replica/offset on named hardware axes), not CuTe work-partition; tile primitives dispatch to TMA / WGMMA / `tcgen05`. FFI across Python/C++/Rust. Dense pre-benchmark feedback: wellformed, sync, race, value-sim. **Already lowers** to CUDA C++/PTX (`tir_pipeline="tirx"`). Published B200 GEMM / FA4 numbers vs cuBLASLt / DeepGEMM / CuTeDSL. Megakernel path (Event Tensor) is explicit and out of Choreo’s spec.
+
+Year-1 Lintel take: this is the **public substitute** for Choreo-as-compiler. Keep Choreo as the smaller JSON face unless a partner already lives in TVM; then `@tirx.v0` wrap, new `%k`. Do not confuse with Meta **TritorX**.
 
 ### B. Tile DSL + invariants (kind 1, opposite layout bet)
 
@@ -106,6 +112,8 @@ Triton, CuTe, Helion, CUDA, HIP, FlyDSL (KernelEvolve). These are real L4 surfac
 
 These are live disagreements. A year-1 product picks **one** cell per row and writes it on an adapter, not a blended dialect.
 
+**Choreo is not the average of those rows.** It copies *admit signals* (roles, `{where}`, cheap layout fail, FFI+CPU sim) and picks a cell per fight: layout is shape×stride (not Cake-hide, not Argus Z3); the payload is a kind-1 Kernel AST with kind-2 *cardinality* (two allowlisted records); the surface is spec-designed, not corpus-grown; the grammar is the JSON schema; the first sink is a Triton printer. Write-up: [CHOREO.md](CHOREO.md). Gluing Cake IR syntax to Argus tag assertions to TIRx D/R/O layouts is still forbidden.
+
 ---
 
 ## Measurements that survive contact with a SKU
@@ -146,6 +154,7 @@ Selector on SLA; JSON schema is the grammar constraint; verify at the same strat
 |---|---|---|
 | Cake | [2608.12629](https://arxiv.org/abs/2608.12629) | 1 |
 | Choreo IR | [github.com/zackc6/choreo](https://github.com/zackc6/choreo) | 1 (year-1 Lintel face) |
+| TIRx | [tvm.apache.org/2026/06/22/tirx](https://tvm.apache.org/2026/06/22/tirx) | 1 (public compiler substitute) |
 | Argus | [2604.18616](https://arxiv.org/abs/2604.18616) | 1 |
 | Zomboss | [2608.00894](https://arxiv.org/abs/2608.00894) | 2 |
 | µCUTLASS | [2603.29010](https://arxiv.org/abs/2603.29010) | 2 |

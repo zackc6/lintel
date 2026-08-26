@@ -79,6 +79,7 @@ Same rule as control: **after** one partner graph lands with an allowlisted Chor
 | `@tile.v0` / `@hip.v0` stub | Empty provider, same `propose` Kernel shape, different printer | Q3 hedge; not two live compilers |
 | `@triton.v0` schedule knobs | Degenerate L4 (five integers) | Fallback if Choreo has no sink by M2 |
 | `@cake.v0` | Wrap if a public Cake tree exists **or** a customer funds it | Optional; C4 still applies if this becomes the product |
+| `@tirx.v0` | Wrap TVM TIRx if a partner already lives there | Same door as Cake; do not dual-live with `@choreo.v0` before first canary |
 | Gluon / TLX / TileLang / HIP printers | Choreo v2 plugins | Same Lintel IR |
 | Argus-class SMT | `oracle` on layouts, **after** or **beside** `check` | Research; not year-1 compile |
 | Agent-authored kernel **text** | Adapter ingests Triton/HIP source under the same gate+oracle | After AST-only PoC works |

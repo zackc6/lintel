@@ -11,4 +11,6 @@
 | Folding CFG / cost / T10 into “later because 10 people” | Year-1 executable is docs/POC.md. Coverage is LATER.md. Linear v0 is degenerate |
 | Treating Lintel IR as the IR an LLM rewrites (Meta Compiler / neural compile) | Control IR stays above data-plane bands. Selector on SLA. [LLM_IR.md](../../docs/LLM_IR.md) |
 | Collapsing “LLM-oriented IR” into one PL band, or copying ai-compiler-survey | Four kinds: program / decision / freeze / control. Independent cut: [LLM_ORIENTED_IR.md](../../docs/LLM_ORIENTED_IR.md). The other survey’s pins stay in LLM_IR.md |
-| Copying zackc6/choreo into this tree | Link it; pin `choreoir` in `compiler_ver`. Pros/cons: [CHOREO.md](../../docs/CHOREO.md) |
+| Copying zackc6/choreo into this tree | Link it; pin `choreoir` in `compiler_ver`. Verdict + comparison: [CHOREO.md](../../docs/CHOREO.md) |
+| Averaging Cake IR + Argus tags + TIRx D/R/O into one dialect | Copy *signals*, pick one cell per fight. TIRx ≠ TritorX |
+| Racing Cake/TIRx on peak as the SKU | Choreo is the L4 face; demo is serving \(F\). `@cake.v0` / `@tirx.v0` are later wraps |

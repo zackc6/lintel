@@ -22,7 +22,7 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Why this IR and the Acme
 | [docs/PRODUCT.md](docs/PRODUCT.md) | What we sell, and why Cake+DSH alone is the wrong SKU |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Seams, FSM, L1–L7 map, repo layout |
 | [docs/DATA_PLANE.md](docs/DATA_PLANE.md) | Choreo Kernel AST as year-1 L4; Triton is the printer |
-| [docs/CHOREO.md](docs/CHOREO.md) | Pros/cons of Choreo IR; what Lintel still has to do |
+| [docs/CHOREO.md](docs/CHOREO.md) | Verdict + vs Cake / Argus / TIRx / LLM-oriented IR; remaining Lintel work |
 | [docs/LLM_IR.md](docs/LLM_IR.md) | New Compiler Stack taxonomy → Selector/stratum pins |
 | [docs/LLM_ORIENTED_IR.md](docs/LLM_ORIENTED_IR.md) | Independent LLM-oriented IR survey (primary papers; not the other survey) |
 | [docs/ADAPTERS.md](docs/ADAPTERS.md) | `adapter_id` table (live / stub / later) |

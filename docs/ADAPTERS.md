@@ -33,6 +33,7 @@ Stub = schema + `adapter_id` in `%k` + reject `unsupported`. Not a second perfor
 | `adapter_id` | When |
 |---|---|
 | `@cake.v0` | Public Cake compiler **or** funded customer. Wrap; do not fork as Lintel Cake. |
+| `@tirx.v0` | Partner already in Apache TVM / TIRx. Wrap their FFI + `tir_pipeline="tirx"`; new `%k`. Not year-1 live. |
 | `@helion.*` / CuTe / CUTLASS templates | If a partner already lives there |
 | `@inductor` | Only if we ever propose **L3** schedules (year-1: pin `compiler_ver`, do not search Inductor) |
 

@@ -9,7 +9,7 @@ Vendors already ship **data planes** (Inductor, XLA, Triton, TensorRT-LLM, Flash
 
 1. A **plugin agent runtime** (session log, seams, sandbox, replay) — DeepSeek Harness-class.
 2. A **typed agent↔compiler contract** (**Lintel IR**: land / revert / reject + localized `gate`) — Cake-class *mechanism* on the **control** plane, not Cake IR.
-3. A **typed L4 Kernel AST** on the live adapter (year-1: [Choreo](https://github.com/zackc6/choreo) + `{where: W|L|S|V}`) — Cake∪Argus∪TIRx *mechanisms* on the **data** plane. Spec: [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md). SLA role is **Selector**, not Translator ([LLM_IR.md](LLM_IR.md)).
+3. A **typed L4 Kernel AST** on the live adapter (year-1: [Choreo](https://github.com/zackc6/choreo) + `{where: W|L|S|V}`) — Cake / Argus / TIRx *mechanisms* (not a blended dialect) on the **data** plane. Spec: [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md). SLA role is **Selector**, not Translator ([LLM_IR.md](LLM_IR.md)).
 4. A **layered admit + deterministic fallback** that release engineering will trust — survey T2 / C6-B / P5.
 5. A **freeze-before-serve** artifact (control file / kernel / schedule) with cache keys — survey T3 / P4.
 

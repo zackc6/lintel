@@ -61,8 +61,9 @@ These are **not** “we are better at CUDA than NVIDIA.” Compete on **cross-to
 | Player | What they are | 1-year threat | 3-year threat | Lintel wedge |
 |---|---|---|---|---|
 | **NVIDIA CompileIQ + Tile + TRT-LLM agents + Cake (research)** | Best funded control-plane *on NVIDIA* | High if we only sell “Triton autotune for CUDA” | Existential on NVIDIA-only SKU | Vendor-neutral admit record + freeze + serving \(F\); Cake-class IR as a *plugin* if they open it |
+| **Apache TVM TIRx** | Public hardware-native L4 + FFI + W/S/race/sim + real CUDA C++/PTX; B200 GEMM/FA4 numbers | High as a *data-plane substitute* for Choreo | High if agents standardize on TVM FFI | Smaller JSON face + admit/freeze SKU; `@tirx.v0` wrap later like Cake. Do not race TVM on peak. Not **TritorX**. |
 | **AMD GEAK v4** | Only named vendor **warm A/B** loop | Medium (Instinct shops) | High on AMD-first buyers | Same wedge; GEAK workflow as an `adapter`/`serving` provider, not an enemy |
-| **Meta TritorX / KernelEvolve / Helion** | Internal bring-up + DSL | Low externally (little public SKU) | High if they productize | We are not job (d) in year 1 |
+| **Meta TritorX / KernelEvolve / Helion** | Internal bring-up + DSL (job d). **Not** Apache TIRx. | Low externally (little public SKU) | High if they productize | We are not job (d) in year 1 |
 | **PyTorch Inductor / Triton / Helion** | Default data plane | They stay the host | They stay the host | We attach; we do not replace |
 | **FlashInfer + FlashInfer-Bench** | Kernel library + serving-trace ladder | Partner, not enemy | Standard oracle rung | Consume `apply()` as an oracle plugin |
 | **Google Magellan / MLGO / AlphaEvolve Cloud** | Offline heuristics + **GA cloud coding-agent search** | High for “evolve any code” budgets; low for serving-kernel admit | Could eat the wrong RFP if we sound like a generic agent | Stay job (a) specialize; we sell freeze+oracles, they sell evolutionary coding |
