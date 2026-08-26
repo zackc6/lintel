@@ -1,7 +1,7 @@
 # Year-1 plan (doable, commercial)
 
 **Clock:** 12 months from kickoff (~2026-09 → 2027-08).  
-**IR:** Build the [PoC](POC.md) first — CFG + cost-as-gate + compile-to-ADG on one region, **and** a typed Triton schedule + `adapter_gate` `{where}` ([DATA_PLANE.md](DATA_PLANE.md)). Linear `lintel-ir.v0` and opaque `enum_id` strings are degenerate, not the Q1 target. Staffing does not cap that set.
+**IR:** Build the [PoC](POC.md) first — CFG + cost-as-gate + compile-to-ADG on one region, **and** a Choreo Kernel AST + `adapter_gate` `{where: W|L|S|V}` ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). Linear `lintel-ir.v0` and Triton `num_warps` knobs are degenerate, not the Q1 target. Staffing does not cap that set.
 
 ## Definition of done (commercial, not demo)
 
@@ -15,7 +15,7 @@ Year 1 is **done** only if all of the following are true. Missing any one means 
 6. **Support**: replay pack, spend cap, severity for oracle miss (survey §5.7 checklist #15).
 7. **Contract**: customer owns outputs; telemetry opt-in (P13).
 
-**Not** year-1 done: KernelBench rank, a public Cake-class IR we own, an AMD port, “agents are the default compiler,” linear-only interpret with no CFG/cost/ADG, opaque-string autotune with no `{where}`, a Lintel **IR-LLM** pretrained on LLVM IR.
+**Not** year-1 done: KernelBench rank, selling Choreo without a device sink, an AMD port, “agents are the default compiler,” linear-only interpret with no CFG/cost/ADG, opaque-string autotune with no `{where}`, a Lintel **IR-LLM** pretrained on LLVM IR.
 
 ## What 10 / 25 / 50 people actually do
 
@@ -34,7 +34,7 @@ Hire for **seams** and for the [PoC](POC.md) interpreter (ADG walk, cost, compil
 | Job (c) lite / support | 0 | 0 | 3 |
 | **Total** | **10** | **25** | **50** |
 
-**Width (product cut, not a headcount cap).** Year 1 ships **one** GPU family, **one** agent surface, **one** serving engine. Default: NVIDIA + Triton + (SGLang *xor* vLLM, pick in week 1). If the home fleet is not NVIDIA, swap the adapter — do not dual-track. A later overlay adds the second surface *or* the second engine, not both in the same quarter.
+**Width (product cut, not a headcount cap).** Year 1 ships **one** GPU family, **one** agent surface, **one** serving engine. Default: NVIDIA + **Choreo** (Triton printer) + (SGLang *xor* vLLM, pick in week 1). If the home fleet is not NVIDIA, swap the **sink** — do not dual-track the face. A later overlay adds the second surface *or* the second engine, not both in the same quarter.
 
 ## Hiring order (the 10)
 
@@ -44,7 +44,7 @@ Do not hire “kernel researchers” first. Hire so Q1 can freeze one artifact.
 |---|---|---|---|
 | Week 0 | Founder-eng | 1 | Pins week-1 decisions; owns kill switches |
 | Week 0–2 | Control-plane | 2 | PoC schema, ADG compile, session log, seams |
-| Week 2–6 | Adapter + localized gates | 2 | Triton (or home-fleet equivalent) |
+| Week 2–6 | Adapter + localized gates | 2 | Choreo check + Triton printer (or home-fleet sink) |
 | Week 2–8 | Oracles | 2 | Golden + numerical first; serving A/B from Q2 |
 | Week 4–8 | Artifact / CI / replay | 1 | Cache keys, partner replay pack |
 | Week 1–12 | Product + solutions | 2 | Partners from week 1 — not after the demo |
@@ -63,12 +63,12 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 | Weeks | Build | Exit this slice |
 |---|---|---|
 | 1 | Pins above; [PoC](POC.md) schema + Acme CFG in-repo; sqlite session log | `lintel-ir.poc` frozen |
-| 2–4 | Compile module → ADG; interpret ADG; sandbox runs Triton **from a typed schedule** | Walk `^try0` land **and** a revert edge on a toy kernel |
-| 5–8 | Triton adapter: two allowlisted schedules; `adapter_gate` `{where: smem\|occupancy}`; golden + numerical on a pinned shape grid; `cost` uses `last_good.F` | First **internal** freeze through the PoC CFG; one `{where: smem}` → `^try1` |
+| 2–4 | Compile module → ADG; interpret ADG; sandbox runs `choreoir.check` on allowlisted Kernels | Walk `^try0` land **and** a revert edge on a toy kernel; one `{where: L}` → `^try1` |
+| 5–8 | Choreo adapter: two allowlisted Kernels; `adapter_gate` `{where: W\|L\|S\|V}`; golden + numerical **if** printer exists; `cost` uses `last_good.F` | First **internal** freeze through the PoC CFG; Finding JSON in the session log |
 | 9–10 | Cache key + replay after an intentional model-id swap; ADG digest pinned | Replay hard-fails on silent decision or ADG change |
-| 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log + ADG + typed schedule in the admit record |
+| 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log + ADG + Kernel AST in the admit record |
 
-**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT, AMD-as-second-live-adapter, a second live GPU vendor, an IR-LLM / neural compile path. **Do** build CFG, cost, ADG compile, and the typed Triton schedule + `{where}` ([POC.md](POC.md), [DATA_PLANE.md](DATA_PLANE.md), [LLM_IR.md](LLM_IR.md)). Serving A/B nodes in the CFG may stub until Q2 — do not stub `cond`, `cost`, or `adapter_gate`.
+**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT in lintel, AMD-as-second-live-adapter, a second live GPU vendor, an IR-LLM / neural compile path, vendoring `choreoir/` here. **Do** build CFG, cost, ADG compile, and the Choreo adapter_gate ([POC.md](POC.md), [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). Serving A/B nodes in the CFG may stub until Q2 / printer — do not stub `cond`, `cost`, or `adapter_gate`.
 
 ## Quarter plan (critical path)
 
@@ -77,17 +77,17 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 **Build**
 
 - Admit-record schema v0 is **already in this repo**; Q1 implements session store + **PoC ADG interpreter** on top of it ([POC.md](POC.md)).
-- Seams: `llm`, `tools`, `sandbox`, `adapter` (Triton **typed schedule**; home-fleet swap is week 1), `oracle={golden,numerical}`; `cost` is a control op, not a new seam. `adapter_gate` is the adapter seam, not a new IR.
+- Seams: `llm`, `tools`, `sandbox`, `adapter` (**Choreo** Kernel AST + `choreoir.check`; Triton printer as sink; home-fleet sink swap is week 1), `oracle={golden,numerical}`; `cost` is a control op, not a new seam. `adapter_gate` is the adapter seam, not a new IR.
 - Control FSM = walk the Acme CFG (blocks + `cond`), not a single linear block.
 - One internal model, one hot op family (attention **or** GEMM — pick by partner, not by paper).
 
 **Do not build**
 
-- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT. A *second* GPU vendor. Dual live L4. IR-LLM pretrain / neural compile.
+- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT in lintel. A *second* GPU vendor. Dual live L4. IR-LLM pretrain / neural compile. Vendoring `choreoir/` here.
 
 **Exit**
 
-- Internal CI compiles the PoC module to an ADG, walks it, and produces a frozen Triton artifact that is numerically admitted (or a documented revert edge), with a replayable log. Schedule record is in the admit record. One `adapter_gate` `{where}` fail is exercised. Fallback path demonstrated.
+- Internal CI compiles the PoC module to an ADG, walks it, and produces a frozen artifact that is numerically admitted **or** a documented revert edge **or** a documented `{where: L}` adapter fail, with a replayable log. Kernel AST is in the admit record. Fallback path demonstrated. Cubin/printer may wait M2.
 
 ### Q2 — Serving \(F\) and first partner (months 3–6)
 
@@ -95,7 +95,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 - Amdahl triage on a **warm** server (GEAK v4 pattern: do not burn search on cold kernels).
 - Serving seam: shadow or A/B + **output parity** on the chosen engine.
-- T5-lite: grow adapter checks from recurring `{where}` fails (tighter schedule bounds, test-gated).
+- T5-lite: grow Choreo `check` rules from recurring `{where}` fails (test-gated in the choreo repo).
 - Artifact cache keys + partner-facing replay pack.
 
 **Staffing note.** If you can hire toward 15, the extra five go to solutions + serving oracles, not a second IR.
@@ -166,7 +166,7 @@ Overnight/CI specialize is the default. Interactive search is a labeled lab tier
 
 | When | Milestone | Survey hook |
 |---|---|---|
-| M1 (Q1) | PoC ADG walk on one op, freeze + fallback + typed schedule `{where}` | T1/T2/T10-lite |
+| M1 (Q1) | PoC ADG walk on one op, freeze + fallback + Choreo `{where}` | T1/T2/T10-lite |
 | M2 (Q2) | Warm-server A/B + parity on partner traces | T6, C2 *instrumented* |
 | M3 (Q3) | Two artifacts in partner VCS; replay after model swap | T3, C5 *path* |
 | M4 (Q4) | GA SKU; customer-owned outputs; support runbooks | P11–P15 |
@@ -174,5 +174,5 @@ Overnight/CI specialize is the default. Interactive search is a labeled lab tier
 
 ## What we will say in the Q4 launch post
 
-Honest: “Hot-path specialize with admit and freeze, on Triton and [engine], for teams that already own their serving stack.”  
+Honest: “Hot-path specialize with admit and freeze, on Choreo→Triton and [engine], for teams that already own their serving stack.”  
 Forbidden: “We replace your compiler.” “Agents are now the default.” “Faster than cuBLAS on everything.”

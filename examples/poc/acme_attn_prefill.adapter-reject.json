@@ -1,21 +1,41 @@
 {
   "schema": "lintel.adapter_proposal.v0",
-  "adapter_id": "triton.v0",
+  "adapter_id": "choreo.v0",
   "graph_hash": "sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0",
   "hw_id": "nvidia.b200.80gb",
-  "compiler_ver": "triton==3.3.0+cu128",
-  "schedule": {
-    "num_warps": 8,
-    "num_stages": 3,
-    "block_m": 256,
-    "block_n": 128,
-    "block_k": 64
+  "compiler_ver": "choreoir==0.1.0;triton==3.3.0+cu128",
+  "enum_id": "choreo.attn.d3.w4",
+  "kernel": {
+    "name": "acme_attn_prefill_bad_layout",
+    "params": [
+      { "name": "Q", "dtype": "bf16", "shape": [128, 64] }
+    ],
+    "buffers": [
+      { "name": "Q", "space": "gmem", "dtype": "bf16", "layout": { "shape": [128, 64], "stride": [64, 1] } },
+      { "name": "SmQ", "space": "smem", "dtype": "bf16", "layout": { "shape": [64, 64], "stride": [64, 1] } }
+    ],
+    "partitions": [
+      { "name": "load", "role": "load", "width": 4 }
+    ],
+    "body": [
+      { "op": "Copy", "id": "c0", "src": "Q", "dst": "SmQ", "partition": "load" }
+    ],
+    "attrs": { "region": "attn.prefill.qkv", "slot": "choreo.attn.d3.w4" }
   },
-  "gates": ["smem", "occupancy", "compile_ok"],
+  "gates": ["W", "L", "S", "V"],
   "reject": {
     "ok": false,
-    "where": "smem",
-    "hint": "block_m",
-    "reason": "shared memory exceeds device limit"
+    "where": "L",
+    "hint": "c0",
+    "reason": "copy shape (128, 64) -> (64, 64)",
+    "finding": {
+      "gate": "L",
+      "severity": "error",
+      "node": "c0",
+      "partition": null,
+      "thread": null,
+      "element": null,
+      "msg": "copy shape (128, 64) -> (64, 64)"
+    }
   }
 }

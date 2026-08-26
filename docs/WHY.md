@@ -1,6 +1,6 @@
 # Why Lintel IR (discussion, with examples)
 
-The data plane already compiles and serves without us. This note is what the **control-plane IR** is for, what cash it moves, and how the Acme PoC shows that on survey L1–L7.
+The data plane already compiles and serves without us. This note is what the **control-plane IR** is for, what cash it moves, and how the Acme PoC shows that on survey L1–L7. Year-1 L4 face is [Choreo IR](https://github.com/zackc6/choreo) ([CHOREO.md](CHOREO.md)).
 
 E2E stack and the band map: [ARCHITECTURE.md](ARCHITECTURE.md). Unit economics: [MARKET.md](MARKET.md). Executable IR: [POC.md](POC.md).
 
@@ -13,7 +13,7 @@ Torch → Inductor / Triton → PTX → SGLang or vLLM already lowers, serves, a
 | Without Lintel IR | With it |
 |---|---|
 | Classical compile + serve | Unchanged — we do not replace L1–L7 |
-| Agent is a script or chat: skip a gate, paste CUDA, reorder steps | Closed opcodes. Agent fills allowlisted **schedule fields** only |
+| Agent is a script or chat: skip a gate, paste CUDA, reorder steps | Closed opcodes. Agent fills allowlisted **Choreo Kernel ASTs** only |
 | Cache key is informal; model swap silently retunes | `%k` first-class. Same key ⇒ same terminator or **hard fail** |
 | Easy to re-run the agent on the serve path | Serve is `lookup(%k)` |
 | Git reviews a kernel diff or a transcript | Module **lowers** to an admit record |
@@ -21,7 +21,7 @@ Torch → Inductor / Triton → PTX → SGLang or vLLM already lowers, serves, a
 | Cost is a comment after the fact | `cost` can skip L6 A/B before spend |
 | Plan is whatever the prompt emitted | Compile to ADG; policy owns the graph |
 
-The IR is **T1 + T2 + T3** (typed interface, layered admit, pin-at-`%k` + replay). It is not “how kernels compile.” Triton still does **L4** (year-1: typed schedule, [DATA_PLANE.md](DATA_PLANE.md)). Cake IR / Tile are later adapters. `opt` still does **L3/L5**.
+The IR is **T1 + T2 + T3** (typed interface, layered admit, pin-at-`%k` + replay). It is not “how kernels compile.” Choreo is year-1 **L4** ([DATA_PLANE.md](DATA_PLANE.md)). Triton is the first **printer**. Cake IR / Tile are later adapters. `opt` still does **L3/L5**.
 
 **Survey M3** (LLM replaces the compiler) is out. **YEAR1 M3** (Q3: two artifacts in partner git + replay) is a milestone, not that cell.
 
@@ -46,7 +46,7 @@ We do **not** claim: default-on for every build, beat cuBLAS on all families, un
 
 ```text
  L1–L2 graph ── triage / graph_hash
- L3–L5 classical lower of L4 **schedule** (Triton …)
+ L3–L5 classical lower of L4 **Choreo Kernel** (Triton printer …)
  L6 serve lookup(%k)
  L7 place (not in PoC)
         │
@@ -70,9 +70,9 @@ Lowering: [examples/admit-record.json](../examples/admit-record.json).
 
 ```text
 ^entry  triage hot
-^try0   propose schedule {num_warps=8, block_m=128, …}  ← typed L4, allowlisted
-        gate adapter {where}            ← pre-compile, Cake-class
-        gate golden, numerical          ← after L5 cubin
+^try0   propose kernel choreo.attn.d3.w4   ← Choreo AST, allowlisted
+        gate adapter {where: W|L|S|V}     ← pre-codegen, choreoir.check
+        gate golden, numerical            ← after L5 cubin (needs printer)
         cost worth_measure
 ^ab0    serving_ab pass  (+8.1% tokens/s, parity=1)
 ^fit0   land under %k    usd_per_compile=38.4
@@ -86,7 +86,7 @@ serve   lookup(%k) → sha256:0e0ecbef…       ← L6, no LLM
 Lowering: [examples/admit-record.fallback.json](../examples/admit-record.fallback.json).
 
 ```text
-^try1   propose schedule {num_warps=16, block_m=64, …}
+^try1   propose kernel choreo.attn.d2.w8
         adapter_gate + golden + numerical pass
 ^ab1    serving_ab fail { where = serving.output_parity, reason = "3/1000" }
         → revert last_good under %k
@@ -119,19 +119,19 @@ PoC CFG: after numerical, `cond %c.worth_measure, ^ab0, ^try1` (or `^giveup`).
 
 `model = "vendor.frontier.…"` is on `pins` for audit. It is **out of `%k`**. Re-walk the same ADG after a searcher swap: terminator and landed digest must match or **hard fail — do not serve**.
 
-**Benefit.** No silent retune. Compiler bump (`triton==3.3.0` → next) is a **new** `%k` and must re-land.
+**Benefit.** No silent retune. Compiler bump (`choreoir` or the Triton sink pin) is a **new** `%k` and must re-land.
 
-### Walk F — adapter `{where: smem}` (Cake-class L4, not Cake IR)
+### Walk F — adapter `{where: L}` (Choreo check, not Cake IR)
 
 Payload: [examples/poc/acme_attn_prefill.adapter-reject.json](../examples/poc/acme_attn_prefill.adapter-reject.json).
 
 ```text
-^try0   propose schedule { block_m = 256, … }
-        gate adapter fail { where = smem, hint = block_m }
-        → ^try1     // next allowlisted record; do not nvcc this one
+^try0   propose kernel with Copy Q[128,64] → SmQ[64,64]
+        gate adapter fail { where = L, hint = c0 }
+        → ^try1     // next allowlisted Kernel; do not print/nvcc this one
 ```
 
-**Benefit.** The agent (or the next enum) mutates **`block_m`**, not the whole kernel text. Opaque `enum_id` strings cannot say this. A Lintel Cake dialect is not required to say this.
+**Benefit.** The agent (or the next enum) mutates **layout / a named node**, not the whole CUDA text. Opaque `enum_id` strings cannot say this. A Lintel Cake dialect is not required to say this.
 
 ## 5. Band cheat-sheet (same walks)
 
@@ -139,9 +139,9 @@ Payload: [examples/poc/acme_attn_prefill.adapter-reject.json](../examples/poc/ac
 |---|---|---|
 | `region` / `graph` | L1→L2 | identity in `%k` |
 | `triage` / `^cold` | L1 cut | skip search |
-| `propose` schedule | L4 | Typed Triton fields, not CUDA text |
-| `gate adapter` `{where}` | L4 pre-compile | Cake-class localized reject |
-| `gate golden/numerical` | L4 after L5 | cubin oracles |
+| `propose` kernel | L4 | Choreo AST, not CUDA/Triton text |
+| `gate adapter` `{where: W\|L\|S\|V}` | L4 pre-codegen | `choreoir.check` localized Finding |
+| `gate golden/numerical` | L4 after L5 | cubin oracles (need printer) |
 | `cost` | control | skip L6 spend |
 | `gate serving_ab` / `land` | L6 | freeze; serve = lookup |
 | `place` | L7 | not in PoC |
@@ -152,8 +152,8 @@ Lintel IR never lowers to CUDA. L3/L5 stay classical. L0 / job (b) never appears
 
 | Pass | Control IR | Adapter (L4→L5) |
 |---|---|---|
-| Check | Well-formed CFG, `%k` laws, `cost.F` == policy | Schedule is Triton-legal; `{where}` on `adapter_gate` |
-| Lower | Module → ADG | Schedule → kernel / PTX |
+| Check | Well-formed CFG, `%k` laws, `cost.F` == policy | `choreoir.check`; `{where}` on `adapter_gate` |
+| Lower | Module → ADG | Kernel → printer → PTX |
 | Run | Walk ADG in CI | Measure / A/B |
 | Serve | Nothing | Load frozen cubin |
 

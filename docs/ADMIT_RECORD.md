@@ -6,79 +6,39 @@ The JSON is the **lowering** of a [Lintel IR](LINTEL_IR.md) module (`land` → `
 
 ## Freeze (this one ships)
 
-Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% of GPU time. Overnight CI proposed one **allowlisted** Triton **schedule record** (warps/block/stages, not an opaque string). Adapter `{where}` gates passed. Oracles passed. Serving \(F\) is up ~8% with quality parity. They merge the digest, not the chat.
+Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% of GPU time. Overnight CI proposed one **allowlisted** [Choreo](https://github.com/zackc6/choreo) **Kernel AST** (partitions, layouts, Copy/Barrier/Mma, pipeline depth — not an opaque string). `choreoir.check` `{where}` gates passed. Oracles passed. Serving \(F\) is up ~8% with quality parity. They merge the digest, not the chat.
+
+The machine JSON (full Kernel AST in `actions[]`) is [`examples/admit-record.json`](../examples/admit-record.json). Excerpt:
 
 ```json
 {
   "schema_version": "admit-record.v0",
   "record_id": "rec_acme_attn_prefill_014",
-  "prev_hash": "sha256:87930123062e3573ae3c9fa5f8662e25981b9b140ddc27a5eb158969f8dfa66d",
-  "created_at": "2026-11-03T04:12:08Z",
-  "commentary": "Optional prose for humans. Oracles, digest, and decision are the contract — not this sentence.",
-  "region": {
-    "region_id": "attn.prefill.qkv",
-    "graph_hash": "sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0",
-    "op_family": "attention"
-  },
   "pins": {
     "hw_id": "nvidia.b200.80gb",
-    "compiler_ver": "triton==3.3.0+cu128",
-    "adapter_id": "triton.v0",
+    "compiler_ver": "choreoir==0.1.0;triton==3.3.0+cu128",
+    "adapter_id": "choreo.v0",
     "model_id": "vendor.frontier.2026-10-20",
     "policy_id": "lintel.specialize.v0"
   },
   "actions": [
     {
-      "kind": "propose_schedule",
-      "enum_id": "triton.attn.w8.m128",
-      "schedule": {
-        "num_warps": 8,
-        "num_stages": 3,
-        "block_m": 128,
-        "block_n": 64,
-        "block_k": 64
-      }
+      "kind": "propose_kernel",
+      "enum_id": "choreo.attn.d3.w4",
+      "kernel": { "name": "acme_attn_prefill_try0" }
     }
   ],
   "oracles": [
-    {
-      "name": "adapter.smem",
-      "version": "0.1.0",
-      "result": "pass",
-      "false_neg_owner": "kernels@acme"
-    },
-    {
-      "name": "golden",
-      "version": "0.1.0",
-      "result": "pass",
-      "false_neg_owner": "kernels@acme"
-    },
-    {
-      "name": "numerical",
-      "version": "0.1.0",
-      "result": "pass",
-      "false_neg_owner": "kernels@acme",
-      "detail": "max_abs_err<1e-3 on shape_grid.attn.prefill.v3 (12 shapes)"
-    },
-    {
-      "name": "serving_ab",
-      "version": "0.1.0",
-      "result": "pass",
-      "false_neg_owner": "serving@acme",
-      "detail": "sglang canary: output_parity=1, tokens_per_s +8.1% vs last_good, n=4h"
-    }
+    { "name": "adapter.WLS", "result": "pass", "false_neg_owner": "kernels@acme" },
+    { "name": "golden", "result": "pass", "false_neg_owner": "kernels@acme" },
+    { "name": "numerical", "result": "pass", "false_neg_owner": "kernels@acme" },
+    { "name": "serving_ab", "result": "pass", "false_neg_owner": "serving@acme",
+      "detail": "sglang canary: output_parity=1, tokens_per_s +8.1% vs last_good" }
   ],
   "artifact": {
     "digest": "sha256:0e0ecbefe475d49eb85f80e704642376a3e52371d08ca370cd0071d9736290f9",
-    "kind": "triton_kernel",
+    "kind": "choreo_kernel",
     "uri": "git://acme/serving-kernels.git@c0ffee / kernels/attn_prefill_qkv.py"
-  },
-  "fitness": {
-    "F_name": "serving.tokens_per_s * quality_parity",
-    "baseline": 1.0,
-    "delta": 0.081,
-    "usd_per_compile": 38.4,
-    "traces": ["acme.prod.decode.2026-10.sample", "acme.shape_grid.attn.prefill.v3"]
   },
   "decision": "freeze",
   "fallback": "last_good"
@@ -90,8 +50,8 @@ Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% o
 | Field | Meaning | Why it is not “just a cubin in git” |
 |---|---|---|
 | `region.graph_hash` | Which IR/region this applies to | Revert and bisect target this hash, not a Slack thread |
-| `pins` | HW + Triton + adapter + **model** + **policy** | Compiler bump or model swap is a new attempt, not a silent retune |
-| `actions[].enum_id` + `schedule` | Allowlist slot + typed Triton fields | Not free CUDA paste. Opaque `num_warps=8.…` strings are degenerate. If the slot is not allowlisted, it is not on the SLA path |
+| `pins` | HW + `choreoir` + sink + adapter + **model** + **policy** | Compiler bump or model swap is a new attempt, not a silent retune |
+| `actions[].enum_id` + `kernel` | Allowlist slot + Choreo Kernel AST | Not free CUDA paste. Triton `num_warps` knobs are degenerate. If the slot is not allowlisted, it is not on the SLA path |
 | `oracles[].false_neg_owner` | Who gets paged if this gate was wrong | Unnamed owner ⇒ that oracle cannot gate GA |
 | `artifact.digest` | Bytes they serve | Serve path loads this. No LLM |
 | `fitness` | Serving \(F\) vs last freeze, plus **$/compile** | Kernel microbench cannot freeze by itself |
@@ -102,7 +62,7 @@ Partner already serves Llama-class decode on SGLang. Attention prefill is ~40% o
 
 ## Fallback (this one does *not* ship)
 
-Same region, different schedule (`w16.m64`). Kernel bench looked faster. Serving parity failed. `decision: fallback` — they keep serving the previous digest.
+Same region, different Kernel (`choreo.attn.d2.w8`). Kernel bench looked faster. Serving parity failed. `decision: fallback` — they keep serving the previous digest.
 
 See [`examples/admit-record.fallback.json`](../examples/admit-record.fallback.json). The record still exists (audit). The serve path does not change.
 

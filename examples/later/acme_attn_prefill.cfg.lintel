@@ -1,6 +1,6 @@
 // Coverage sketch after PoC. Year-1 executable is examples/poc/.
 // Same CFG family; this file is the source if PoC and coverage diverge.
-// Opaque enum strings here are not the live L4; PoC uses typed schedule + {where}.
+// Opaque enum strings here are not the live L4; PoC uses Choreo Kernel + {where}.
 
 module @rec_acme_attn_prefill_cfg version "lintel-ir.v1-sketch" {
 
@@ -12,8 +12,8 @@ module @rec_acme_attn_prefill_cfg version "lintel-ir.v1-sketch" {
 
   pins {
     hw       = "nvidia.b200.80gb"
-    compiler = "triton==3.3.0+cu128"
-    adapter  = @triton.v0
+    compiler = "choreoir==0.1.0;triton==3.3.0+cu128"
+    adapter  = @choreo.v0
     model    = "vendor.frontier.2026-10-20"
     policy   = @lintel.specialize.v1
   }
@@ -28,13 +28,13 @@ module @rec_acme_attn_prefill_cfg version "lintel-ir.v1-sketch" {
     revert last_good under %k
 
   ^try0:
-    %p0 = propose propose_schedule "triton.attn.num_warps=8.block_m=128"
+    %p0 = propose propose_kernel "choreo.attn.d3.w4"
     %g0 = gate golden %p0 owner @kernels.acme
     cond %g0.ok, ^num0, ^try1
       // fail { seam = adapter, where = golden, reason = "ref mismatch" }
 
   ^try1:
-    %p1 = propose propose_schedule "triton.attn.num_warps=16.block_m=64"
+    %p1 = propose propose_kernel "choreo.attn.d2.w8"
     %g1 = gate golden %p1 owner @kernels.acme
     cond %g1.ok, ^num1, ^giveup
 

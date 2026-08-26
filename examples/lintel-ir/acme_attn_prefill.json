@@ -8,23 +8,35 @@
   },
   "pins": {
     "hw_id": "nvidia.b200.80gb",
-    "compiler_ver": "triton==3.3.0+cu128",
-    "adapter_id": "triton.v0",
+    "compiler_ver": "choreoir==0.1.0;triton==3.3.0+cu128",
+    "adapter_id": "choreo.v0",
     "model_id": "vendor.frontier.2026-10-20",
     "policy_id": "lintel.specialize.v0"
   },
   "plan": {
     "label": "entry",
     "ops": [
-      { "op": "cache_key", "id": "k" },
-      { "op": "triage", "id": "r" },
+      {
+        "op": "cache_key",
+        "id": "k"
+      },
+      {
+        "op": "triage",
+        "id": "r"
+      },
       {
         "op": "propose",
         "id": "p",
-        "kind": "propose_schedule",
-        "enum_id": "triton.attn.num_warps=8.block_m=128"
+        "kind": "propose_kernel",
+        "enum_id": "choreo.attn.d3.w4"
       },
-      { "op": "gate", "id": "g0", "oracle": "golden", "on": "p", "owner": "kernels@acme" },
+      {
+        "op": "gate",
+        "id": "g0",
+        "oracle": "golden",
+        "on": "p",
+        "owner": "kernels@acme"
+      },
       {
         "op": "gate",
         "id": "g1",
@@ -33,8 +45,18 @@
         "owner": "kernels@acme",
         "detail": "max_abs_err<1e-3"
       },
-      { "op": "gate", "id": "g2", "oracle": "serving_ab", "on": "p", "owner": "serving@acme" },
-      { "op": "fitness", "id": "f", "on": "g2" }
+      {
+        "op": "gate",
+        "id": "g2",
+        "oracle": "serving_ab",
+        "on": "p",
+        "owner": "serving@acme"
+      },
+      {
+        "op": "fitness",
+        "id": "f",
+        "on": "g2"
+      }
     ],
     "term": {
       "op": "land",

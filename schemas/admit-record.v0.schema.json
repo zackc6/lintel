@@ -64,23 +64,21 @@
         "properties": {
           "kind": {
             "type": "string",
-            "enum": ["propose_schedule", "propose_hint", "propose_acf", "noop"]
+            "enum": ["propose_kernel", "propose_schedule", "propose_hint", "propose_acf", "noop"]
           },
           "enum_id": {
             "type": "string",
             "minLength": 1,
-            "description": "Allowlist slot. Not free text. Opaque field-strings are degenerate; PoC payload is schedule."
+            "description": "Allowlist slot. Not free text. PoC payload is a Choreo Kernel AST."
+          },
+          "kernel": {
+            "type": "object",
+            "description": "Choreo Kernel JSON (year-1 live propose)."
           },
           "schedule": {
             "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "num_warps": { "type": "integer" },
-              "num_stages": { "type": "integer" },
-              "block_m": { "type": "integer" },
-              "block_n": { "type": "integer" },
-              "block_k": { "type": "integer" }
-            }
+            "description": "Degenerate Triton knob form.",
+            "additionalProperties": true
           }
         }
       }

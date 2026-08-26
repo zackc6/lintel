@@ -1,6 +1,6 @@
 # Product thesis
 
-**Last updated:** 2026-08-25  
+**Last updated:** 2026-08-26  
 **Horizon:** year 1 lands ~2027-08 (survey Horizon A, 2027–28)
 
 ## The gap we sell
@@ -9,7 +9,7 @@ Vendors already ship **data planes** (Inductor, XLA, Triton, TensorRT-LLM, Flash
 
 1. A **plugin agent runtime** (session log, seams, sandbox, replay) — DeepSeek Harness-class.
 2. A **typed agent↔compiler contract** (**Lintel IR**: land / revert / reject + localized `gate`) — Cake-class *mechanism* on the **control** plane, not Cake IR.
-3. A **typed L4 schedule** on the live adapter (year-1: Triton fields + `{where}`) — Cake-class *mechanism* on the **data** plane. Spec: [DATA_PLANE.md](DATA_PLANE.md). SLA role is **Selector**, not Translator ([LLM_IR.md](LLM_IR.md)).
+3. A **typed L4 Kernel AST** on the live adapter (year-1: [Choreo](https://github.com/zackc6/choreo) + `{where: W|L|S|V}`) — Cake∪Argus∪TIRx *mechanisms* on the **data** plane. Spec: [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md). SLA role is **Selector**, not Translator ([LLM_IR.md](LLM_IR.md)).
 4. A **layered admit + deterministic fallback** that release engineering will trust — survey T2 / C6-B / P5.
 5. A **freeze-before-serve** artifact (control file / kernel / schedule) with cache keys — survey T3 / P4.
 
@@ -19,7 +19,8 @@ That joint is Lintel. The compiler stays classical. The agent stays a searcher. 
 
 | Tempting merge | Why it is not a year-1 company |
 |---|---|
-| Ship Cake IR as *the* kernel language | Cake is NVIDIA Ampere–Blackwell research; no public tree; **C4** says Tile / Triton / CuTe / Argus will fragment the surface. Betting the company on one L4 IR is a 2028 kill shot. |
+| Ship Cake IR as *the* kernel language | Cake is NVIDIA Ampere–Blackwell research; no public tree; **C4** says Tile / Triton / CuTe / Argus will fragment the surface. Choreo is our L4 *face* in a sibling repo; we still do not sell a kernel language. |
+| Ship Choreo as the company | Same C4 kill if the demo is “we compiled Choreo” and there is no device sink / serving F. |
 | Ship DeepSeek Harness as the product | DSH is a generic coding-agent runtime. Star count ≠ compiler-oracle evidence (**C7**). Customers will not put serve-path kernels on “the model looked at the diff.” |
 | Fine-tune a kernel LLM and sell chat | One-shot KernelBench success stays low; fusion is hard; **C2** needs median/p50 on pinned traces + cost-to-compile. Chat is a *view*, not the SKU. |
 | Replace `opt` / Inductor | Survey **rejects M3 through Horizon B**. Release eng will not buy it. |
@@ -28,7 +29,7 @@ That joint is Lintel. The compiler stays classical. The agent stays a searcher. 
 
 | Source | Mechanism we keep | What we discard |
 |---|---|---|
-| **Cake** | Typed agent-facing *schedule/contract*; localized pre-compile gates; harness evolves from recurring failures (new checks, not new silicon) | Cake IR as the only dialect; 80M-token clean-start as the product UX; NVIDIA lock-in |
+| **Cake** | Typed agent-facing *schedule/contract*; localized pre-compile gates; harness evolves from recurring failures | Cake IR as the only dialect; 80M-token clean-start as the product UX; NVIDIA lock-in. Year-1 face is **Choreo**, not a Cake fork. |
 | **DeepSeek Harness** | Everything-is-a-plugin; capability **seams** (definition / provider / consumer); append-only session log as the source of model-visible context; resume / fork / replay | Coding-agent UX as the SKU; unbounded tool-calling as the SLA path; no compiler oracles |
 | **GEAK v4** (must add) | Amdahl triage on a *warm* serving stack; A/B + output parity; JS/FSM workflow not free chat | Instinct-only marketing; hero-kernel blogs as “default agent compile” |
 | **Argus** (year 2 plugin, not year-1 critical path) | Tag/assert + compile-time SMT counterexamples | Claiming library-class peak on three families as C2 settlement |
@@ -41,7 +42,7 @@ That joint is Lintel. The compiler stays classical. The agent stays a searcher. 
 | The customer gets | The customer does *not* get |
 |---|---|
 | A CI job that ranks hot kernels (Amdahl / `gpu_time × headroom`) | Silent rewrite of their whole model graph |
-| Agents proposing on a **constrained action space** (typed Triton **schedule record**, allowlisted; ACF-class knobs later) | Free CUDA/HIP/MLIR paste-and-pray as the default; Cake IR as the kernel language |
+| Agents proposing on a **constrained action space** (allowlisted **Choreo Kernel AST**; Triton knobs degenerate; ACF-class later) | Free CUDA/HIP/MLIR paste-and-pray as the default; Cake IR as the kernel language; unbounded Choreo mutation on SLA |
 | Layered admit: unit/golden → numerical vs reference → shape-grid → optional serving A/B | “The LLM said it is correct” |
 | Freeze: content-addressed artifact + admit record in *their* git | A SaaS that owns their kernels |
 | Deterministic fallback to the last good artifact or classical path | LLM on the serve hot path |

@@ -9,7 +9,7 @@ Inference labs already pay three bills Lintel is meant to cut. Year-1 sales conv
 | **Kernel engineer-weeks** on each model drop / HW SKU | Amdahl-ranked specialize + freeze; humans review admit records, not 200 raw diffs | Time-to-admitted-kernel on partner traces vs their last quarter |
 | **$/token** (or TTFT / tokens/s) on hot serving paths | Search under product \(F\), not kernel microbench | Serving A/B + parity (GEAK v4-class), cost-to-compile beside the gain |
 | **Release risk** from silent bad codegen | Layered admit + last-good/classical fallback; no LLM at serve | Fire-drill + signed admit records |
-| **Vendor lock-in tax** | Seams: Triton now, Tile/HIP/Cake-class later without a rewrite | Empty second-adapter stub in Q3 is the proof |
+| **Vendor lock-in tax** | Seams: Choreo now, Tile/HIP/Cake-class later without a rewrite | Empty second-adapter stub in Q3 is the proof |
 
 **What we do not claim as year-1 value.** Median default-path compile for *all* builds (**C2** open industry-wide). Beating vendor libraries on every family (Argus/Cake are *color*, not a SKU promise). Replacing NVIDIA/AMD compiler teams.
 
@@ -46,7 +46,7 @@ Survey Horizon A is 2027–28; Horizon B ~2029–31. Lintel year 1 ≈ late Hori
 
 | Window | What customers will pay for | Lintel offer | What we refuse |
 |---|---|---|---|
-| **Year 1 (now→~2027-08)** | Hot-path specialize they can freeze and audit | Lintel Specialize: Triton + one engine + PoC ADG ([POC.md](POC.md)) | Default-all, new mega-IR, survey M3 |
+| **Year 1 (now→~2027-08)** | Hot-path specialize they can freeze and audit | Lintel Specialize: Choreo→Triton + one engine + PoC ADG ([POC.md](POC.md)) | Default-all, new mega-IR, survey M3 |
 | **Year 2 (~2027-09→2028-08)** | Second surface (Tile/HIP) + on-prem + reported p50 on *their* fleet | Adapter #2; coverage [LATER.md](LATER.md) (`%w`, policy-hash); optional SMT | Claiming C2 industry settlement |
 | **Year 3 (~2028-09→2029-08)** | Compiled control plane: placement, multi-SKU | T10 coverage (placement after `%w` is boring); still classical lowering | Autonomous tape-out; LLM-as-`opt` |
 

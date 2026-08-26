@@ -59,18 +59,16 @@
         "kind": { "type": "string" },
         "enum_id": {
           "type": "string",
-          "description": "Allowlist slot name. Opaque 'num_warps=8.block_m=128' strings are degenerate; PoC payload is schedule."
+          "description": "Allowlist slot name. Opaque field-strings are degenerate; PoC payload is a Choreo Kernel AST."
+        },
+        "kernel": {
+          "type": "object",
+          "description": "Choreo Kernel JSON. Same shape as schemas/adapter-proposal.v0.schema.json $defs.kernel."
         },
         "schedule": {
           "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "num_warps": { "type": "integer", "minimum": 1, "maximum": 32 },
-            "num_stages": { "type": "integer", "minimum": 1, "maximum": 8 },
-            "block_m": { "type": "integer", "minimum": 16 },
-            "block_n": { "type": "integer", "minimum": 16 },
-            "block_k": { "type": "integer", "minimum": 16 }
-          }
+          "description": "Degenerate Triton knob form. Not the PoC payload.",
+          "additionalProperties": true
         },
         "oracle": { "type": "string" },
         "on": { "type": "string" },

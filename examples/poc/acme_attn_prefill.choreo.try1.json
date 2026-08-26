@@ -1,0 +1,35 @@
+{
+  "schema": "lintel.adapter_proposal.v0",
+  "adapter_id": "choreo.v0",
+  "graph_hash": "sha256:bbcd57f9162e8a42bbf26df28a6b2a3ac2f8793061c036e198afeaf4f65d6db0",
+  "hw_id": "nvidia.b200.80gb",
+  "compiler_ver": "choreoir==0.1.0;triton==3.3.0+cu128",
+  "enum_id": "choreo.attn.d2.w8",
+  "kernel": {
+    "name": "acme_attn_prefill_try1",
+    "params": [
+      { "name": "Q", "dtype": "bf16", "shape": [128, 64] },
+      { "name": "Kt", "dtype": "bf16", "shape": [64, 128] }
+    ],
+    "buffers": [
+      { "name": "Q", "space": "gmem", "dtype": "bf16", "layout": { "shape": [128, 64], "stride": [64, 1] } },
+      { "name": "Kt", "space": "gmem", "dtype": "bf16", "layout": { "shape": [64, 128], "stride": [128, 1] } },
+      { "name": "SmQ", "space": "smem", "dtype": "bf16", "layout": { "shape": [128, 64], "stride": [64, 1] } },
+      { "name": "SmKt", "space": "smem", "dtype": "bf16", "layout": { "shape": [64, 128], "stride": [128, 1] } },
+      { "name": "Acc", "space": "regs", "dtype": "f32", "layout": { "shape": [128, 128], "stride": [128, 1] } }
+    ],
+    "partitions": [
+      { "name": "load", "role": "load", "width": 8 },
+      { "name": "math", "role": "math", "width": 8 }
+    ],
+    "body": [
+      { "op": "Copy", "id": "c0", "src": "Q", "dst": "SmQ", "partition": "load" },
+      { "op": "Copy", "id": "c1", "src": "Kt", "dst": "SmKt", "partition": "load" },
+      { "op": "Barrier", "id": "b0", "wait_for": ["load"], "arrive": "math" },
+      { "op": "Pipeline", "id": "pipe0", "depth": 2, "body": [] },
+      { "op": "Mma", "id": "m0", "a": "SmQ", "b": "SmKt", "c": "Acc", "partition": "math" }
+    ],
+    "attrs": { "region": "attn.prefill.qkv", "slot": "choreo.attn.d2.w8" }
+  },
+  "gates": ["W", "L", "S", "V"]
+}

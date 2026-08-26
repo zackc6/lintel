@@ -1,6 +1,6 @@
 # Adapters — data-plane plugins
 
-An **adapter** is a compiler Lintel does not own. It accepts a **typed schedule** (year-1) or later kernel text, lowers on one GPU family, returns an artifact + gate/oracle facts.
+An **adapter** is a compiler Lintel does not own. Year-1 it accepts a **Choreo Kernel AST**, runs `choreoir.check`, and (once a printer exists) lowers on one GPU family. Returns an artifact + gate/oracle facts.
 
 Year-1: **one** live adapter. Coverage: more `adapter_id`s, never one IR for all of them.
 
@@ -10,22 +10,21 @@ Year-1: **one** live adapter. Coverage: more `adapter_id`s, never one IR for all
 
 | `adapter_id` | Agent-facing type | Lowers with | Status |
 |---|---|---|---|
-| `@triton.v0` | Schedule: `num_warps`, `num_stages`, `block_m/n/k` (Triton-legal) | Partner Triton / PyTorch Inductor | **PoC live** |
+| `@choreo.v0` | [Choreo](https://github.com/zackc6/choreo) Kernel AST (buffers, layout, partitions, Copy/Mma/Barrier/Pipeline) | `choreoir.check` then Triton printer (first sink) | **PoC live** |
 
-Gate checks (names are bands, Cake-style `{where}`): `smem`, `occupancy`, `tma_align`, `compile_ok`. Implementation = Triton/CUDA limits, not a new checker IR.
+Gate checks are Choreo Finding bands: `W`, `L`, `S`, `V`. After a printer exists, also `compile_ok`. Implementation = `choreoir` + vendor toolchain, not a new checker IR in this repo.
 
 ---
 
-## Q3 stub (empty)
-
-Exactly one of:
+## Degenerate / Q3 stub
 
 | `adapter_id` | Notes |
 |---|---|
-| `@tile.v0` | NVIDIA Tile-ish; **no** compile in year-1 |
-| `@hip.v0` | AMD; **no** compile in year-1 |
+| `@triton.v0` | Degenerate L4: `num_warps` / `block_*` knobs. M2 kill-switch if Choreo has no device sink. |
+| `@tile.v0` | NVIDIA Tile-ish; **no** compile in year-1 (Q3 empty stub) |
+| `@hip.v0` | AMD; **no** compile in year-1 (Q3 empty stub) |
 
-Stub = schema + `adapter_id` in `%k` + reject `unsupported`. Not a second performance path.
+Stub = schema + `adapter_id` in `%k` + reject `unsupported`. Not a second performance path. Pick **one** of tile/hip for the Q3 stub.
 
 ---
 
@@ -41,10 +40,10 @@ Stub = schema + `adapter_id` in `%k` + reject `unsupported`. Not a second perfor
 
 ## Contract (all adapters)
 
-1. **Input:** schedule record (required year-1) and/or kernel text (later).
-2. **`adapter_gate`:** pass/fail + `{where}` + optional `hint` field name.
-3. **Compile:** vendor toolchain. Timeout → fail closed.
+1. **Input:** Kernel AST (required year-1 live) or degenerate schedule record / later kernel text.
+2. **`adapter_gate`:** pass/fail + `{where}` + optional `hint` node/field + Finding JSON.
+3. **Compile:** Choreo printer + vendor toolchain. Timeout → fail closed. No printer → no cubin; still run check.
 4. **Output:** artifact bytes + hashes for admit-record `artifact_hash`.
 5. **Do not** put model id in the adapter input that feeds `%k`.
 
-Schema: [schemas/adapter-proposal.v0.schema.json](../schemas/adapter-proposal.v0.schema.json).
+Schema: [schemas/adapter-proposal.v0.schema.json](../schemas/adapter-proposal.v0.schema.json). Pros/cons: [CHOREO.md](CHOREO.md).

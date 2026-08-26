@@ -50,7 +50,7 @@ Raising the agent from CUDA/CUTLASS text to a small typed surface improves **cor
 
 Clean-start Flash-KMeans on B200 at an 80M-token budget: Cake IR median **1.144×** the tuned FlashML baseline vs CUDA/PTX **0.928×**. Beyond that: Kimi Delta Attention **2.05×** geometric mean vs official FlashKDA, validated in serving. NVIDIA Ampere–Blackwell only. The IR **evolves from a kernel corpus**, not from a committee language design.
 
-Year-1 Lintel take: the **mechanisms** (typed schedule, `{where}` reject, growing harness). Not Cake v2 the language ([DATA_PLANE.md](DATA_PLANE.md)).
+Year-1 Lintel take: the **mechanisms** (typed schedule, `{where}` reject, growing harness). The live face is **Choreo** (Cake ∪ Argus-lite ∪ TIRx), not Cake v2 the language ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)).
 
 ### B. Tile DSL + invariants (kind 1, opposite layout bet)
 
@@ -90,7 +90,7 @@ Lintel’s admit record is this family. Serve is still `lookup(%k)`, not “re-r
 
 ### G. Human kernel languages agents still dump (kind 1, not co-designed)
 
-Triton, CuTe, Helion, CUDA, HIP, FlyDSL (KernelEvolve). These are real L4 surfaces. They were designed for humans (or for a classical autotuner), not for localized reject. Agents can emit them; the compiler error is usually a blob. Year-1 Lintel does **not** take agent-authored Triton *source* as the SLA payload — it takes a **typed schedule record** Triton already accepts ([DATA_PLANE.md](DATA_PLANE.md)).
+Triton, CuTe, Helion, CUDA, HIP, FlyDSL (KernelEvolve). These are real L4 surfaces. They were designed for humans (or for a classical autotuner), not for localized reject. Agents can emit them; the compiler error is usually a blob. Year-1 Lintel does **not** take agent-authored Triton *source* as the SLA payload — it takes a **Choreo Kernel AST** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). Triton is the first **printer**.
 
 ---
 
@@ -131,10 +131,10 @@ Do not reread this survey as a reason to change the PoC.
 
 | Kind | Year-1 | Where |
 |---|---|---|
-| **2** Decision surface | Allowlisted **typed Triton schedule** (`adapter-proposal.v0`). Two records, not unbounded search (C3-B). | [DATA_PLANE.md](DATA_PLANE.md) |
+| **1** Program (structured AST) | Allowlisted **Choreo Kernel** (`adapter-proposal.v0`). Two records, not unbounded search (C3-B). Kind-2 Triton knobs are degenerate. | [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md) |
 | **4** Control / tool IR | Lintel IR CFG + `cost` + ADG. Terminators `land` \| `revert` \| `reject`. Serve = `lookup(%k)`. | [POC.md](POC.md), [LINTEL_IR.md](LINTEL_IR.md) |
 | **3** Freeze | Admit record in partner git. FlashInfer-style Trace is a cousin, not a second controller. | [ADMIT_RECORD.md](ADMIT_RECORD.md) |
-| **1** Program | **Out of SLA.** Triton/Tile/HIP/Cake IR may exist **behind** an `adapter_id`. `@cake.v0` is a later wrap. LLVM-IR rewrite and neural compile stay out. | [LATER.md](LATER.md), [LLM_IR.md](LLM_IR.md) |
+| **1 unstructured / 2 knobs as face** | **Out of SLA.** Triton/CUDA *source*, Cake IR, Tile/HIP as agent face. Printers and later wraps only. LLVM-IR rewrite and neural compile stay out. | [LATER.md](LATER.md), [LLM_IR.md](LLM_IR.md) |
 
 Selector on SLA; JSON schema is the grammar constraint; verify at the same stratum as `propose` — those pins are in [LLM_IR.md](LLM_IR.md) (from the *other* survey). This file is why those pins are not a random taste: the independent literature already split program vs decision vs freeze vs control, and the failures concentrate on free rewrite of the wrong stratum.
 
@@ -145,6 +145,7 @@ Selector on SLA; JSON schema is the grammar constraint; verify at the same strat
 | Paper / artifact | arXiv / URL | Kind |
 |---|---|---|
 | Cake | [2608.12629](https://arxiv.org/abs/2608.12629) | 1 |
+| Choreo IR | [github.com/zackc6/choreo](https://github.com/zackc6/choreo) | 1 (year-1 Lintel face) |
 | Argus | [2604.18616](https://arxiv.org/abs/2604.18616) | 1 |
 | Zomboss | [2608.00894](https://arxiv.org/abs/2608.00894) | 2 |
 | µCUTLASS | [2603.29010](https://arxiv.org/abs/2603.29010) | 2 |

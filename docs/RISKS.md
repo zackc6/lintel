@@ -21,15 +21,16 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 | Partner gain is only a microbench | Do not publish. Require serving \(F\) or drop the claim. |
 | Fallback never exercised | Schedule a fire-drill or we are lying about C6-B. |
 | Token/$ per admitted %\(F\) unknown by end of Q2 | Hiring freeze on net-new roles. |
-| Home fleet is not NVIDIA and we still staff Cake IR | Swap the Q1 adapter; do not dual-track. |
-| Sales demo uses free CUDA rewrite as the happy path | Pull the demo. Constrained actions only. |
+| Home fleet is not NVIDIA and we still staff a CUDA-only printer | Swap the Q1 **sink**; do not dual-track. Choreo check still runs on CPU. |
+| Sales demo uses free CUDA rewrite **or** “we compiled Choreo” without F | Pull the demo. Constrained Kernel AST + serving delta. |
+| Choreo has no device sink by M2 | Live adapter falls back to degenerate Triton schedule knobs so a partner can still freeze. |
 | Roadmap slide says “replace Inductor” | Delete the slide. |
 
 ## Things that look like progress and are not
 
 - KernelBench rank without cost-to-compile.
-- A Cake IR prototype that only we can compile.
-- “Cake v2” as a new kernel language (the adapter contract is already the PoC).
+- A Cake IR **or Choreo** prototype that only we can compile (no public sink).
+- “Cake v2” / “Choreo the company” as a new kernel language (the adapter contract is already the PoC).
 - Designing Lintel IR as a Meta-LLM-Compiler **LLVM IR** rewrite surface, or adding neural compile / decompile opcodes ([LLM_IR.md](LLM_IR.md)).
 - A DeepSeek Harness skin with no `verify` seam.
 - “15% vendor-headline” charts (survey C2 tension).
@@ -40,7 +41,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 ## Year-2 doors we leave open (not commitments)
 
 - Argus-class SMT as an `oracle` provider.
-- `@cake.v0` **wrap** (their compiler) if a public tree exists or a customer funds it — not a Lintel Cake dialect. Year-1 already has Cake **mechanisms** on Triton ([DATA_PLANE.md](DATA_PLANE.md)).
+- `@cake.v0` **wrap** (their compiler) if a public tree exists or a customer funds it — not a Lintel Cake dialect. Year-1 L4 face is **Choreo** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)).
 - DSH bundle packaging if `dsh-plugin` is the distribution ABI.
 - CFG / cost-as-gate / T10 **coverage** (`%w`, policy-hash, placement) after the [PoC](POC.md) ADG walk is real ([LATER.md](LATER.md)).
 - Job (c) comments on kernel PRs (never “we review llvm-project”).

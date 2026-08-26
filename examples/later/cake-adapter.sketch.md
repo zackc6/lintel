@@ -1,6 +1,6 @@
 # Later: `@cake.v0` as a plugin (not the SKU)
 
-**Do not staff this until** the Triton typed-schedule PoC has a partner canary **and** either a public Cake compiler exists or a customer pays for the wrap.
+**Do not staff this until** the Choreo Kernel PoC has a partner canary **and** either a public Cake compiler exists or a customer pays for the wrap.
 
 ```
 adapter_id: cake.v0

@@ -1,10 +1,10 @@
 {
   "schema_version": "lintel-adg.poc",
   "module_id": "rec_acme_attn_prefill_poc",
-  "commentary": "T10 lite: compile of examples/poc/acme_attn_prefill.poc.json. SLA interprets this ADG. Serve does not. Adapter_gate {where} is an edge, same as golden.",
+  "commentary": "T10 lite: compile of examples/poc/acme_attn_prefill.poc.json. SLA interprets this ADG. Serve does not. Adapter_gate {where: W|L|S|V} is an edge, same as golden.",
   "entry": "entry",
-  "agent_slots": ["propose.enum_id", "propose.schedule", "triage.region"],
-  "kernel_cache_key_note": "%k = hash(graph, hw, compiler, adapter, policy) — schedule is payload at the key, not in it",
+  "agent_slots": ["propose.enum_id", "propose.kernel", "triage.region"],
+  "kernel_cache_key_note": "%k = hash(graph, hw, compiler, adapter, policy) — Choreo Kernel is payload at the key, not in it",
   "adg": [
     { "id": "entry", "ops": ["cache_key", "triage"], "ok": "try0", "fail": "cold", "pred": "hot" },
     { "id": "cold", "term": "revert" },
@@ -13,9 +13,9 @@
       "ops": ["propose", "gate.adapter"],
       "ok": "gold0",
       "fail": "try1",
-      "enum_id": "triton.attn.w8.m128",
-      "where": "smem",
-      "hint": "block_m",
+      "enum_id": "choreo.attn.d3.w4",
+      "where": "L",
+      "hint": "c0",
       "owner": "kernels@acme"
     },
     {
@@ -31,9 +31,9 @@
       "ops": ["propose", "gate.adapter"],
       "ok": "gold1",
       "fail": "giveup",
-      "enum_id": "triton.attn.w16.m64",
-      "where": "occupancy",
-      "hint": "num_warps",
+      "enum_id": "choreo.attn.d2.w8",
+      "where": "S",
+      "hint": "b0",
       "owner": "kernels@acme"
     },
     {

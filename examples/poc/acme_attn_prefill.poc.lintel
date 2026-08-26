@@ -1,6 +1,7 @@
 // PoC — lintel-ir.poc. SLA interprets the compiled ADG, not this text.
-// Control: CFG + cost + two allowlisted schedules. Policy owns the graph.
-// Data plane: typed Triton schedule + adapter_gate {where}. Not Cake IR.
+// Control: CFG + cost + two allowlisted Choreo Kernels. Policy owns the graph.
+// Data plane: Choreo Kernel AST + adapter_gate {where: W|L|S|V}. Triton is the sink.
+// Kernel payloads: examples/poc/acme_attn_prefill.choreo.json (.try1.json)
 // Compile → examples/poc/acme_attn_prefill.poc.adg.json
 // Serve is lookup(%k). Not survey M3.
 
@@ -14,8 +15,8 @@ module @rec_acme_attn_prefill_poc version "lintel-ir.poc" {
 
   pins {
     hw       = "nvidia.b200.80gb"
-    compiler = "triton==3.3.0+cu128"
-    adapter  = @triton.v0
+    compiler = "choreoir==0.1.0;triton==3.3.0+cu128"
+    adapter  = @choreo.v0
     model    = "vendor.frontier.2026-10-20"
     policy   = @lintel.specialize.poc
   }
@@ -30,12 +31,12 @@ module @rec_acme_attn_prefill_poc version "lintel-ir.poc" {
     revert last_good under %k
 
   ^try0:
-    %p0 = propose propose_schedule "triton.attn.w8.m128", schedule {
-      num_warps = 8, num_stages = 3, block_m = 128, block_n = 64, block_k = 64
-    }
+    %p0 = propose propose_kernel "choreo.attn.d3.w4"
+      // Kernel: load(4)/math(4), Pipeline.depth=3, Copy+Barrier+Mma
+      // file: examples/poc/acme_attn_prefill.choreo.json
     %s0 = gate adapter %p0 owner @kernels.acme
     cond %s0.ok, ^gold0, ^try1
-      // fail { seam = adapter, where = smem, hint = block_m }
+      // fail { seam = adapter, where = L, hint = c0 }
 
   ^gold0:
     %g0 = gate golden %p0 owner @kernels.acme
@@ -43,12 +44,12 @@ module @rec_acme_attn_prefill_poc version "lintel-ir.poc" {
       // fail { seam = adapter, where = golden, reason = "ref mismatch" }
 
   ^try1:
-    %p1 = propose propose_schedule "triton.attn.w16.m64", schedule {
-      num_warps = 16, num_stages = 2, block_m = 64, block_n = 64, block_k = 64
-    }
+    %p1 = propose propose_kernel "choreo.attn.d2.w8"
+      // Kernel: load(8)/math(8), Pipeline.depth=2
+      // file: examples/poc/acme_attn_prefill.choreo.try1.json
     %s1 = gate adapter %p1 owner @kernels.acme
     cond %s1.ok, ^gold1, ^giveup
-      // fail { seam = adapter, where = occupancy, hint = num_warps }
+      // fail { seam = adapter, where = S, hint = b0 }
 
   ^gold1:
     %g1 = gate golden %p1 owner @kernels.acme

@@ -19,7 +19,7 @@ Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compil
 | **C2** vendor headlines vs p50 | Someone publishes default-path p50/p90 + cost | Report *partner* traces in that format. Do not fake it earlier. |
 | **C3-A** free rewrite wins a public suite | Widen action enums *behind admit* | Oracles stay. Free CUDA paste is still not the demo. |
 | **C3-B** constrained actions hold (current lean) | Keep narrow enums | Sell as the safety story. |
-| **C4** Triton vs Tile vs Cake IR vs Argus | Surface fragments | Ship another `adapter` provider. Year-1 live L4 is a **typed Triton schedule**, not Cake IR. Portable schema was the year-1 bet. |
+| **C4** Triton vs Tile vs Cake IR vs Argus | Surface fragments | Year-1 live L4 **face** is **Choreo**; Triton is the first **sink**. Another vendor = another printer / `adapter_id`, not a new Lintel IR. |
 | **C5** online vs freeze-before-serve | Vendors name ACF workflows in release notes | Integrate; we remain the cross-vendor admit/freeze layer. |
 | **C6-A** agents replace compilers | — | **Do not follow.** Wrong company. |
 | **C6-B** hybrid (current lean) | — | Stay. Kill switch if fallback is never drilled. |
@@ -34,13 +34,13 @@ Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), repl
 
 | T | Year-1 | Year-2 door |
 |---|---|---|
-| **T1** typed agent↔compiler interface | **Lintel IR** + [PoC](POC.md) CFG/`cost`/ADG **and** typed Triton schedule + `{where}` ([DATA_PLANE.md](DATA_PLANE.md)) | Coverage [LATER.md](LATER.md); `@cake.v0` wrap only; still one Lintel IR |
+| **T1** typed agent↔compiler interface | **Lintel IR** + [PoC](POC.md) CFG/`cost`/ADG **and** Choreo Kernel + `{where}` ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)) | Coverage [LATER.md](LATER.md); `@cake.v0` wrap only; still one Lintel IR |
 | **T2** admit / fallback | Layered oracles + last_good / classical | SMT / Alive2 as `oracle` providers |
 | **T3** freeze + replay | Lintel IR `%k = cache_key(...)`; serve is `lookup(%k)` | Policy bundles |
 | **T4** in-tree advisors | Out | Out unless a customer funds job (b) |
-| **T5** dialect/ISA feedback | **Lite:** PoC `adapter_gate` `{where}`; recurring fails → new check or tighter schedule bound (test-gated) | Not ISA RFCs; L5 `where` is an oracle plugin |
+| **T5** dialect/ISA feedback | **Lite:** PoC `adapter_gate` `{where: W\|L\|S\|V}`; recurring fails → new `choreoir.check` rule (test-gated in choreo) | Not ISA RFCs; L5 `where` is an oracle plugin |
 | **T6** serving A/B | One engine, partner traces | Second engine |
-| **T7** open multi-IR corpora | Out (not a data company) | Consume KernelBook-class data if it helps the Triton adapter |
+| **T7** open multi-IR corpora | Out (not a data company) | Consume KernelBook-class data if it helps the Choreo adapter |
 | **T8** unified ladder | Refuse KernelBench as GA metric; partner ladder + cost-to-compile | Public method note, not a fake industry p50 |
 | **T9** provenance / CODEOWNERS | Q3 | Air-gap / SSO at 25–50 people |
 | **T10** workflow compile | [PoC](POC.md): compile one CFG to ADG; interpret ADG | [LATER.md](LATER.md): `%w`, policy-hash, more edges; still `lookup(%k)` on serve |
@@ -106,13 +106,13 @@ A **separate** independent survey (primary papers, four kinds: program / decisio
 
 | Their claim | Year-1 product choice |
 |---|---|
-| Selector is the safe LLM role | SLA `propose` = allowlisted Triton **schedule**. Widen only behind admit (**C3-A**). |
+| Selector is the safe LLM role | SLA `propose` = allowlisted **Choreo Kernel**. Widen only behind admit (**C3-A**). |
 | Translator has the correctness problem | `paste_cuda` / free IR rewrite **illegal** on SLA. Lab may be looser; still no `land` without gates. |
 | Generator of *inspectable* artifacts beats chat | Payload is `adapter-proposal.v0` + admit record. Commentary is not truth. Magellan Generator (new passes) stays job (b) **out**. |
 | Train an IR-LLM (Meta Compiler on LLVM IR) | Later `llm` **provider**. Not a new Lintel dialect. P12. |
 | Intra-level rewrite at LLVM IR / ASM | Classical **L0/L5**. No `propose` there in year 1. |
 | Cross-level neural compile / decompile | Survey **M3**. Out. |
 | KernelBench / CA@k / `-Oz` size as SOTA | Not GA. Serving **\(F\)** + $/compile. |
-| Constrained decoding / grammar-guided CUDA | JSON **schema** on the schedule is the constraint. |
+| Constrained decoding / grammar-guided CUDA | JSON **schema** on the Choreo Kernel is the constraint. |
 | LEGO-style basic-block split for LLM compile | Out. Scale = Amdahl `triage`, not neural compile. |
 | Hybrid systems are the near-term path | Already the company. Kill switch: fallback never drilled (**C6-B**). |

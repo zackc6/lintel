@@ -4,7 +4,7 @@ The [PoC](POC.md) is the hard kernel on **one** graph. This file is how that ker
 
 ## Already in the PoC (do not redo)
 
-CFG with `cond`, `cost` as a gate, compile module → ADG, interpret ADG, `%k` replay, two **typed** schedules, `adapter_gate` `{where}`.
+CFG with `cond`, `cost` as a gate, compile module → ADG, interpret ADG, `%k` replay, two **Choreo Kernels**, `adapter_gate` `{where: W|L|S|V}`.
 
 ## Extend in this order
 
@@ -17,7 +17,7 @@ PoC freezes an ADG digest beside the admit record. Coverage makes that a first-c
 | `%k` | graph, hw, compiler, adapter, policy | Kernel digest |
 | `%w` | controller, policy, oracle bundle, \(F\), budget | ADG |
 
-Triton bump → new `%k`. Gate set / \(F\) / budget bump → new `%w` (and new `%k`, because `policy_id` is in `%k`).
+Triton/choreoir bump → new `%k`. Gate set / \(F\) / budget bump → new `%w` (and new `%k`, because `policy_id` is in `%k`).
 
 Sketch (fuller compile module): [examples/later/wf_acme_specialize.compile.lintel](../examples/later/wf_acme_specialize.compile.lintel).
 
@@ -33,10 +33,10 @@ PoC says the policy owns the CFG; coverage **enforces** it: `hash(ADG)` must equ
 
 | Add | Still illegal |
 |---|---|
-| `cond` on numerical fail → next schedule (not only golden / adapter) | Agent-authored edges |
+| `cond` on numerical fail → next kernel (not only golden / adapter) | Agent-authored edges |
 | Triage ranks N regions; CFG per region or a dispatcher block | One mega-CFG the model writes |
 | `or_else classical` as well as `last_good` | Dropping a required gate |
-| Depth > 2 schedule tries, still allowlisted | Unbounded search / free integer search |
+| Depth > 2 kernel tries, still allowlisted | Unbounded search / free AST search |
 
 CFG sketch with the richer retry shape is already in [examples/later/acme_attn_prefill.cfg.lintel](../examples/later/acme_attn_prefill.cfg.lintel) (same graph as PoC; keep it as the coverage source of truth when PoC and coverage diverge).
 
@@ -52,9 +52,9 @@ Cost-only slice: [examples/later/acme_attn_prefill.cost.lintel](../examples/late
 
 ### 5. Second adapter / engine (width, not a new control IR)
 
-New `adapter_id` or serving provider → new `%k`. Same Lintel IR, same ADG opcodes, new **schedule schema** per adapter. Q3 stub adapter still valid; live second surface when a partner needs it.
+New `adapter_id` or serving provider → new `%k`. Same Lintel IR, same ADG opcodes, new **Kernel schema** per adapter. Q3 stub adapter still valid; live second surface when a partner needs it.
 
-Data-plane coverage (not a new Lintel IR): [DATA_PLANE.md](DATA_PLANE.md). `@cake.v0` is a **wrap** if a public tree or a customer funds it — sketch: [examples/later/cake-adapter.sketch.md](../examples/later/cake-adapter.sketch.md). Never the SKU.
+Data-plane coverage (not a new Lintel IR): [DATA_PLANE.md](DATA_PLANE.md). Choreo remaining work: [CHOREO.md](CHOREO.md). `@cake.v0` is a **wrap** if a public tree or a customer funds it — sketch: [examples/later/cake-adapter.sketch.md](../examples/later/cake-adapter.sketch.md). Never the SKU.
 
 ### 6. Placement / multi-SKU (after `%w` is boring)
 
@@ -69,14 +69,14 @@ PoC: check + lower to ADG. Coverage can add, still on the **control** graph:
 - Edge labels must be `{where, seam}` from a real gate
 - ADG canonical JSON (sorted ids) so `%w` is stable
 
-No pass lowers Lintel IR to CUDA. No pass is InstCombine on Triton.
+No pass lowers Lintel IR to CUDA. No pass is InstCombine on Triton. Choreo `check` runs **in the adapter**, not as a Lintel IR pass.
 
 ## Non-goals (still)
 
 - Survey M3 / C6-A / LLM-as-`opt`.
 - One cost model for L1–L7.
-- Cake IR / Tile as the control IR, or as the year-1 live L4.
-- “Cake v2 the company.” Cake-class **adapter contract** is already in the PoC.
-- Interpreting Lintel IR or ADG on the serve path.
+- Cake IR / Tile as the control IR, or as the year-1 live **face** (Choreo is the face; Triton is the printer).
+- “Cake v2 the company” or “Choreo the company.” The adapter contract is already in the PoC.
+- Interpreting Lintel IR, ADG, or Choreo on the serve path.
 - Agent-written CFG or agent-written `%k` / `%w` fields.
 - Deferring this list until a 10-person team “finishes linear v0.”
