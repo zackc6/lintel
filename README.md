@@ -1,14 +1,34 @@
 # Lintel
 
-**A commercial compiler control plane for a 10–50 person team, deliverable in 12 months.**
+**Goal:** a next-generation **agentic compiler**. Agents search and propose. Compilers check, lower, and measure. Serve loads a frozen binary — no model on the hot path.
 
-Lintel is **not** a new `opt` / Inductor / Triton, and **not** a generic coding agent. Agents search and synthesize; classical compilers lower, measure, and fall back; Lintel owns the **typed contract, layered admit, freeze, and replay** so that loop can be sold.
+Lintel is the **control plane** of that compiler: what to try, what to ship, what to roll back. It is not a new `opt` / Inductor / Triton, and not a generic coding agent. The typed kernel the agent edits is **[Choreo](https://github.com/zackc6/choreo)**. Lowering is a classical **sink** (GPU cubin or NPU binary). Picture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-This repository is a **year-1 plan** (plus a written v0 contract in `schemas/` / `examples/`). It is not a compiler and it does not run CI. It does not fork [Cake](https://arxiv.org/abs/2608.12629) or [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). It takes Cake’s **typed schedule contract + localized reject + evolving harness** (Lintel runs the loop; compiler PRs land on `choreoir`) and DSH’s **plugin seams + append-only session log**, and composes them as the product kernel. Control plane = Lintel IR. Data plane = **[Choreo IR](https://github.com/zackc6/choreo)** (typed Kernel AST); Triton is the first printer, not the agent face. Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (read in place; this repo does not copy it).
+This repository is a **year-1 plan** for that control plane (written v0 contract in `schemas/` / `examples/`). It does not run CI and it does not emit cubins. It does not fork [Cake](https://arxiv.org/abs/2608.12629) or [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). It takes Cake’s typed schedule + localized reject + evolving harness (Lintel runs the loop; compiler PRs land on `choreoir`) and DSH’s plugin seams + session log. Triton is the first printer, not the agent face. Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (read in place; this repo does not copy it — that is hygiene, not the mission).
 
-**Year-1 SKU.** CI/hot-path specialize on Amdahl-ranked kernels → layered admit → freeze a content-addressed artifact → serving A/B on one engine → classical fallback. Customer owns the artifact. No LLM on the serve path.
+```mermaid
+flowchart TB
+  GOAL["Next-generation agentic compiler<br/>agents search and propose<br/>compilers check, lower, and measure"]
 
-**What we refuse to sell in year 1.** “LLM replaces the compiler.” “Default-on for every build.” “One agent IR for all vendors.” Mid-walk compiler self-modify sold as T5.
+  LINTEL["Lintel<br/>control plane<br/>decides what to try, what to ship,<br/>and what to roll back"]
+  CHOREO["Choreo<br/>kernel program the agent edits<br/>typed schedule: tiles, roles,<br/>barriers, layouts"]
+  LOWER["Lowering<br/>classical compiler path<br/>turns that program into<br/>a GPU or NPU binary"]
+  SERVE["Serve<br/>load the frozen binary<br/>no agent on the hot path"]
+
+  GOAL --> LINTEL
+  GOAL --> CHOREO
+  GOAL --> LOWER
+
+  LINTEL -->|"propose a kernel"| CHOREO
+  CHOREO -->|"localized reject: where it failed"| LINTEL
+  CHOREO -->|"admitted program"| LOWER
+  LOWER -->|"binary + how to launch it"| LINTEL
+  LINTEL -->|"ship or keep the last good one"| SERVE
+```
+
+**Year-1 SKU.** CI/hot-path specialize on Amdahl-ranked kernels → layered admit → freeze a content-addressed artifact → serving A/B on one engine → classical fallback. Customer owns the artifact.
+
+**What we refuse to sell in year 1.** “LLM replaces the compiler.” “Default-on for every build.” “One agent IR for all vendors.” Mid-walk compiler self-modify sold as T5. “Agentic compiler” without classical check/lower.
 
 **Maintainer git.** Commit and push `main` directly. No feature branches, no PRs — see [`.cursor/skills/lintel/SKILL.md`](.cursor/skills/lintel/SKILL.md). This repo has no GitHub Actions.
 
@@ -20,7 +40,7 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Why this IR and the Acme
 |---|---|
 | [docs/WHY.md](docs/WHY.md) | Why the IR, what we benefit, Acme walks (L1–L7) |
 | [docs/PRODUCT.md](docs/PRODUCT.md) | What we sell, and why Cake+DSH alone is the wrong SKU |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Seams, FSM, L1–L7 map, repo layout |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Goal picture, seams, FSM, L1–L7 map |
 | [docs/DATA_PLANE.md](docs/DATA_PLANE.md) | Choreo Kernel AST as year-1 L4; Triton is the printer |
 | [docs/CHOREO.md](docs/CHOREO.md) | Verdict + vs Cake / Argus / TIRx / LLM-oriented IR; remaining Lintel work |
 | [docs/LLM_IR.md](docs/LLM_IR.md) | New Compiler Stack taxonomy → Selector/stratum pins |

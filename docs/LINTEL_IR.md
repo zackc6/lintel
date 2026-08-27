@@ -1,6 +1,6 @@
 # Lintel IR — control plane
 
-**Lintel IR** is the control-plane IR. Year-1 L4 is a **[Choreo](https://github.com/zackc6/choreo) Kernel AST** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). A **sink** must consume the schedule (roles, barriers, `Pipeline.depth`) and emit a cubin/NPU bin. `print_triton` that comments those fields is not a sink. `@tirx.v0` / `@tilelang.ascend` / Cake IR plug in behind `adapter`. They are not Lintel IR.
+**Lintel IR** is the control-plane IR of a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Year-1 L4 is a **[Choreo](https://github.com/zackc6/choreo) Kernel AST** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). A **sink** must consume the schedule (roles, barriers, `Pipeline.depth`) and emit a cubin/NPU bin. `print_triton` that comments those fields is not a sink. `@tirx.v0` / `@tilelang.ascend` / Cake IR plug in behind `adapter`. They are not Lintel IR.
 
 A module is one specialize plan at a cache key `%k`. Year-1 **executable** modules are the [PoC](POC.md) (CFG + `cost` + compile to ADG). A linear block is a CFG with one `^entry`. The agent fills enumerated slots. The compiler owns lowering, measurement, and fallback — and **compiles this plan to an ADG**. Serve does not interpret Lintel IR. Serve is `lookup(%k)`.
 

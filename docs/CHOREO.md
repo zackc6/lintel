@@ -1,18 +1,28 @@
-# Choreo IR — data-plane face, not this product
+# Choreo IR — the kernel program, not the whole compiler
 
 Sibling tree: [zackc6/choreo](https://github.com/zackc6/choreo) (`choreoir` 0.1.0). Read it there. **Do not copy that package into this repo.**
 
-Choreo is the year-1 **L4 object** the agent may fill. **Lintel IR** stays the control plane (CFG, `cost`, ADG, `%k`, `land` / `revert` / `reject`). Choreo’s own spec forbids control-plane work in that tree. The split is the product.
+The **goal** is a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Choreo is the **typed kernel the agent edits** (tiles, roles, barriers, layouts) plus checks before codegen. It is not Lintel, not the cubin sink, and not serving \(F\). Lintel IR stays the control plane (CFG, `cost`, ADG, `%k`, `land` / `revert` / `reject`). Choreo’s own spec forbids control-plane work in that tree. The split is the product.
 
 ```text
- searcher  ──fills──►  Choreo Kernel AST     ← data plane (this adapter)
-                             │
-                       check W→L→S→V         ← choreoir.check  (localized Finding)
-                             │
-                       Triton printer (sink) ← classical; not in lintel
-                             │
- Lintel IR ──compile──► ADG ──walk──► admit  ← control plane (this repo)
- serve = lookup(%k)                            no LLM, no Choreo interpret
+  next-generation agentic compiler     ← the goal
+
+  searcher
+     │
+     ▼
+  Lintel          propose a kernel
+     │
+     ▼
+  Choreo          the program  +  checks before codegen
+     │               pass → lower     fail → {where} back to Lintel
+     ▼
+  Lowering        GPU cubin  or  NPU binary   ← sink, not this repo
+     │
+     ▼
+  Lintel          measure; land or revert
+     │
+     ▼
+  Serve           frozen binary. no model in the loop.
 ```
 
 Spec in that repo: AST (kernel, buffers, layout×stride, partitions/roles, Copy / Mma / Barrier / Pipeline) and admit **W / L / S / V**. Findings name `gate`, `node`, optional `partition` / `thread` / `element`. Not scraped `nvcc` stdout.

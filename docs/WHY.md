@@ -1,6 +1,6 @@
 # Why Lintel IR (discussion, with examples)
 
-The data plane already compiles and serves without us. This note is what the **control-plane IR** is for, what cash it moves, and how the Acme PoC shows that on survey L1–L7. Year-1 L4 face is [Choreo IR](https://github.com/zackc6/choreo) ([CHOREO.md](CHOREO.md)).
+The **goal** is a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Classical data planes already compile and serve without us. This note is why that compiler needs a **control-plane IR**, what cash it moves, and how the Acme PoC shows that on survey L1–L7. Year-1 L4 face is [Choreo IR](https://github.com/zackc6/choreo) ([CHOREO.md](CHOREO.md)).
 
 E2E stack and the band map: [ARCHITECTURE.md](ARCHITECTURE.md). Survey direction vs stack: [SURVEY_MATCH.md](SURVEY_MATCH.md). Unit economics: [MARKET.md](MARKET.md). Executable IR: [POC.md](POC.md).
 
@@ -8,7 +8,7 @@ E2E stack and the band map: [ARCHITECTURE.md](ARCHITECTURE.md). Survey direction
 
 Torch → Inductor / Triton → PTX → SGLang or vLLM already lowers, serves, and falls back. Autotune, a YAML job, CompileIQ ACFs, GEAK workflows, or a coding agent in a sandbox can all propose a faster kernel.
 
-**Without Lintel IR you still have a compiler.** You do not have a product you can freeze, replay, and sell when an LLM is on the *specialize* path. If you never put an agent in CI, you do not need this IR.
+**Without Lintel IR you still have a classical compiler.** You do not have the **agentic** compiler: freeze, replay, and sell when an LLM is on the *specialize* path. If you never put an agent in CI, you do not need this IR.
 
 | Without Lintel IR | With it |
 |---|---|

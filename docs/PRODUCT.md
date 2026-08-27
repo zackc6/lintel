@@ -1,7 +1,9 @@
 # Product thesis
 
-**Last updated:** 2026-08-26  
+**Last updated:** 2026-08-27  
 **Horizon:** year 1 lands ~2027-08 (survey Horizon A, 2027–28)
+
+**Goal:** a next-generation **agentic compiler** — agents search and propose; compilers check, lower, and measure; serve is a frozen binary. Picture: [ARCHITECTURE.md](ARCHITECTURE.md). Lintel is the control plane of that compiler. Choreo is the typed kernel. Lowering is a classical sink. The survey is evidence for the year-1 slice, not the mission.
 
 ## The gap we sell
 
@@ -13,7 +15,7 @@ Vendors already ship **data planes** (Inductor, XLA, Triton, TensorRT-LLM, Flash
 4. A **layered admit + deterministic fallback** that release engineering will trust — survey T2 / C6-B / P5.
 5. A **freeze-before-serve** artifact (control file / kernel / schedule) with cache keys — survey T3 / P4.
 
-That joint is Lintel. The compiler stays classical. The agent stays a searcher. The **sold** layer is the control plane; year-1 data-plane work is the adapter contract under it, not a new compiler. Survey match: **Horizon A / job (a) / M1-lite**, not joint search over L2–L7 ([SURVEY_MATCH.md](SURVEY_MATCH.md)).
+That joint is how we **ship** the agentic compiler. The lowering compiler stays classical. The agent stays a searcher. The **sold** layer is Lintel (control) plus the year-1 Choreo adapter contract, not a cubin company and not a survey recap. Survey match: **Horizon A / job (a) / M1-lite**, not joint search over L2–L7 ([SURVEY_MATCH.md](SURVEY_MATCH.md)).
 
 ## Why not “fork Cake + fork DeepSeek Harness”
 

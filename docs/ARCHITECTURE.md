@@ -1,6 +1,68 @@
 # Architecture (e2e stack + mechanisms)
 
-The survey’s 1–3 year uncertainty is *which IR, which flag, which vendor surface* — not whether agents exist. Lintel is a **small control-plane IR + plugins**. Cake, DeepSeek Harness, and GEAK are **mechanisms**, not the product. Why this IR exists and how the Acme walks hit L1–L7: [WHY.md](WHY.md). Data-plane PoC (Choreo Kernel AST, Triton printer): [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md). LLM role / stratum pins: [LLM_IR.md](LLM_IR.md). Independent IR survey (not that paper): [LLM_ORIENTED_IR.md](LLM_ORIENTED_IR.md). Survey *direction* vs *stack*: [SURVEY_MATCH.md](SURVEY_MATCH.md).
+**Goal:** a next-generation **agentic compiler**. Agents search and propose. Compilers check, lower, and measure. Serve loads a frozen binary. Lintel is the **control plane** of that compiler, not the mission “don’t copy the survey.”
+
+Cake, DeepSeek Harness, and GEAK are **mechanisms**. The survey is **evidence** for the slice we ship first ([SURVEY_MATCH.md](SURVEY_MATCH.md)). Why the control IR exists and how Acme walks hit L1–L7: [WHY.md](WHY.md). Data-plane face: [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md). LLM role: [LLM_IR.md](LLM_IR.md). Independent IR survey: [LLM_ORIENTED_IR.md](LLM_ORIENTED_IR.md).
+
+## Goal (the picture)
+
+Three pieces **are** the compiler. Serve is the *outcome*, not a fourth compiler box. Goal arrows into Lintel / Choreo / Lowering mean composition, not three independent jobs.
+
+```mermaid
+flowchart TB
+  GOAL["Next-generation agentic compiler<br/>agents search and propose<br/>compilers check, lower, and measure"]
+
+  LINTEL["Lintel<br/>control plane<br/>decides what to try, what to ship,<br/>and what to roll back"]
+  CHOREO["Choreo<br/>kernel program the agent edits<br/>typed schedule: tiles, roles,<br/>barriers, layouts"]
+  LOWER["Lowering<br/>classical compiler path<br/>turns that program into<br/>a GPU or NPU binary"]
+  SERVE["Serve<br/>load the frozen binary<br/>no agent on the hot path"]
+
+  GOAL --> LINTEL
+  GOAL --> CHOREO
+  GOAL --> LOWER
+
+  LINTEL -->|"propose a kernel"| CHOREO
+  CHOREO -->|"localized reject: where it failed"| LINTEL
+  CHOREO -->|"admitted program"| LOWER
+  LOWER -->|"binary + how to launch it"| LINTEL
+  LINTEL -->|"ship or keep the last good one"| SERVE
+```
+
+```text
+  next-generation agentic compiler     ← the goal
+
+  searcher
+     │
+     ▼
+  Lintel          walk a specialize job
+     │               propose a kernel
+     ▼
+  Choreo          the program  +  checks before codegen
+     │               pass → lower     fail → try the next kernel
+     ▼
+  Lowering        GPU cubin  or  NPU binary
+     │
+     ▼
+  Lintel          measure on the real serving path
+                  keep it, or revert
+     │
+     ▼
+  Serve           frozen binary only. no model in the loop.
+```
+
+| Piece | Role |
+|---|---|
+| **Goal** | Agentic compiler: agents own search; compilers still own legality and codegen. |
+| **Lintel** | Orchestrates search, admit, freeze, rollback. This repo. |
+| **Choreo** | The typed kernel the agent is allowed to edit. Sibling repo. |
+| **Lowering** | Deterministic codegen (sink). Not an LLM. Not this repo. |
+| **Serve** | `lookup(%k)`. Not part of search. |
+
+**What the picture claims.** Hybrid loop (survey C6-B) as the *product*, not as a refusal slogan. Localized `{where}` is a **CFG edge** back to Lintel, not Choreo deciding ship/rollback. Lowering returns a binary **and** launch metadata; Lintel still owns land vs last_good. Lintel appears twice in the ASCII walk because it is the same controller: propose, then \(F\)-admit.
+
+**What it does not claim.** Agents *are* the compiler (survey M3 / C6-A). Joint search over L2–L7. This plan repo emitting cubins. A printer that comments `Pipeline.depth` counting as Lowering. Mid-walk `check.py` rewrite.
+
+Maps onto Cake’s three jobs: (1) Choreo face, (2) Lowering/sink, (3) Lintel outer loop. Year-1 still searches **only L4**; L6 is the \(F\)-oracle ([SURVEY_MATCH.md](SURVEY_MATCH.md)).
 
 ## E2E software stack
 
@@ -248,3 +310,4 @@ Week-1 pins (in `%k` or audit): GPU family, serving engine, op family. Changing 
 - Always-on frontier model at every customer compile.
 - Serving a proposal before \(F\)-admit.
 - Putting `model_id` or free text into `%k`.
+- “Agentic compiler” as LLM-as-`opt` (M3). Agents own search; compilers own check/lower/measure.

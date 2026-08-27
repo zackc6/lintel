@@ -1,8 +1,8 @@
 # PoC — jump to the hard kernel
 
-Linear `lintel-ir.v0` is too simple: the compiler only type-checks and interprets one block. Opaque `enum_id` strings and Triton `num_warps`/`block_*` knobs are the same trap on **L4**. **Year 1 builds both hard kernels first**, on a small set, then [extends coverage](LATER.md). Headcount is not a scope cap.
+The **goal** is an agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Linear `lintel-ir.v0` is too simple: the compiler only type-checks and interprets one block. Opaque `enum_id` strings and Triton `num_warps`/`block_*` knobs are the same trap on **L4**. **Year 1 builds both hard kernels first**, on a small set, then [extends coverage](LATER.md). Headcount is not a scope cap.
 
-Serve is still `lookup(%k)`. Survey **M3** (LLM replaces the compiler) stays out. The classical compiler still lowers the **printed** adapter IR (Triton first sink). This PoC is:
+Serve is still `lookup(%k)`. Survey **M3** (LLM replaces the compiler) stays out — agents own search, not legality. The classical compiler still lowers the **printed** adapter IR (Triton first sink). This PoC is:
 
 1. **Control:** walk a CFG, evaluate `cost`, compile the plan to an ADG.
 2. **Data plane:** [Choreo](https://github.com/zackc6/choreo) **Kernel AST** + `adapter_gate` `{where: W|L|S|V}`. Spec: [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md).

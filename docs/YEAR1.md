@@ -1,5 +1,7 @@
 # Year-1 plan (doable, commercial)
 
+**Goal:** ship a next-generation agentic compiler as a product: Lintel walks specialize, Choreo is the typed kernel, a sink emits the binary, serve is freeze ([ARCHITECTURE.md](ARCHITECTURE.md)).
+
 **Clock:** 12 months from kickoff (~2026-09 → 2027-08).  
 **IR:** Build the [PoC](POC.md) first — CFG + cost-as-gate + compile-to-ADG on one region, **and** a Choreo Kernel AST + `adapter_gate` `{where: W|L|S|V}` ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). Linear `lintel-ir.v0` and Triton `num_warps` knobs are degenerate, not the Q1 target. Staffing does not cap that set.
 

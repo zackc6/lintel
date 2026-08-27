@@ -6,7 +6,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 
 | Bet | Survey | If we are wrong |
 |---|---|---|
-| Hybrid control plane (C6-B) | Agents search; compilers lower/admit/fallback | We are in the wrong business. Do not pivot to survey M3 (LLM-as-compiler). |
+| Hybrid control plane (C6-B) | Agents search; compilers lower/admit/fallback. The **goal** is this loop as an agentic compiler. | We are in the wrong business. Do not pivot to survey M3 (LLM-as-compiler). |
 | Two-clock T5 (Cake flavor) | Compiler evolves **across** jobs; `check` is pinned **inside** a walk | If “evolve during compilation” is read as mid-walk self-modify, we look like C6-A. Keep Undergo. |
 | Narrow actions (C3-B) | Cake/Argus/HintPilot beat free rewrite | Widen enums *behind* admit; keep oracles |
 | Multi-DSL (C4 open) | Triton stays primary; Tile/Cake/Argus rise | Adapters; portable schema was the hedge |
@@ -28,6 +28,7 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 | Roadmap slide says “replace Inductor” | Delete the slide. |
 | Sales/roadmap says “compiler evolves during compilation” without two clocks | Pull the sentence. Say: pin `check` inside a walk; choreo PR + new `%k` across jobs. Mid-walk `check.py` rewrite stays **forbidden** ([SURVEY_MATCH.md](SURVEY_MATCH.md)). |
 | Slide claims “e2e-optimal-seeking” / joint L1–L7 search | Delete. Year-1 is M1-lite: search L4, admit L6. |
+| “Agentic compiler” sold without classical check/lower, or with a model on serve | Pull the sentence. Goal is C6-B. M3 stays out ([ARCHITECTURE.md](ARCHITECTURE.md)). |
 
 ## Things that look like progress and are not
 

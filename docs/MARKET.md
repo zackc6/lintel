@@ -99,7 +99,7 @@ These are **not** “we are better at CUDA than NVIDIA.” Compete on **cross-to
 
 ## Positioning sentence
 
-> Lintel is the **admit-and-freeze control plane** for teams that already have a compiler and a serving stack. Agents propose; compilers lower; oracles decide; git owns the artifact.
+> The product is a next-generation **agentic compiler**: Lintel decides what to try and what to ship; Choreo is the typed kernel; a classical sink lowers; serve is a frozen binary. Agents propose; compilers check and measure; git owns the artifact.
 
 If a slide cannot say that sentence, it is selling the wrong company.
 

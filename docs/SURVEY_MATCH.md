@@ -1,5 +1,7 @@
 # Survey match — Horizon A direction, not the full stack
 
+The **goal** is a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). This file is whether year-1 Lintel×Choreo matches the survey’s predicted *direction*. The survey is evidence, not the mission. “Don’t copy the survey” is repo hygiene.
+
 Evidence: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) §5.1–5.1.4, §5.5, §5.8.4. This file does not copy that tree. Year-1 choices stay in [SURVEY_MAP.md](SURVEY_MAP.md). Band map and Acme walks: [ARCHITECTURE.md](ARCHITECTURE.md), [WHY.md](WHY.md). Codesign: [CHOREO.md](CHOREO.md) Undergo.
 
 **Yes for the survey’s predicted *direction* (Horizon A, soft merge M1, hybrid C6-B).** No for the full predicted *stack* (joint search across L1–L7, four jobs, compiled control plane as Horizon B). The codesign is a **narrow year-1 productization** of that direction, not a new L-band and not “agents are the compiler.”

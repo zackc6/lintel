@@ -2,7 +2,7 @@
 
 Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (`docs/SURVEY.md`). This file does not copy the survey. It records **what Lintel does** when a survey cell is still open. If a conflict settles, change the row — not the controller.
 
-Whether year-1 *is* the predicted future: [SURVEY_MATCH.md](SURVEY_MATCH.md) (yes for Horizon A direction; no for the full stack).
+The **goal** is an agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Whether year-1 *is* the predicted future: [SURVEY_MATCH.md](SURVEY_MATCH.md) (yes for Horizon A direction; no for the full stack).
 
 ## Jobs
 
