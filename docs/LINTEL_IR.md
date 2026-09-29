@@ -1,8 +1,10 @@
 # Lintel IR — control plane
 
-**Lintel IR** is the control-plane IR of a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Year-1 L4 is a **[Choreo](https://github.com/zackc6/choreo) Kernel AST** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). A **sink** must consume the schedule (roles, barriers, `Pipeline.depth`) and emit a cubin/NPU bin. `print_triton` that comments those fields is not a sink. `@tirx.v0` / `@tilelang.ascend` / Cake IR plug in behind `adapter`. They are not Lintel IR.
+**Lintel IR** is the control-plane IR of a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). The architecture’s function coverage and three loops live there. This document is the application-walk language: one job, pinned contract, pinned procedure, pinned compiler.
 
-A module is one specialize plan at a cache key `%k`. Year-1 **executable** modules are the [PoC](POC.md) (CFG + `cost` + compile to ADG). A linear block is a CFG with one `^entry`. The agent fills enumerated slots. The compiler owns lowering, measurement, and fallback — and **compiles this plan to an ADG**. Serve does not interpret Lintel IR. Serve is `lookup(%k)`.
+A representation the proposer may edit is a **[Choreo](https://github.com/zackc6/choreo) Kernel AST** ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). A mapping to hardware consumes the schedule (roles, barriers, `Pipeline.depth`) and emits a binary. `print_triton` that comments those fields is not that mapping. Other representations plug in behind `adapter`. They are not Lintel IR.
+
+A module is one application plan at a cache key `%k`. The [PoC](POC.md) is one executable module (CFG + `cost` + compile to ADG) on a kernel surface. A linear block is a CFG with one `^entry`. A proposer — agent, learned policy, or structured search — fills candidates. Gates, measurement, and fallback stay on this plan, and the plan **compiles to an ADG**. Deploy does not interpret Lintel IR. Deploy is `lookup(%k)`.
 
 Terminators are ordinary English verbs: **land**, **revert**, **reject**.
 
@@ -15,36 +17,36 @@ Terminators are ordinary English verbs: **land**, **revert**, **reject**.
 E2E stack: [ARCHITECTURE.md](ARCHITECTURE.md). Merge ticket: [ADMIT_RECORD.md](ADMIT_RECORD.md).
 
 ```text
-  Agent fills ENUMERATED slots only
+  Proposer fills candidates
+  (agent, learned policy, or structured search)
               │
               ▼
-     Lintel IR (this document)         ← control plane
+     Lintel IR (this document)         ← application walk
               │  %k = cache_key(...)
-              │  interpret (year 1)
               ▼
-     admit record JSON                 ← lowering (what git reviews)
+     admit record JSON                 ← what git reviews
               │
               ▼
-     store[ %k ] = artifact.digest     ← serve is lookup(%k)
+     store[ %k ] = artifact.digest     ← deploy is lookup(%k)
               │
-     adapter IR  Choreo Kernel AST · GPU sink (Triton/TIRx/CUTLASS) · `@tilelang.ascend` later · Cake wrap later
+     representation (Choreo Kernel, or another adapter)
               │
               ▼
-     classical lowering → serve
+     map to hardware → deploy
 ```
 
-**Invariant.** Lintel IR never lowers to CUDA/HIP/PTX. SLA `propose` is **Selector** (allowlisted Choreo Kernel), not a Translator of IR/CUDA. Pins: [LLM_IR.md](LLM_IR.md). Choreo check is still classical.
+**Invariant.** Lintel IR does not lower to CUDA, HIP, or PTX. `propose` submits a candidate in a representation. Checks on that representation stay ordinary functions. Pins: [LLM_IR.md](LLM_IR.md). Compiler changes and procedure changes are the other two loops in [ARCHITECTURE.md](ARCHITECTURE.md), not extra opcodes on this walk.
 
 ## Opcodes (v0)
 
-| Op | Role | Agent may… |
+| Op | Role | A proposer may… |
 |---|---|---|
-| **`cache_key`** | Bind `%k` = hash(graph, hw, compiler, adapter, policy) | Not add fields; not put `model` or `enum_id` in the key |
-| `triage` | Amdahl cut | Allowlisted regions only |
-| `propose` | Bind allowlisted `enum_id` + **Choreo Kernel AST** | Pick from the two PoC records. No `paste_cuda`. Triton knobs / opaque strings are degenerate. |
-| `gate` | Oracle; fail → `{where, reason, seam}` | Not skip a required gate |
-| `measure` | Bench / serving A/B | Not invent a number |
-| `fitness` | Score vs last_good under pinned \(F\) | Not change \(F\) on the SLA path |
+| **`cache_key`** | Bind `%k`. Architecture: hash(workload, hw, compiler, adapter, policy, contract). v0 examples: graph, hw, compiler, adapter, policy, with the contract pinned in the module | Not put `model` or the candidate body in the key. Not move \(F\) by editing `policy_id` |
+| `triage` | Choose scope from the profile | Open a decision area the contract allows |
+| `propose` | Bind a candidate in the active representation | PoC: two allowlisted Choreo Kernels. Architecture: a configuration or a synthesized candidate, same gates. Triton knobs are a degenerate candidate |
+| `gate` | Check matched to the action; fail → `{where, reason, seam}` | Not skip a required check |
+| `measure` | Kernel time, application metric, and search cost | Not invent a number. Report speed and search cost apart |
+| `fitness` | Score vs last_good under the pinned contract | Not change \(F\) |
 
 **Terminators** (exactly one per path) — all **under `%k`**:
 
@@ -65,32 +67,34 @@ Same idea as a compile-cache key (`ccache` / ThinLTO), plus **agent policy**. No
 ```
 
 ```text
-cache-key.v0 = { graph_hash, hw_id, compiler_ver, adapter_id, policy_id }
+cache_key = hash( workload_id, hw_id, compiler_ver, adapter_id, policy_id, contract_id )
+
+cache-key.v0 examples = { graph_hash, hw_id, compiler_ver, adapter_id, policy_id }
 cache_key_digest = sha256(canonical_json)
 ```
 
 | In `%k` | Out of `%k` |
 |---|---|
-| This graph on this HW / compiler / adapter / policy | `model_id` (audit) |
-| `policy_id` versions the **decision procedure** (gates, \(F\), search rules, retrieval policy) | `memory_id` — stored traces the same procedure reads. Audit on the admit record |
-| | `enum_id` / kernel bytes (value *at* the key) |
-| | **`Kernel.target`** — admission is `pins.hw_id`, not a fifth key |
+| This workload on this HW / compiler / adapter / policy / contract | `model_id` (audit) |
+| `policy_id` versions the **decision procedure** (search rules, retrieval policy, which areas and slots exist, stopping). It does not version \(F\) or the required checks | `memory_id` — stored traces the same procedure reads. Audit on the admit record |
+| `contract_id` versions the objective, tolerances, and required checks. v0 modules pin that text in the module; a procedure edit must not move it | `enum_id` / candidate bytes (value *at* the key) |
+| | **`Kernel.target`** — admission is `pins.hw_id`, not another key field |
 | | commentary, SSA temps, `$/compile` |
 
-**Replay law.** Same `%k` ⇒ same terminator and, if `land`, same digest. Else **hard fail**. Model swap + same policy = same `%k`. Compiler bump **or** `policy_id` bump = new `%k` (must re-land). A new `memory_id` under the same `policy_id` is the same `%k`, and it does not authorize a second digest. Memory may change proposals only on a key that has not yet landed. A re-interpret that disagrees still hard-fails.
+**Replay law.** Same `%k` ⇒ same terminator and, if `land`, same digest. Else hard-fail. Model swap + same policy + same contract = same `%k`. Compiler bump, `policy_id` bump, or `contract_id` change = new `%k` (must re-land). A new `memory_id` under the same `policy_id` is the same `%k`, and it does not authorize a second digest. Memory may change proposals only on a key that has not yet landed. A re-interpret that disagrees still hard-fails.
 
 ## Three artifacts the control plane versions
 
 The opcodes in this document are the application loop. The compiler loop and the controller loop are not extra opcodes on that walk. Judgment: [SURVEY_MATCH.md](SURVEY_MATCH.md).
 
-| Edit | Persists as | Year-1 |
+| Edit | Persists as | In the architecture |
 |---|---|---|
-| Next allowlisted Kernel after `{where: L}` | Application digest at `%k` | The PoC |
-| Append a fail to the session log; same retrieval rule | `memory_id` (not in `%k`) | Log it. Do not call it a new controller |
-| Human edits the CFG, the allowlist, or the stopping rule | New `policy_id`, new `%k` | Allowed. This is engineering, not self-evolution |
-| Automatic propose → freeze → holdout → `promote` of a `policy_id` | New `policy_id` | **Specified, not built.** Sketch below |
-| New `check` rule or a sink that consumes `Pipeline.depth` | New `compiler_ver`, new `%k` | Process: [CHOREO.md](CHOREO.md). Not a mid-walk rewrite |
-| Relax \(F\) or `max_abs_err` so a candidate passes | — | Illegal for every automatic loop. A human may open a new experiment with a new contract |
+| Next candidate after `{where}` | Application digest at `%k` | Application loop. The PoC uses two allowlisted kernels |
+| Append a fail to the session log; same retrieval rule | `memory_id` (not in `%k`) | Memory. Not a new controller |
+| Human edits the search rules, the allowlist, or the stopping rule | New `policy_id`, new `%k` | A procedure edit. Not the automatic loop |
+| Automatic propose → freeze → holdout → `promote` of a `policy_id` | New `policy_id` | Controller loop. Sketch below. A product slice may wait to run it |
+| New check, transform, or a mapping that consumes the schedule | New `compiler_ver`, new `%k` | Compiler loop ([CHOREO.md](CHOREO.md)). Not a mid-walk rewrite |
+| Relax \(F\) or `max_abs_err` so a candidate passes | — | Illegal for every automatic loop. A human opens a new experiment with a new `contract_id` |
 
 `promote` is not `land`. `land` stores an application digest. `promote` publishes a procedure that later application jobs may pin. Serve never interprets a controller-development module.
 

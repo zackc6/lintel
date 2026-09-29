@@ -1,6 +1,6 @@
 # Survey match — scope and the three loops
 
-Evidence: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) as of **23 September 2026** (`docs/SURVEY.md`). This file does not copy that tree. It is the judgment of Lintel’s goal and control-plane IR against that rewrite. Older rows (Horizon A, M1, T1–T10, C6-A/B) stay in [SURVEY_MAP.md](SURVEY_MAP.md) as the decision log; where they disagree with this file, **this file wins**.
+Evidence: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) as of **23 September 2026** (`docs/SURVEY.md`). This file does not copy that tree. It records how a **product slice** relates to that survey. The early-stage architecture and its function coverage are [ARCHITECTURE.md](ARCHITECTURE.md). This file does not narrow that picture. Older rows (Horizon A, M1, T1–T10, C6-A/B) stay in [SURVEY_MAP.md](SURVEY_MAP.md) as the decision log; where they disagree with this file about the slice, **this file wins**. Where they disagree with the architecture, [ARCHITECTURE.md](ARCHITECTURE.md) wins.
 
 Acme walks: [ARCHITECTURE.md](ARCHITECTURE.md), [WHY.md](WHY.md). IR laws: [LINTEL_IR.md](LINTEL_IR.md). Compiler PRs: [CHOREO.md](CHOREO.md) Undergo. The gated controller module: [LATER.md](LATER.md), [examples/later/controller-dev.sketch.lintel](../examples/later/controller-dev.sketch.lintel).
 

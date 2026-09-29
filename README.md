@@ -1,34 +1,36 @@
 # Lintel
 
-**Goal:** a next-generation **agentic compiler** for frontier serving. It chooses actions, synthesizes implementations, and evaluates them under a fixed contract. Year-1: an allowlisted kernel proposal, classical check and lowering, freeze, replay. Serve loads a frozen binary — no model on the hot path.
+**Goal:** a next-generation **agentic compiler**. It chooses actions, synthesizes implementations, and evaluates them under a fixed contract. It can change its compiler tools or its decision procedure only in separate measured loops. Deploy loads an accepted artifact and a fallback, with no optimizer-model on the hot path.
 
-Lintel is the **control plane** of that compiler: what to try, what to ship, what to roll back. It is not a new `opt` / Inductor / Triton, and not a generic coding agent. The typed kernel the agent edits is **[Choreo](https://github.com/zackc6/choreo)**. Lowering is a classical **sink** (GPU cubin or NPU binary). Picture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
-This repository is a **year-1 plan** for that control plane (written v0 contract in `schemas/` / `examples/`). It does not run CI and it does not emit cubins. It does not fork [Cake](https://arxiv.org/abs/2608.12629) or [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). It takes Cake’s typed schedule + localized reject + evolving harness (Lintel runs the loop; compiler PRs land on `choreoir`) and DSH’s plugin seams + session log. Triton is the first printer, not the agent face. Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (read in place; this repo does not copy it — that is hygiene, not the mission).
+Lintel is the **control plane**: what to try, what to ship, what to roll back, and what may change across jobs. The early-stage picture and its function coverage are [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Choreo is one representation the proposer may edit. Mapping to hardware is a replaceable component. This repository is the written contract (`schemas/` / `examples/`) plus that design. It does not run CI and it does not emit binaries. Evidence: [ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (read in place; this repo does not copy it).
 
 ```mermaid
 flowchart TB
-  GOAL["Next-generation agentic compiler<br/>frontier serving: choose, synthesize,<br/>evaluate, freeze"]
+  CONTRACT["Experiment contract<br/>objective, acceptance rules, budget<br/>no loop may relax these"]
 
-  LINTEL["Lintel<br/>control plane<br/>decides what to try, what to ship,<br/>and what to roll back"]
-  CHOREO["Choreo<br/>kernel program the agent edits<br/>typed schedule: tiles, roles,<br/>barriers, layouts"]
-  LOWER["Lowering<br/>classical compiler path<br/>turns that program into<br/>a GPU or NPU binary"]
-  SERVE["Serve<br/>load the frozen binary<br/>no agent on the hot path"]
+  subgraph APP["Application optimization"]
+    SEARCH["Search controller<br/>agent · learned policy · structured search"]
+    AREAS["Decision areas<br/>graph · representation · kernel · runtime"]
+    TOOLS["Compiler tools<br/>keep, generate, or replace"]
+    CHECK["Check and measure"]
+    DEPLOY["Deploy<br/>accepted artifact plus fallback"]
+  end
 
-  GOAL --> LINTEL
-  GOAL --> CHOREO
-  GOAL --> LOWER
+  COMP["Compiler development<br/>promote compiler_ver"]
+  CTRL["Controller development<br/>promote policy_id or reject"]
 
-  LINTEL -->|"propose a kernel"| CHOREO
-  CHOREO -->|"localized reject: where it failed"| LINTEL
-  CHOREO -->|"admitted program"| LOWER
-  LOWER -->|"binary + how to launch it"| LINTEL
-  LINTEL -->|"ship or keep the last good one"| SERVE
+  CONTRACT --> SEARCH
+  SEARCH --> AREAS --> TOOLS --> CHECK --> DEPLOY
+  CHECK -.-> SEARCH
+  CHECK -.-> COMP
+  CHECK -.-> CTRL
+  COMP -->|new compiler_ver| TOOLS
+  CTRL -->|new policy_id| SEARCH
 ```
 
 **Year-1 SKU.** CI/hot-path specialize on Amdahl-ranked kernels → layered admit → freeze a content-addressed artifact → serving A/B on one engine → classical fallback. Customer owns the artifact.
 
-**What we refuse to sell in year 1.** “LLM replaces the compiler.” “Default-on for every build.” “One agent IR for all vendors.” “The control plane improves itself” (that loop is specified and gated). A session log sold as a new controller. Mid-walk `check.py` rewrite. Agentic search with no classical check, lower, or fallback.
+**What we refuse to sell in year 1.** “LLM replaces the compiler.” “Default-on for every build.” “One agent IR for all vendors.” “The control plane improves itself” as a year-1 result. The controller loop is in the architecture; this slice does not run it. A session log sold as a new controller. Mid-walk checker rewrite. Search with no check, mapping to hardware, or fallback.
 
 **Maintainer git.** Commit and push `main` directly. No feature branches, no PRs — see [`.cursor/skills/lintel/SKILL.md`](.cursor/skills/lintel/SKILL.md). This repo has no GitHub Actions.
 
@@ -40,7 +42,7 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Why this IR and the Acme
 |---|---|
 | [docs/WHY.md](docs/WHY.md) | Why the IR, what we benefit, Acme walks (L1–L7) |
 | [docs/PRODUCT.md](docs/PRODUCT.md) | What we sell, and why Cake+DSH alone is the wrong SKU |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Goal picture, seams, FSM, L1–L7 map |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Early-stage picture, function coverage, three loops |
 | [docs/DATA_PLANE.md](docs/DATA_PLANE.md) | Choreo Kernel AST as year-1 L4; Triton is the printer |
 | [docs/CHOREO.md](docs/CHOREO.md) | Verdict + vs Cake / Argus / TIRx / LLM-oriented IR; remaining Lintel work |
 | [docs/LLM_IR.md](docs/LLM_IR.md) | New Compiler Stack taxonomy → Selector/stratum pins |

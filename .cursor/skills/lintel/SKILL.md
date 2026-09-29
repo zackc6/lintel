@@ -46,7 +46,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 |---|---|
 | `docs/WHY.md` | Why the IR (it already compiles without us); \(F\), tokens, walks |
 | `docs/PRODUCT.md` | SKU |
-| `docs/ARCHITECTURE.md` | **Goal picture** (agentic compiler). Seams / FSM / today’s stack. Three loops. Survey judgment → SURVEY_MATCH |
+| `docs/ARCHITECTURE.md` | **Early-stage picture:** contract, application search across decision areas, replaceable compiler tools, compiler loop, controller loop, function coverage. A product slice is YEAR1 / SURVEY_MATCH and does not define the picture |
 | `docs/DATA_PLANE.md` | Choreo Kernel AST as year-1 L4; Triton is the printer, **not** Cake v2 the language |
 | `docs/CHOREO.md` | Verdict + vs Cake / Argus / TIRx; Undergo (Lintel decides, PRs land on choreoir). Do not copy zackc6/choreo here |
 | `docs/LLM_IR.md` | New Compiler Stack (Selector / stratum) → year-1 pins. Do not make Lintel IR an LLVM-IR LLM |
@@ -63,7 +63,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 | `docs/LATER.md` | Coverage after PoC (`%w` is the ADG, not the controller). Controller-dev sketch is gated. Not delayed by a 10-person cap |
 | `schemas/` `examples/` | v0 linear (degenerate), poc CFG+Choreo Kernel, later coverage |
 
-Keep the bet: the *goal* is the agentic compiler; year-1 ships admit + freeze + replay on one kernel surface. Cake and DeepSeek Harness are **mechanisms**, not forks. Year-1 kernel face is Choreo Kernel AST, not Cake IR and not Triton knobs. Do not pull controller self-improvement or a second decision area into the year-1 milestones.
+Keep the bet: the *goal* is the agentic compiler. The architecture picture covers the five compilation functions, the decision-area checklist, and all three loops, including controller `promote`. Cake and DeepSeek Harness are **mechanisms**, not forks. A product slice may still ship admit + freeze + replay on one kernel surface; do not treat that slice as the architecture, and do not pull controller self-improvement into the year-1 milestones.
 
 ## Codesign (Lintel × Choreo)
 

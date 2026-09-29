@@ -1,6 +1,6 @@
 # Why Lintel IR (discussion, with examples)
 
-The **goal** is a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Classical stacks already compile and serve. This note is why that compiler needs a **control-plane IR**, what cash it moves, and how the Acme PoC shows the year-1 application loop. Scope and the other two loops (compiler, controller): [SURVEY_MATCH.md](SURVEY_MATCH.md). Year-1 kernel face is [Choreo IR](https://github.com/zackc6/choreo) ([CHOREO.md](CHOREO.md)).
+The **goal** is a next-generation agentic compiler. The early-stage picture, function coverage, and the three loops are [ARCHITECTURE.md](ARCHITECTURE.md). Classical stacks already compile and serve. This note is why that compiler needs a **control-plane IR**, what cash it moves, and how the Acme PoC shows one application walk. What a product slice ships: [SURVEY_MATCH.md](SURVEY_MATCH.md). One representation is [Choreo IR](https://github.com/zackc6/choreo) ([CHOREO.md](CHOREO.md)).
 
 E2E stack and the band map: [ARCHITECTURE.md](ARCHITECTURE.md). Survey direction vs stack: [SURVEY_MATCH.md](SURVEY_MATCH.md). Unit economics: [MARKET.md](MARKET.md). Executable IR: [POC.md](POC.md).
 

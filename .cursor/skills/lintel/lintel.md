@@ -6,7 +6,7 @@ Lintel **codesigns** with Choreo; it does not contain it. The **goal** is an age
 
 | Topic | Pin |
 |---|---|
-| Goal | Next-generation **agentic compiler** for frontier serving. Year-1: allowlisted kernel, classical check/lower, freeze. Wider decision areas open on a profile. [ARCHITECTURE.md](../../docs/ARCHITECTURE.md). |
+| Goal | Next-generation **agentic compiler**. Early-stage picture: contract, three proposers, decision-area checklist, replaceable compiler tools, compiler loop, controller loop. A kernel slice is not that picture. [ARCHITECTURE.md](../../docs/ARCHITECTURE.md). |
 | Cake (1) IR / (2) lowering / (3) outer loops | (1) Choreo face. (2) sink (TIRx/Triton/TileLang-Ascend). (3) **Lintel**: application admit now; compiler PRs on `choreoir`; controller `promote` later and gated. |
 | Undergo | Compiler PRs edit `choreoir` (`compiler_ver`). After merge, `check`/print are ordinary functions, no LLM. Choreo does not self-modify during search. |
 | Three identities | Application digest at `%k`. `compiler_ver` = compiler. `policy_id` = procedure. `memory_id` = logs, outside `%k`. `%w` = frozen ADG, not the controller. |
@@ -37,7 +37,7 @@ Full prose: [docs/CHOREO.md](../../docs/CHOREO.md). Survey match: [docs/SURVEY_M
 | Averaging Cake IR + Argus tags + TIRx D/R/O into one dialect | Copy *signals*, pick one cell per fight. TIRx ≠ TritorX |
 | Treating a choreo PR, a session log, or a human CFG edit as one “self-evolving control plane” | Name the artifact: `compiler_ver`, `memory_id`, or `policy_id`. Automatic `promote` is the controller sketch and is gated. [SURVEY_MATCH.md](../../docs/SURVEY_MATCH.md) |
 | Selling “evolve during compilation” without an artifact and a clock | Inside a walk = pinned `check` and pinned `policy_id`. Across jobs = new `%k`. [CHOREO.md](../../docs/CHOREO.md) Undergo, [RISKS.md](../../docs/RISKS.md) |
-| Calling year-1 the joint-search architecture, or freezing kernel-only search as the goal | Year-1 searches the kernel schedule. Other decision areas open when the profile says so. [SURVEY_MATCH.md](../../docs/SURVEY_MATCH.md) |
+| Calling year-1 the architecture, or freezing kernel-only search as the picture | The picture is [ARCHITECTURE.md](../../docs/ARCHITECTURE.md): five functions, all decision areas, three loops. YEAR1 is a slice. |
 | Selling “agentic compiler” as a model on serve, or as check/fallback removed | Year-1 still checks, lowers, measures, and freezes. Serve is `lookup(%k)`. |
 | Pulling controller self-improvement into Q1–Q4 because the survey named it | The survey also says it is last, unproven at application level, and gated on the other two loops. |
 | Unifying NVIDIA `tmem` and Ascend `L0C` in one enum | Two sinks; spaces/roles valid-for-`hw_id`. Do not dual-track Ascend in Q1 |
