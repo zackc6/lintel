@@ -42,13 +42,13 @@ Outcome-based “% latency saved” pricing waits on a real A/B platform (P20). 
 
 ## Where the money is in 1 / 2 / 3 years
 
-Survey Horizon A is 2027–28; Horizon B ~2029–31. Lintel year 1 ≈ late Horizon A entry (**direction** match: M1-lite, job (a); **not** the joint L2–L7 architecture — [SURVEY_MATCH.md](SURVEY_MATCH.md)). Years 2–3 are “control plane becomes how orgs survive O(ops × devices × generations)” — still hybrid, still not M3.
+The survey’s one-year forecast (through September 2027) is toolchain integration with conventional backends still in the path. Lintel year 1 is that slice: kernel specialize, admit, freeze ([SURVEY_MATCH.md](SURVEY_MATCH.md)). Years 2–3 can add a second surface and workflow freeze. Joint search and controller self-improvement stay gated experiments, not the P&L story.
 
 | Window | What customers will pay for | Lintel offer | What we refuse |
 |---|---|---|---|
-| **Year 1 (now→~2027-08)** | Hot-path specialize they can freeze and audit | Lintel Specialize: Choreo→Triton + one engine + PoC ADG ([POC.md](POC.md)) | Default-all, new mega-IR, survey M3 |
+| **Year 1 (now→~2027-08)** | Hot-path specialize they can freeze and audit | Lintel Specialize: Choreo→Triton + one engine + PoC ADG ([POC.md](POC.md)) | Default-all, new mega-IR, a model on serve |
 | **Year 2 (~2027-09→2028-08)** | Second surface (Tile/HIP) + on-prem + reported p50 on *their* fleet | Adapter #2; coverage [LATER.md](LATER.md) (`%w`, policy-hash); optional SMT | Claiming C2 industry settlement |
-| **Year 3 (~2028-09→2029-08)** | Compiled control plane: placement, multi-SKU | T10 coverage (placement after `%w` is boring); still classical lowering | Autonomous tape-out; LLM-as-`opt` |
+| **Year 3 (~2028-09→2029-08)** | A second decision area only if year-1 kernels did not move serving | Placement / overlap after `%w` is boring, compared with local search | Controller self-improvement as a SKU; a model on serve |
 
 If year 1 does not produce frozen customer-owned artifacts, year 2–3 stories are fiction.
 

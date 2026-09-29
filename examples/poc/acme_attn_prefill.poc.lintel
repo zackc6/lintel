@@ -3,7 +3,7 @@
 // Data plane: Choreo Kernel AST + adapter_gate {where: W|L|S|V}. Triton is the sink.
 // Kernel payloads: examples/poc/acme_attn_prefill.choreo.json (.try1.json)
 // Compile → examples/poc/acme_attn_prefill.poc.adg.json
-// Serve is lookup(%k). Not survey M3.
+// Serve is lookup(%k). This file is the application loop; policy_id stays pinned.
 
 module @rec_acme_attn_prefill_poc version "lintel-ir.poc" {
 

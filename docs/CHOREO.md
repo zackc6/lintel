@@ -61,7 +61,7 @@ The “union” is of **admit mechanisms**, not of languages. [LLM_ORIENTED_IR.m
 |---|---|
 | **No cubin sink in v0.1.** `print_triton` is a stencil, not `nvcc`. Interpreter + W/L/S are real. | Serving **\(F\)** needs a cubin. Until a printer *executes*, `serving_ab` stays stub-able (already Q2). **Do not stub `adapter_gate`.** Kill switch: no sink by M2 → fall back to degenerate Triton *schedule* knobs so a partner can still freeze. |
 | **We own an L4 language.** Cake reading A / C4 was “IR only we can compile.” | Mitigate: Choreo is the *face*; sinks are vendor DSLs (Triton first, then Gluon/TLX/TileLang/HIP). Lintel never emits PTX. Demo is still F, not “we compiled Choreo.” |
-| **Designed, not grown.** Cake IR evolved from a kernel corpus; the harness grows verifier rules from recurring fails. Choreo v0.1 is a committee AST. | We do not get Cake’s 1.144× / 2.05× from `role`. T5-lite: Lintel decides; PRs land on `choreoir` ([Undergo](#undergo-choreo-is-the-artifact-lintel-is-the-process)). |
+| **Designed, not grown.** Cake IR evolved from a kernel corpus; the harness grows verifier rules from recurring fails. Choreo v0.1 is a committee AST. | We do not get Cake’s 1.144× / 2.05× from `role`. Compiler changes: Lintel decides; PRs land on `choreoir` ([Undergo](#undergo-choreo-is-the-artifact-lintel-is-the-process)). |
 | **Straight-line body.** No unstructured CFG; Pipeline is a region, not a full FA3 program. | Acme PoC is a **tile choreography** (Copy+Barrier+Mma), not a complete FlashAttention clone. Peak kernels stay behind the printer + vendor compiler. |
 | **Layout is a third cell, cheaper than both papers.** Shape×stride cover + copy/MMA rank. No Z3, no thread/element CEX in v0.1 (schema fields exist; mostly unused). | Agents still fill strides (Cake said hide that) without Argus CEX. `{where: L}` is a cheap filter. Do not staff Z3 in *lintel*. |
 | **V is tiny-tile CPU, not a GPU oracle.** choreoir can sim `Copy` / `Mma` / `Reduce`; year-1 may still gate Copy-first. | Numerical oracle on the cubin still required after lower. V is not serving parity. |
@@ -84,7 +84,7 @@ Choreo is **kind 1** (agent-authored program). Lintel IR is **kind 4** (control)
 |---|---|---|---|---|---|
 | What the model sees | Warp / barrier / pipeline; **no** layout algebra | Layout algebra **is** the spec (tags + Z3) | Storage-first layout (D/R/O, named axes) + orchestration in source | **Third cell:** `Layout {shape, stride}`; no Z3; no CuTe work-partition | Same; `{where: L}` is the cheap gate |
 | What the model authors | A **program** (Cake IR) | A **program** (tile DSL) | A **program** (TIR + tile primitives) | A **program** (Kernel AST / JSON) | Program payload, **two** allowlisted slots (C3-B) |
-| Where the surface comes from | Grows from a **kernel corpus** | Research DSL + MLIR + Z3 | TVM core; intrinsics first, primitives later | **Spec-designed** closed enums; grows only by choreo PR + spec bump | Do not grow a Lintel dialect; T5-lite is Lintel→choreo PR |
+| Where the surface comes from | Grows from a **kernel corpus** | Research DSL + MLIR + Z3 | TVM core; intrinsics first, primitives later | **Spec-designed** closed enums; grows only by choreo PR + spec bump | Do not grow a Lintel dialect; compiler PRs land on `choreoir` (`compiler_ver`) |
 | How the model learns it | Agents + evolving harness (not a 546B IR-LLM) | Tags in the Python DSL | TVM FFI (Py/C++/Rust) + docs/course | JSON schema in the prompt | Schema is the grammar constraint |
 | NVIDIA lowering | CUDA/PTX (their compiler; **no public tree**) | n/a (MI300X) | CUDA C++/PTX (`tir_pipeline="tirx"`) | Triton **sketch** printer | Printer must become a cubin sink or we flip to `@triton.v0` knobs |
 
@@ -212,7 +212,9 @@ Same as a CPU undergoing a microcode update: the chip is updated; it is not the 
 - The agent does not mutate the dialect at runtime.
 - Lintel IR does not grow `tmem` ops or DaVinci spaces. Kind 4 does not rewrite kind 1.
 
-T5-lite is this loop, not “Choreo self-improves.” **Two clocks** ([SURVEY_MATCH.md](SURVEY_MATCH.md)): inside one ADG walk, `choreoir` is pinned in `%k` and `check` is an ordinary function; across overnight specialize, a choreo PR + `compiler_ver` bump is a **new `%k`**. Rewriting `check.py` on `^try0`→`^try1` is M3-adjacent and forbidden. “Evolve during compilation” without naming both clocks is a [slogan hazard](RISKS.md).
+This loop changes the **compiler** (`compiler_ver`). It does not change the controller. **Two clocks** ([SURVEY_MATCH.md](SURVEY_MATCH.md)): inside one ADG walk, `choreoir` is pinned in `%k` and `check` is an ordinary function; across overnight specialize, a choreo PR + `compiler_ver` bump is a **new `%k`**. Rewriting `check.py` on `^try0`→`^try1` stays forbidden.
+
+A tighter allowlist, a new stopping rule, or a new retrieval policy is a new `policy_id`. A longer session log under the same rule is `memory_id` and stays outside `%k`. Neither is a choreo PR. Automatic promotion of `policy_id` is the controller loop, gated, and not this section ([LINTEL_IR.md](LINTEL_IR.md)). Naming “evolve” without the artifact and the clock is a [slogan hazard](RISKS.md).
 
 ---
 
@@ -231,7 +233,7 @@ Control CFG + ADG + `%k` laws are already the PoC. Choreo does not replace them.
 2. **Pin** `choreoir` by git SHA / version in `compiler_ver`. Same pin on replay.
 3. **Session log** stores Finding JSON (`gate`, `node`, `msg`, optional `partition`/`element`), not a Triton traceback as the only signal.
 4. **Two allowlisted slots** (`choreo.attn.d3.w4`, `choreo.attn.d2.w8`). Lab may mutate enumerated fields; SLA `land` still only those records (C3-B).
-5. **T5-lite:** recurring `{where}` in the session log → Lintel opens a **choreo PR** (new `check` rule, printer that consumes `Pipeline.depth`) or a tighter allowlist here. Human merge. Bump `compiler_ver`. The agent never mutates the dialect on the SLA path. Do not grow a Lintel layout dialect.
+5. **Compiler loop:** recurring `{where}` that is a checker or printer limitation → Lintel opens a **choreo PR** (new `check` rule, printer that consumes `Pipeline.depth`). Human merge. Bump `compiler_ver`. A tighter allowlist is a `policy_id` edit in this repo, not that PR. The agent never mutates the dialect on the SLA path. Do not grow a Lintel layout dialect. Do not run controller-development in Q1.
 
 ### Blocked on choreo (do in that repo, consume here)
 
@@ -254,7 +256,7 @@ Control CFG + ADG + `%k` laws are already the PoC. Choreo does not replace them.
 
 - Interpret Lintel IR, ADG, or Choreo on the serve path.
 - Dual live L4 (Choreo + Triton-as-agent-face, or Choreo + TIRx-as-face) before first partner canary.
-- Copy choreo into lintel; make Lintel IR a Kernel AST; neural compile; survey M3.
+- Copy choreo into lintel; make Lintel IR a Kernel AST; neural compile; a model on the serve path.
 - Claim library-class TFLOPS because `check` returned `[]`, or race Cake/TIRx on peak as the SKU.
 - Let the searcher mutate Choreo’s enums at runtime, or let `choreoir.check` rewrite itself without a PR.
 

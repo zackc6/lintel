@@ -1,6 +1,6 @@
 # Lintel
 
-**Goal:** a next-generation **agentic compiler**. Agents search and propose. Compilers check, lower, and measure. Serve loads a frozen binary — no model on the hot path.
+**Goal:** a next-generation **agentic compiler** for frontier serving. It chooses actions, synthesizes implementations, and evaluates them under a fixed contract. Year-1: an allowlisted kernel proposal, classical check and lowering, freeze, replay. Serve loads a frozen binary — no model on the hot path.
 
 Lintel is the **control plane** of that compiler: what to try, what to ship, what to roll back. It is not a new `opt` / Inductor / Triton, and not a generic coding agent. The typed kernel the agent edits is **[Choreo](https://github.com/zackc6/choreo)**. Lowering is a classical **sink** (GPU cubin or NPU binary). Picture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -8,7 +8,7 @@ This repository is a **year-1 plan** for that control plane (written v0 contract
 
 ```mermaid
 flowchart TB
-  GOAL["Next-generation agentic compiler<br/>agents search and propose<br/>compilers check, lower, and measure"]
+  GOAL["Next-generation agentic compiler<br/>frontier serving: choose, synthesize,<br/>evaluate, freeze"]
 
   LINTEL["Lintel<br/>control plane<br/>decides what to try, what to ship,<br/>and what to roll back"]
   CHOREO["Choreo<br/>kernel program the agent edits<br/>typed schedule: tiles, roles,<br/>barriers, layouts"]
@@ -28,7 +28,7 @@ flowchart TB
 
 **Year-1 SKU.** CI/hot-path specialize on Amdahl-ranked kernels → layered admit → freeze a content-addressed artifact → serving A/B on one engine → classical fallback. Customer owns the artifact.
 
-**What we refuse to sell in year 1.** “LLM replaces the compiler.” “Default-on for every build.” “One agent IR for all vendors.” Mid-walk compiler self-modify sold as T5. “Agentic compiler” without classical check/lower.
+**What we refuse to sell in year 1.** “LLM replaces the compiler.” “Default-on for every build.” “One agent IR for all vendors.” “The control plane improves itself” (that loop is specified and gated). A session log sold as a new controller. Mid-walk `check.py` rewrite. Agentic search with no classical check, lower, or fallback.
 
 **Maintainer git.** Commit and push `main` directly. No feature branches, no PRs — see [`.cursor/skills/lintel/SKILL.md`](.cursor/skills/lintel/SKILL.md). This repo has no GitHub Actions.
 
@@ -49,7 +49,7 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Why this IR and the Acme
 | [docs/YEAR1.md](docs/YEAR1.md) | Quarters, 10/25/50 staffing, week-by-week Q1, hiring order, GTM |
 | [docs/MARKET.md](docs/MARKET.md) | Business value, unit economics, competitors over 1–3 years |
 | [docs/RISKS.md](docs/RISKS.md) | Kill switches tied to survey checkpoints |
-| [docs/SURVEY_MATCH.md](docs/SURVEY_MATCH.md) | Horizon A direction vs full stack; two-clock T5; L1–L7 search cut |
+| [docs/SURVEY_MATCH.md](docs/SURVEY_MATCH.md) | Scope and the three loops, against the 23 Sep 2026 survey |
 | [docs/SURVEY_MAP.md](docs/SURVEY_MAP.md) | Jobs, C1–C10, T1–T10, P1–P23 → year-1 choice |
 | [docs/ADMIT_RECORD.md](docs/ADMIT_RECORD.md) | Annotated admit record (landed + reverted) |
 | [docs/LINTEL_IR.md](docs/LINTEL_IR.md) | Lintel IR: land / revert / reject + cache_key |

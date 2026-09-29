@@ -2,13 +2,24 @@
 
 Evidence source: [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey) (`docs/SURVEY.md`). This file does not copy the survey. It records **what Lintel does** when a survey cell is still open. If a conflict settles, change the row — not the controller.
 
-The **goal** is an agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Whether year-1 *is* the predicted future: [SURVEY_MATCH.md](SURVEY_MATCH.md) (yes for Horizon A direction; no for the full stack).
+The **goal** is an agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Scope and the three loops, judged against the **23 September 2026** rewrite: [SURVEY_MATCH.md](SURVEY_MATCH.md). That file wins when it disagrees with a row below.
+
+The tables under Jobs, Conflicts, and Techniques use the **pre-rewrite identifiers** (Horizon A, C1–C10, T1–T10, P1–P23). They are the decision log. Current readings that replace them:
+
+| Old identifier | Governing reading |
+|---|---|
+| Horizon A / M1, “search only L4” | Year-1 kernel-schedule search for frontier serving. Other decision areas open on a profile, not on a calendar. |
+| M3 / C6-A “refused through 2031” | Year-1 keeps check, lower, and fallback. Later replacement is one component on a corpus. |
+| T5 as the control plane evolving | T5’s compiler half is the choreo PR (`compiler_ver`). The procedure half is `policy_id`. Memory is `memory_id`. |
+| T10 / `%w` as “the controller” | `%w` freezes one job’s ADG. `policy_id` is the procedure. |
+| C3 | Start restricted (two Kernels). Compare with wider synthesis before growing the AST. |
+| Joint L2–L7 as the architecture | A 2029 experiment, and only if it beats local search and a non-agent joint search. |
 
 ## Jobs
 
 | Job | Survey | Year 1 | Why |
 |---|---|---|---|
-| **(a) online/CI specialize** | Horizon A ships for *some* products, not silent default | **GA SKU** | Only job we sell in year 1 with serving \(F\) |
+| **(a) online/CI specialize** | 2027 forecast: integrate with existing toolchains; not silent default | **GA SKU** | Only job we sell in year 1 with serving \(F\) |
 | **(b) offline heuristic synthesis** | Magellan vs MLGO (**C1**) | Out | Different buyer; Google's fight |
 | **(c) oracle PR review** | C7; llvm-harness / Archer | Out of GA; 50-person overlay comments on *kernel* PRs only | Generic SCM review is the wrong SKU |
 | **(d) ASIC bring-up / codesign** | C9; TritorX / Zomboss | Out | Needs a second shipping vendor and a coverage SLA; not Cake+DSH |
@@ -23,8 +34,8 @@ The **goal** is an agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Whethe
 | **C3-B** constrained actions hold (current lean) | Keep narrow enums | Sell as the safety story. |
 | **C4** Triton vs Tile vs Cake IR vs Argus | Surface fragments | Year-1 live L4 **face** is **Choreo**; Triton is the first **sink**. Another vendor = another printer / `adapter_id`, not a new Lintel IR. |
 | **C5** online vs freeze-before-serve | Vendors name ACF workflows in release notes | Integrate; we remain the cross-vendor admit/freeze layer. |
-| **C6-A** agents replace compilers | — | **Do not follow.** Wrong company. “Evolve during compilation” without two clocks *reads* as this cell ([SURVEY_MATCH.md](SURVEY_MATCH.md)). |
-| **C6-B** hybrid (current lean) | — | Stay. Kill switch if fallback is never drilled. |
+| **C6-A** agents replace compilers | The 23 Sep 2026 question is component-by-component, not a permanent ban | Year-1 keeps check, lower, fallback. One later component, one corpus. No model on serve ([SURVEY_MATCH.md](SURVEY_MATCH.md)). |
+| **C6-B** hybrid (current lean) | — | Year-1 application loop. Kill switch if fallback is never drilled. |
 | **C7** SCM AI vs compiler-oracle review | llvm-project grows oracle review | Optional year-2 plugin. Not year-1 GA. |
 | **C8** “AI compiler” sense | — | We are control plane, not a new Inductor. |
 | **C9** coverage vs peak | Second-vendor TritorX-class | Year 2+ if a 50-person overlay exists. |
@@ -32,9 +43,9 @@ The **goal** is an agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Whethe
 
 ## Techniques (T1–T10)
 
-Survey §5.8.4 highest-leverage missing parts: money-grade oracles (T2+T6), replayable artifacts (T3), portable agent compile interface (T1). Year-1 **is those three**, plus T5-lite (compiler PRs into `choreoir`, not mid-walk mutation) and T6 on one engine. Not a new IR.
+The current guide’s first priorities (§5.8.4, 23 September 2026) are a trustworthy application benchmark, a strong baseline, and a candidate/evaluation interface. The rows below are the older technique list. Year-1 still builds the typed interface (T1), layered admit (T2), replay (T3), and serving measurement (T6), plus compiler PRs into `choreoir` (the compiler half of T5). Controller self-improvement is not a T-row we ship; see [SURVEY_MATCH.md](SURVEY_MATCH.md).
 
-Direction vs full predicted stack: [SURVEY_MATCH.md](SURVEY_MATCH.md) (Horizon A / M1-lite; **not** joint L2–L7). Band walks: [ARCHITECTURE.md](ARCHITECTURE.md).
+Band names in [ARCHITECTURE.md](ARCHITECTURE.md) are our stack vocabulary.
 
 | T | Year-1 | Year-2 door |
 |---|---|---|
@@ -42,7 +53,7 @@ Direction vs full predicted stack: [SURVEY_MATCH.md](SURVEY_MATCH.md) (Horizon A
 | **T2** admit / fallback | Layered oracles + last_good / classical | SMT / Alive2 as `oracle` providers |
 | **T3** freeze + replay | Lintel IR `%k = cache_key(...)`; serve is `lookup(%k)` | Policy bundles |
 | **T4** in-tree advisors | Out | Out unless a customer funds job (b) |
-| **T5** dialect/ISA feedback | **Lite, two clocks:** inside a walk, `choreoir` is pinned; across jobs, recurring `{where}` → choreo PR → new `%k`. Not mid-walk `check.py` rewrite ([SURVEY_MATCH.md](SURVEY_MATCH.md)). | Intra-session **bundle** hashed in `%k`/`%w` ([LATER.md](LATER.md)); still not ISA RFCs |
+| **T5** dialect/ISA feedback | **Compiler half only:** inside a walk, `choreoir` is pinned; across jobs, recurring `{where}` → choreo PR → new `compiler_ver`. A procedure edit is a new `policy_id`, not this row. Not mid-walk `check.py` rewrite ([SURVEY_MATCH.md](SURVEY_MATCH.md)). | Verifier **bundle** classified as compiler, memory, or procedure ([LATER.md](LATER.md)); still not ISA RFCs |
 | **T6** serving A/B | One engine, partner traces | Second engine |
 | **T7** open multi-IR corpora | Out (not a data company) | Consume KernelBook-class data if it helps the Choreo adapter |
 | **T8** unified ladder | Refuse KernelBench as GA metric; partner ladder + cost-to-compile | Public method note, not a fake industry p50 |

@@ -1,6 +1,6 @@
 # Why Lintel IR (discussion, with examples)
 
-The **goal** is a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Classical data planes already compile and serve without us. This note is why that compiler needs a **control-plane IR**, what cash it moves, and how the Acme PoC shows that on survey L1–L7. Year-1 L4 face is [Choreo IR](https://github.com/zackc6/choreo) ([CHOREO.md](CHOREO.md)).
+The **goal** is a next-generation agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). Classical stacks already compile and serve. This note is why that compiler needs a **control-plane IR**, what cash it moves, and how the Acme PoC shows the year-1 application loop. Scope and the other two loops (compiler, controller): [SURVEY_MATCH.md](SURVEY_MATCH.md). Year-1 kernel face is [Choreo IR](https://github.com/zackc6/choreo) ([CHOREO.md](CHOREO.md)).
 
 E2E stack and the band map: [ARCHITECTURE.md](ARCHITECTURE.md). Survey direction vs stack: [SURVEY_MATCH.md](SURVEY_MATCH.md). Unit economics: [MARKET.md](MARKET.md). Executable IR: [POC.md](POC.md).
 
@@ -21,9 +21,9 @@ Torch → Inductor / Triton → PTX → SGLang or vLLM already lowers, serves, a
 | Cost is a comment after the fact | `cost` can skip L6 A/B before spend |
 | Plan is whatever the prompt emitted | Compile to ADG; policy owns the graph |
 
-The IR is **T1 + T2 + T3** (typed interface, layered admit, pin-at-`%k` + replay). It is not “how kernels compile.” Choreo is year-1 **L4** ([DATA_PLANE.md](DATA_PLANE.md)). Triton is the first **printer**. Cake IR / Tile are later adapters. `opt` still does **L3/L5**.
+The IR pins a typed proposal, layered admit, and replay at `%k`. It is not “how kernels compile.” Choreo is the year-1 kernel face ([DATA_PLANE.md](DATA_PLANE.md)). Triton is the first **printer**. Cake IR / Tile are later adapters. `opt` still does mid-IR and machine-code lowering.
 
-**Survey M3** (LLM replaces the compiler) is out. **YEAR1 M3** (Q3: two artifacts in partner git + replay) is a milestone, not that cell.
+The PoC walks in §4 are the **application** loop. A session log is memory. A choreo PR is the compiler loop. An automatic `promote` of `policy_id` is the controller loop, and it is not one of these walks ([SURVEY_MATCH.md](SURVEY_MATCH.md)). **YEAR1 M3** (Q3: two artifacts in partner git + replay) is a milestone name. It is not “the model replaces the compiler.”
 
 ## 2. What we benefit (cash language)
 
@@ -157,4 +157,4 @@ Lintel IR never lowers to CUDA. L3/L5 stay classical. L0 / job (b) never appears
 | Run | Walk ADG in CI | Measure / A/B |
 | Serve | Nothing | Load frozen cubin |
 
-Enough that the IR is not a shell script. Not InstCombine. Not survey M3.
+Enough that the IR is not a shell script. It is not InstCombine. Check and lowering stay classical on this path. The controller-development module, when it is eventually run, is a different program ([examples/later/controller-dev.sketch.lintel](../examples/later/controller-dev.sketch.lintel)).

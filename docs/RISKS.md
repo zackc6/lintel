@@ -6,8 +6,9 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 
 | Bet | Survey | If we are wrong |
 |---|---|---|
-| Hybrid control plane (C6-B) | Agents search; compilers lower/admit/fallback. The **goal** is this loop as an agentic compiler. | We are in the wrong business. Do not pivot to survey M3 (LLM-as-compiler). |
-| Two-clock T5 (Cake flavor) | Compiler evolves **across** jobs; `check` is pinned **inside** a walk | If “evolve during compilation” is read as mid-walk self-modify, we look like C6-A. Keep Undergo. |
+| Application loop with classical check, lower, and fallback | Year-1 of the agentic compiler. The goal also allows later, measured component replacement | Dropping the fallback to sound more agentic. Keep last_good. |
+| Compiler loop, two clocks | `check` is pinned **inside** a walk; a choreo PR changes `compiler_ver` **across** jobs | “Evolve during compilation” with no clock and no artifact name. Keep Undergo. |
+| Controller loop stays gated | Procedure changes are human `policy_id` edits until partner \(F\) and one compiler change exist | Selling self-evolving control IR in year 1. A log is memory, not a promote. |
 | Narrow actions (C3-B) | Cake/Argus/HintPilot beat free rewrite | Widen enums *behind* admit; keep oracles |
 | Multi-DSL (C4 open) | Triton stays primary; Tile/Cake/Argus rise | Adapters; portable schema was the hedge |
 | Freeze-before-serve (C5 path) | Commercial default is CI → artifact | If customers demand always-on LLM compile, charge lab-tier only |
@@ -26,9 +27,10 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 | Sales demo uses free CUDA rewrite **or** “we compiled Choreo” without F | Pull the demo. Constrained Kernel AST + serving delta. |
 | Choreo has no device sink by M2 | Live adapter falls back to degenerate Triton schedule knobs so a partner can still freeze. |
 | Roadmap slide says “replace Inductor” | Delete the slide. |
-| Sales/roadmap says “compiler evolves during compilation” without two clocks | Pull the sentence. Say: pin `check` inside a walk; choreo PR + new `%k` across jobs. Mid-walk `check.py` rewrite stays **forbidden** ([SURVEY_MATCH.md](SURVEY_MATCH.md)). |
-| Slide claims “e2e-optimal-seeking” / joint L1–L7 search | Delete. Year-1 is M1-lite: search L4, admit L6. |
-| “Agentic compiler” sold without classical check/lower, or with a model on serve | Pull the sentence. Goal is C6-B. M3 stays out ([ARCHITECTURE.md](ARCHITECTURE.md)). |
+| Sales/roadmap says “evolves during compilation” without naming the artifact and the clock | Pull the sentence. Compiler: pin `check` inside a walk; choreo PR + new `%k` across jobs. Controller: new `policy_id` after holdout, or a human edit. Memory: `memory_id`, same `%k`. |
+| Slide claims joint search over graph, kernel, communication, and placement as the year-1 product | Delete. Year-1 searches the kernel schedule and admits on serving measurement ([SURVEY_MATCH.md](SURVEY_MATCH.md)). |
+| “The controller improves itself” on a year-1 slide, or a session log presented as that result | Pull it. The module is [examples/later/controller-dev.sketch.lintel](../examples/later/controller-dev.sketch.lintel), behind the gate. |
+| “Agentic compiler” sold with a model on serve, or with no check and no fallback | Pull the sentence. Year-1 still checks, lowers, measures, and freezes ([ARCHITECTURE.md](ARCHITECTURE.md)). |
 
 ## Things that look like progress and are not
 
@@ -41,7 +43,9 @@ These are product policy, not a risk register for a slide. Each row is a survey 
 - Headcount 50 before M2 (partner A/B).
 - Two live adapters before the first partner canary.
 - A second GPU vendor in Q1 because the org chart asked for it.
-- Intra-session `check.py` rewrite sold as T5 (that is M3-adjacent).
+- Intra-session `check.py` rewrite sold as compiler evolution.
+- A session log, a retrieved example, or a human-edited CFG sold as controller self-improvement.
+- A controller comparison that also bumps the model or `choreoir` (the gain is not attributable).
 - “Not a fixed dialect” with only two allowlisted kernels and no fail corpus (process claim, not evidence).
 
 ## Year-2 doors we leave open (not commitments)

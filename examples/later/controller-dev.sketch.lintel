@@ -1,0 +1,63 @@
+// Controller-development sketch. Not lintel-ir.poc. Not a year-1 milestone.
+// Laws: docs/LINTEL_IR.md. Gate: docs/SURVEY_MATCH.md. Sequence: docs/LATER.md item 7.
+//
+// This module does not land a kernel and does not store a cubin.
+// promote publishes a policy_id. Later application jobs that pin it get a new %k.
+// Serve never interprets this module.
+//
+// Classification reminders:
+//   next kernel after {where: L}     application search, same policy_id
+//   longer session log, same rule    memory_id only
+//   new stopping / retrieval rule    this module's delta (procedure)
+//   new choreoir check rule          compiler_ver, a different experiment
+
+module @ctrl_dev_attn_stop version "lintel-ir.controller.v0-sketch" {
+
+  contract {                               // outside the edit. illegal to relax here
+    F          = "serving.tokens_per_s * quality_parity"
+    numerical  = { max_abs_err = 1e-3 }
+    gates      = [adapter, golden, numerical, cost, serving_ab]
+  }
+
+  pins {                                   // fixed for every arm (attribution)
+    hw       = "nvidia.b200.80gb"
+    compiler = "choreoir==0.1.0;triton==3.3.0+cu128"
+    model    = "vendor.frontier.2026-10-20"
+    baseline = @lintel.specialize.v0
+  }
+
+  arms {
+    fixed        = @lintel.specialize.v0
+    memory_only  = @lintel.specialize.v0 { memory_id = "snap.2026-11-01" }
+    procedure    = @lintel.specialize.v1
+    conventional = @config_search.v0      // same allowlisted slots, no model
+  }
+
+  candidate @lintel.specialize.v1 {
+    kind  = instructions                   // or retrieval_policy. nothing else
+    // illegal: agent_code, opcode, gate_set, F, check.py, compiler bump
+    delta = "after two layout rejects on one region, stop tile search and try the other allowlisted kernel"
+  }
+
+  families {
+    dev     = [attn.prefill.partner_a, gemm.partner_a]          // proposer may read these traces
+    holdout = [attn.decode.partner_b, gemm.partner_b]           // absent from dev traces
+  }
+
+  plan @evaluate {
+  ^dev:
+    // ordinary application modules, candidate policy, dev families only
+    // proposer may revise `delta` from these results
+    run specialize under candidate on dev
+  ^freeze:
+    freeze candidate @lintel.specialize.v1
+    // no further edits before holdout
+  ^holdout:
+    // matched per-job budget; disclose development usd separately
+    compare arms on holdout
+  ^decide:
+    promote @lintel.specialize.v1
+      // publishes policy_id. does not land. does not write store[%k]
+    | reject { reason = "no holdout gain after disclosed dev cost" }
+  }
+}

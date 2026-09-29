@@ -6,11 +6,11 @@ Lintel **codesigns** with Choreo; it does not contain it. The **goal** is an age
 
 | Topic | Pin |
 |---|---|
-| Goal | Next-generation **agentic compiler**. Agents search; compilers check/lower/measure; serve is freeze. Lintel is the control plane of that compiler. Survey is evidence, not the mission. [ARCHITECTURE.md](../../docs/ARCHITECTURE.md). |
-| Cake (1) IR / (2) lowering / (3) evolving harness | (1) Choreo face. (2) sink (TIRx/Triton/TileLang-Ascend). (3) **Lintel** routes; **choreoir** is the PR target. |
-| Undergo | Compiler PRs edit `choreoir`. After merge, `check`/print are ordinary functions, no LLM. Choreo does not self-modify during search. |
-| T5-lite | Recurring `{where}` → Lintel decides (allowlist / cal / tactic / choreo PR). Spec bump only when a sink already consumes the new op/space. |
-| Survey match | **Horizon A job (a) M1-lite**, not §5.1.3 joint L2–L7. Search only L4; L6 is \(F\)-oracle. Two clocks for T5. [SURVEY_MATCH.md](../../docs/SURVEY_MATCH.md). |
+| Goal | Next-generation **agentic compiler** for frontier serving. Year-1: allowlisted kernel, classical check/lower, freeze. Wider decision areas open on a profile. [ARCHITECTURE.md](../../docs/ARCHITECTURE.md). |
+| Cake (1) IR / (2) lowering / (3) outer loops | (1) Choreo face. (2) sink (TIRx/Triton/TileLang-Ascend). (3) **Lintel**: application admit now; compiler PRs on `choreoir`; controller `promote` later and gated. |
+| Undergo | Compiler PRs edit `choreoir` (`compiler_ver`). After merge, `check`/print are ordinary functions, no LLM. Choreo does not self-modify during search. |
+| Three identities | Application digest at `%k`. `compiler_ver` = compiler. `policy_id` = procedure. `memory_id` = logs, outside `%k`. `%w` = frozen ADG, not the controller. |
+| Survey match | 23 Sep 2026 judgment: scope + three loops. Year-1 stays kernel search + freeze. Controller self-improvement is specified, not a milestone. [SURVEY_MATCH.md](../../docs/SURVEY_MATCH.md). |
 | vs Cake/TIRx as compilers | v0.1 `print_triton` ignores `Barrier`/`Pipeline.depth`. Worse compiler until a sink **consumes** the schedule. Not a worse *face*. |
 | GPU + Ascend | Two sinks, not one averaged AST. Sequence: one kernel, one target, real binary, **then** the second. `@tilelang.ascend` later; not year-1 live. |
 | `%k` / target | `hw_id` + `compiler_ver` + `adapter_id` already admit. Do not add `Kernel.target` as a fifth key. |
@@ -31,14 +31,15 @@ Full prose: [docs/CHOREO.md](../../docs/CHOREO.md). Survey match: [docs/SURVEY_M
 | Naming the control-plane IR AdmitIR / LandIR / SpecIR / ReplayIR | **Lintel IR**. Cake IR is a *later* adapter wrap, not the SKU. Year-1 data plane is a **Choreo Kernel AST** |
 | Fork Cake IR or DeepSeek Harness as the product | Seams + Lintel IR; take mechanisms, not brands. “Cake v2 the language” is C4. Choreo is the L4 face in a **sibling** repo — do not vendor it here |
 | Folding CFG / cost / T10 into “later because 10 people” | Year-1 executable is docs/POC.md. Coverage is LATER.md. Linear v0 is degenerate |
-| Treating Lintel IR as the IR an LLM rewrites (Meta Compiler / neural compile) | Control IR stays above data-plane bands. Selector on SLA. [LLM_IR.md](../../docs/LLM_IR.md) |
+| Treating Lintel IR as the IR an LLM rewrites (Meta Compiler / neural compile) | Control IR is the procedure. Selector on SLA. [LLM_IR.md](../../docs/LLM_IR.md) |
 | Collapsing “LLM-oriented IR” into one PL band, or copying ai-compiler-survey | Four kinds: program / decision / freeze / control. Independent cut: [LLM_ORIENTED_IR.md](../../docs/LLM_ORIENTED_IR.md). The other survey’s pins stay in LLM_IR.md |
 | Copying zackc6/choreo into this tree | Link it; pin `choreoir` in `compiler_ver`. Verdict + comparison: [CHOREO.md](../../docs/CHOREO.md) |
 | Averaging Cake IR + Argus tags + TIRx D/R/O into one dialect | Copy *signals*, pick one cell per fight. TIRx ≠ TritorX |
-| Treating T5-lite as Choreo rewriting itself at search time | Lintel decides; PRs edit `choreoir`; after merge `check`/print are ordinary functions. Two clocks. [CHOREO.md](../../docs/CHOREO.md) Undergo |
-| Selling “evolve during compilation” without two clocks | Inside a walk = pinned `check`. Across jobs = T5. Mid-walk self-modify = M3. [SURVEY_MATCH.md](../../docs/SURVEY_MATCH.md), [RISKS.md](../../docs/RISKS.md) |
-| Calling year-1 “the e2e-optimal-seeking architecture” | M1-lite on **one** band. No L2/L3/L7 proposals yet. |
-| Selling “agentic compiler” as LLM-as-`opt` | Agents own **search**. Compilers still own legality and codegen. Serve has no model. |
+| Treating a choreo PR, a session log, or a human CFG edit as one “self-evolving control plane” | Name the artifact: `compiler_ver`, `memory_id`, or `policy_id`. Automatic `promote` is the controller sketch and is gated. [SURVEY_MATCH.md](../../docs/SURVEY_MATCH.md) |
+| Selling “evolve during compilation” without an artifact and a clock | Inside a walk = pinned `check` and pinned `policy_id`. Across jobs = new `%k`. [CHOREO.md](../../docs/CHOREO.md) Undergo, [RISKS.md](../../docs/RISKS.md) |
+| Calling year-1 the joint-search architecture, or freezing kernel-only search as the goal | Year-1 searches the kernel schedule. Other decision areas open when the profile says so. [SURVEY_MATCH.md](../../docs/SURVEY_MATCH.md) |
+| Selling “agentic compiler” as a model on serve, or as check/fallback removed | Year-1 still checks, lowers, measures, and freezes. Serve is `lookup(%k)`. |
+| Pulling controller self-improvement into Q1–Q4 because the survey named it | The survey also says it is last, unproven at application level, and gated on the other two loops. |
 | Unifying NVIDIA `tmem` and Ascend `L0C` in one enum | Two sinks; spaces/roles valid-for-`hw_id`. Do not dual-track Ascend in Q1 |
 | Adding `Kernel.target` into `%k` | Admission against `pins.hw_id`. `%k` stays graph, hw, compiler, adapter, policy |
 | Racing Cake/TIRx on peak, or 1.144× from `role` | Face + freeze SKU. Demo is serving \(F\). `@cake.v0` / `@tirx.v0` / `@tilelang.ascend` are later wraps |

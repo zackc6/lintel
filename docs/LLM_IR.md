@@ -14,7 +14,7 @@ Their three strata (NL / high-level PL / LLVM IR+ASM) are **too coarse** for us.
 |---|---|---|
 | **Design philosophy** | Selector / Translator / Generator | SLA `propose` is **Selector** (allowlisted **Choreo Kernel**). Translator (`paste_cuda`, free LLVM/Triton rewrite) is **illegal on SLA**. Generator-lite = the **inspectable Kernel JSON**, then `check` + printer. Magellan-class Generator (new passes) is job (b) — **out**. |
 | **LLM methodology** | Training-required (IR-LLM, SFT/RL) vs training-free (prompt/agent) | Year-1 `llm` seam is **training-free**. A Meta-Compiler-class IR model is a later **provider**, not a new Lintel IR. Their “locked-in to one IR task” warning is our **P12**. |
-| **Abstraction** | NL · PL · LLVM IR/ASM; intra-level vs cross-level (compile/decompile) | Lintel IR sits **above** all three. NL = commentary only. PL payload year-1 = **Choreo Kernel AST**, not CUDA/Triton source. LLVM IR/PTX = classical **L0/L5**. Cross-level “LLM is the compiler” (C→x86, decompile) is **survey M3** — out. |
+| **Abstraction** | NL · PL · LLVM IR/ASM; intra-level vs cross-level (compile/decompile) | Lintel IR sits **above** all three. NL = commentary only. PL payload year-1 = **Choreo Kernel AST**, not CUDA/Triton source. LLVM IR/PTX = classical machine code. Cross-level “LLM is the compiler” (C→x86, decompile) stays out of year 1. |
 | **Task / metric** | Transpile CA@k, KernelBench vs eager, LLVM `-Oz` size, BLEU | SKU metric stays serving **\(F\)** ([WHY.md](WHY.md)). Their own §4: LLM-as-`opt` on LLVM IR still does **not** beat classical compilers on perf/cost/scale. |
 
 ---
@@ -29,7 +29,7 @@ Their three strata (NL / high-level PL / LLVM IR+ASM) are **too coarse** for us.
 
 4. **Do not import LEGO-Compiler decomposition** (basic-block split for neural compile). That helps translation, not joint \(F\)-search. Our scale cut is Amdahl `triage` on a **region**, already in the PoC CFG.
 
-5. **Self-improving = T5-lite, not a new `opt`.** Recurring `{where}` → Lintel decides (tighter allowlist, cost-cal, tactic) and, when the compiler must change, a **PR into `choreoir`** (new `check` rule or a sink that consumes the schedule). After merge, `check` / print are ordinary functions — no LLM. The agent does not mutate the dialect at runtime. Do not staff “Translator finds a trick → we emit a new LLVM pass.” Spec: [CHOREO.md](CHOREO.md) Undergo.
+5. **Three improvement targets, three identities.** A new Kernel under the same policy is application search (`land` at `%k`). A new `check` rule or a sink that consumes the schedule is a **PR into `choreoir`**, then a new `compiler_ver` ([CHOREO.md](CHOREO.md) Undergo); after merge, `check` / print are ordinary functions. A new stopping rule, allowlist, or retrieval policy is a new `policy_id`. A longer log under the same retrieval rule is `memory_id` and is not a controller change. Automatic `promote` of a `policy_id` is specified and gated ([SURVEY_MATCH.md](SURVEY_MATCH.md)). The agent does not mutate the dialect at runtime. Do not staff “Translator finds a trick → we emit a new LLVM pass.”
 
 ---
 

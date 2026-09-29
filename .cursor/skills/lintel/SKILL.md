@@ -9,7 +9,7 @@ description: >-
 
 # Lintel (this repo)
 
-**Goal:** a next-generation **agentic compiler** (agents search and propose; compilers check, lower, and measure; serve is a frozen binary). Picture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+**Goal:** a next-generation **agentic compiler** for frontier serving (choose actions, synthesize, evaluate under a fixed contract, freeze a binary). Year-1 searches the kernel schedule with classical check and lowering. Scope and the three loops (application, compiler, controller): [docs/SURVEY_MATCH.md](docs/SURVEY_MATCH.md). Picture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 This repo is the year-1 **plan** for **Lintel** (the control plane of that compiler). It is not the cubin sink, not Choreo, and not a copy of the survey.
 
@@ -46,7 +46,7 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 |---|---|
 | `docs/WHY.md` | Why the IR (it already compiles without us); \(F\), tokens, walks |
 | `docs/PRODUCT.md` | SKU |
-| `docs/ARCHITECTURE.md` | **Goal picture** (agentic compiler). Seams / FSM / L1–L7 walks. Survey *prediction* pointer → SURVEY_MATCH |
+| `docs/ARCHITECTURE.md` | **Goal picture** (agentic compiler). Seams / FSM / today’s stack. Three loops. Survey judgment → SURVEY_MATCH |
 | `docs/DATA_PLANE.md` | Choreo Kernel AST as year-1 L4; Triton is the printer, **not** Cake v2 the language |
 | `docs/CHOREO.md` | Verdict + vs Cake / Argus / TIRx; Undergo (Lintel decides, PRs land on choreoir). Do not copy zackc6/choreo here |
 | `docs/LLM_IR.md` | New Compiler Stack (Selector / stratum) → year-1 pins. Do not make Lintel IR an LLVM-IR LLM |
@@ -55,15 +55,15 @@ User override only: if they **explicitly** ask for a branch/PR, then follow that
 | `docs/YEAR1.md` | 10/25/50, quarters, GTM |
 | `docs/MARKET.md` | Value, pricing, competitors |
 | `docs/RISKS.md` | Kill switches |
-| `docs/SURVEY_MATCH.md` | Survey *direction* (Horizon A, M1-lite) vs *stack*. Two-clock T5. Do not copy the survey tree. |
+| `docs/SURVEY_MATCH.md` | Judgment vs the 23 Sep 2026 survey: scope, three loops, what stays year-1. Wins over older M1/T5 slogans. Do not copy the survey tree. |
 | `docs/SURVEY_MAP.md` | P/T/C → year-1 choice |
 | `docs/ADMIT_RECORD.md` | Annotated admit record for humans |
-| `docs/LINTEL_IR.md` | Lintel IR laws (`%k`, land / revert / reject) |
+| `docs/LINTEL_IR.md` | Lintel IR laws (`%k`, land / revert / reject, `policy_id` vs `memory_id` vs `compiler_ver`) |
 | `docs/POC.md` | Year-1 executable: CFG + cost + ADG **and** Choreo Kernel. Do not start with linear-only or Triton knobs |
-| `docs/LATER.md` | Coverage after PoC. Not delayed by a 10-person cap |
+| `docs/LATER.md` | Coverage after PoC (`%w` is the ADG, not the controller). Controller-dev sketch is gated. Not delayed by a 10-person cap |
 | `schemas/` `examples/` | v0 linear (degenerate), poc CFG+Choreo Kernel, later coverage |
 
-Keep the hybrid bet: the *goal* is the agentic compiler; this product is admit + freeze + replay so that loop can ship. Cake and DeepSeek Harness are **mechanisms**, not forks. Year-1 L4 is Choreo Kernel AST, not Cake IR and not Triton knobs.
+Keep the bet: the *goal* is the agentic compiler; year-1 ships admit + freeze + replay on one kernel surface. Cake and DeepSeek Harness are **mechanisms**, not forks. Year-1 kernel face is Choreo Kernel AST, not Cake IR and not Triton knobs. Do not pull controller self-improvement or a second decision area into the year-1 milestones.
 
 ## Codesign (Lintel × Choreo)
 
@@ -75,7 +75,7 @@ Cake (arXiv:2608.12629) splits in three. Only one is a Lintel object:
 |---|---|
 | (1) Typed IR the agent edits | **Choreo** Kernel AST (kind 1). Year-1 SLA still two allowlisted records (kind-2 cardinality). |
 | (2) Lowering that **derives** barrier addresses, phase bits, TMEM offsets, then emits a cubin/NPU bin | **Sink**, not this repo. Wrap TIRx/Triton/CUTLASS (`@tirx.v0`) or TileLang-Ascend (`@tilelang.ascend`). `print_triton` that comments `Pipeline.depth` is **not** a sink. |
-| (3) Outer loop: evidence → new gate / cost cal / tactic / compiler PR → freeze | **Lintel** (kind 4 + kind 3). Merge gate, workload contract, `%k`, serving \(F\). |
+| (3) Outer loops: application admit, compiler PRs, and (later) a controller `promote` | **Lintel** (kind 4 + kind 3). Year-1 runs application admit only. Compiler PRs are `compiler_ver`. Procedure edits are `policy_id`. Logs are `memory_id`. |
 
 **Undergo:** Choreo is the *artifact that changes*, not the process that decides. Compiler evolution = PRs into `choreoir` (`check.py`, a printer that consumes the schedule, occasional AST spec bump). After merge, `check` / lower are ordinary functions: Kernel in, findings or a binary out. **No LLM on that path.** Choreo does not notice recurring fails, does not land/revert/freeze/\(F\), and the agent does not mutate the dialect at runtime. Lintel runs the loop and merges the PR.
 
@@ -88,7 +88,9 @@ Cake (arXiv:2608.12629) splits in three. Only one is a Lintel object:
 - Beat Cake on NVIDIA KDA / 400-shape KNN. Wedge is vendor-neutral freeze + (later) GPU+Ascend SKU. Ascend bar is TileLang-Ascend / Ascend C (~0.95–1.0× FA), not Cake.
 - Claim Cake’s 1.144× from `role`, or \(F\) from `check() == []`.
 - Race TIRx/Cake as a compiler company. Demo is serving \(F\). M2 kill: no cubin sink → `@triton.v0` knobs.
-- Rewrite `check.py` (or add a keyword) inside one ADG walk. That is M3-adjacent. T5 is a choreo PR **across** jobs, then a new `%k`.
+- Rewrite `check.py` (or add a keyword) inside one ADG walk. A compiler change is a choreo PR **across** jobs, then a new `compiler_ver` and a new `%k`.
+- Call a session log, a human-edited CFG, or a choreo PR “the control plane evolving itself.” Those are memory, a `policy_id` edit, and a compiler change. Automatic `promote` is `examples/later/controller-dev.sketch.lintel`, and it is gated.
+- Treat L1–L7 as a layer count the survey still requires, or year-1 kernel search as the permanent scope. Widen-when rules are in SURVEY_MATCH.
 - Treat the mission as “don’t copy the survey.” That is hygiene. The goal is the agentic compiler.
 
-T5-lite = this loop, not “Choreo self-improves.” **Two clocks:** pin `choreoir` *inside* an ADG walk; evolve it *across* jobs (PR → new `%k`). Mid-walk `check.py` rewrite is M3-adjacent and forbidden. Survey match: [docs/SURVEY_MATCH.md](docs/SURVEY_MATCH.md). TIRx ≠ TritorX.
+**Three loops.** Application: pinned policy, `land`/`revert` under `%k`, serve is `lookup`. Compiler: pin `choreoir` inside a walk; PR across jobs. Controller: offline, compiler and model pinned, `promote` a `policy_id` or `reject`; not year-1. Survey judgment: [docs/SURVEY_MATCH.md](docs/SURVEY_MATCH.md). TIRx ≠ TritorX.

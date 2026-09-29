@@ -1,9 +1,9 @@
 # Product thesis
 
-**Last updated:** 2026-08-27  
-**Horizon:** year 1 lands ~2027-08 (survey Horizon A, 2027–28)
+**Last updated:** 2026-09-29  
+**Horizon:** year 1 lands ~2027-08. That sits in the survey’s one-year window: kernel search and diagnosis integrated with existing toolchains, conventional backends still in the path ([SURVEY_MATCH.md](SURVEY_MATCH.md)).
 
-**Goal:** a next-generation **agentic compiler** — agents search and propose; compilers check, lower, and measure; serve is a frozen binary. Picture: [ARCHITECTURE.md](ARCHITECTURE.md). Lintel is the control plane of that compiler. Choreo is the typed kernel. Lowering is a classical sink. The survey is evidence for the year-1 slice, not the mission.
+**Goal:** a next-generation **agentic compiler** for frontier serving. It chooses actions, synthesizes implementations, evaluates them under a fixed contract, and freezes a binary. Picture: [ARCHITECTURE.md](ARCHITECTURE.md). Lintel is the control plane. Choreo is the typed kernel. Lowering is a classical sink. Year-1 searches the kernel schedule only; graph, communication, and placement open when a profile says the kernel row is not the limit. The controller’s own procedure is human-owned in year 1.
 
 ## The gap we sell
 
@@ -15,7 +15,7 @@ Vendors already ship **data planes** (Inductor, XLA, Triton, TensorRT-LLM, Flash
 4. A **layered admit + deterministic fallback** that release engineering will trust — survey T2 / C6-B / P5.
 5. A **freeze-before-serve** artifact (control file / kernel / schedule) with cache keys — survey T3 / P4.
 
-That joint is how we **ship** the agentic compiler. The lowering compiler stays classical. The agent stays a searcher. The **sold** layer is Lintel (control) plus the year-1 Choreo adapter contract, not a cubin company and not a survey recap. Survey match: **Horizon A / job (a) / M1-lite**, not joint search over L2–L7 ([SURVEY_MATCH.md](SURVEY_MATCH.md)).
+That joint is how we **ship** the year-1 slice. Check and lowering stay classical. The sold layer is Lintel plus the Choreo adapter contract. The survey match for scope and for the three loops is [SURVEY_MATCH.md](SURVEY_MATCH.md).
 
 ## Why not “fork Cake + fork DeepSeek Harness”
 
@@ -25,7 +25,7 @@ That joint is how we **ship** the agentic compiler. The lowering compiler stays 
 | Ship Choreo as the company | Same C4 kill if the demo is “we compiled Choreo” and there is no device sink / serving F. |
 | Ship DeepSeek Harness as the product | DSH is a generic coding-agent runtime. Star count ≠ compiler-oracle evidence (**C7**). Customers will not put serve-path kernels on “the model looked at the diff.” |
 | Fine-tune a kernel LLM and sell chat | One-shot KernelBench success stays low; fusion is hard; **C2** needs median/p50 on pinned traces + cost-to-compile. Chat is a *view*, not the SKU. |
-| Replace `opt` / Inductor | Survey **rejects M3 through Horizon B**. Release eng will not buy it. |
+| Replace `opt` / Inductor in year 1 | Release engineering buys a frozen artifact with a fallback. A later component replacement is a separate corpus experiment ([SURVEY_MATCH.md](SURVEY_MATCH.md)). |
 
 **Take the mechanisms, not the brands.**
 
@@ -50,7 +50,7 @@ That joint is how we **ship** the agentic compiler. The lowering compiler stays 
 | Deterministic fallback to the last good artifact or classical path | LLM on the serve hot path |
 | Replay pack: same cache key after model or compiler upgrade | A promise of unique global e2e optimum |
 
-**Fitness \(F\) we optimize (survey §5.1.3).** Not \(\sum\) local microbench. Year-1 \(F\) is a constrained front the customer names: typically **serving tokens/s (or TTFT) · quality parity · $/compile**. Energy and cluster util are recorded, not required for GA.
+**Fitness \(F\) we optimize (survey §5.1.1, frontier serving segment).** Year-1 \(F\) is the customer’s application contract: typically **serving tokens/s (or TTFT) · quality parity · $/compile**. A faster kernel counts only to the extent the serving path moves. Energy and cluster util are recorded, not required for GA. Search cost is on the admit record from the first freeze; making search cheaper is a later result, after a reused win exists.
 
 **Commercial packaging (survey §5.7 checklist).**
 
@@ -82,7 +82,9 @@ They will not pay for: a better chat window, a research IR, or “we beat hipBLA
 - Job (d) ASIC bring-up / Zomboss-class mapping (**C9** needs a second shipping vendor; out of this SKU).
 - Autonomous tape-out (**C10** — survey rejects).
 - Multi-month *default-path* A/B as a marketing claim (**C2** still open industry-wide; we *instrument* it, we do not claim settlement).
-- Coverage items in [LATER.md](LATER.md) (`%w` as a second key, placement, multi-SKU) before the [PoC](POC.md) ADG walk is real.
+- Coverage items in [LATER.md](LATER.md) (`%w` as the ADG digest, placement, multi-SKU) before the [PoC](POC.md) ADG walk is real.
+- Automatic controller improvement (propose / freeze / holdout / `promote`). Humans may edit `policy_id`. The self-evolving module waits on the gate in [SURVEY_MATCH.md](SURVEY_MATCH.md).
+- A second decision area (fusion, communication, placement) before a profile shows the kernel row is not the limit.
 
 ## Survey commercial checklist (year-1 status)
 

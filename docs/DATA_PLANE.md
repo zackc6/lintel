@@ -1,8 +1,8 @@
 # Data plane — Choreo Kernel AST, not a cubin company
 
-The **goal** is an agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). **Control plane** (Lintel IR) is the year-1 PoC: CFG, `cost`, frozen ADG. That IR **does not compile kernels**. It only says *whether* to search, *which* allowlisted kernel to try, *when* to stop, and *what* to pin.
+The **goal** is an agentic compiler ([ARCHITECTURE.md](ARCHITECTURE.md)). **Control plane** (Lintel IR) is the year-1 PoC: CFG, `cost`, frozen ADG. That IR **does not compile kernels**. It says *whether* to search, *which* allowlisted kernel to try, *when* to stop, and *what* to pin. The procedure those rules implement is `policy_id`. Changing it automatically is a different module ([SURVEY_MATCH.md](SURVEY_MATCH.md)).
 
-**Data plane** is L4. Year-1 live face is **[Choreo IR](https://github.com/zackc6/choreo)** — a typed kernel choreography AST. Pros, cons, and remaining work: [CHOREO.md](CHOREO.md). **Lowering** is a classical sink (GPU cubin or NPU binary). Triton / Tile / HIP / Cake IR are **sinks or later adapters**, not the agent-facing IR.
+**Compiler substrate** (this file’s “data plane”) is the kernel schedule in year 1. The survey no longer requires a fixed L1–L7 layer count; L4 is our name for that schedule. Live face: **[Choreo IR](https://github.com/zackc6/choreo)** — a typed kernel choreography AST. Pros, cons, and remaining work: [CHOREO.md](CHOREO.md). **Lowering** is a classical sink (GPU cubin or NPU binary). Triton / Tile / HIP / Cake IR are **sinks or later adapters**, not the agent-facing IR.
 
 ---
 

@@ -72,11 +72,31 @@ cache_key_digest = sha256(canonical_json)
 | In `%k` | Out of `%k` |
 |---|---|
 | This graph on this HW / compiler / adapter / policy | `model_id` (audit) |
+| `policy_id` versions the **decision procedure** (gates, \(F\), search rules, retrieval policy) | `memory_id` — stored traces the same procedure reads. Audit on the admit record |
 | | `enum_id` / kernel bytes (value *at* the key) |
 | | **`Kernel.target`** — admission is `pins.hw_id`, not a fifth key |
 | | commentary, SSA temps, `$/compile` |
 
-**Replay law.** Same `%k` ⇒ same terminator and, if `land`, same digest. Else **hard fail**. Model swap + same policy = same `%k`. Compiler bump = new `%k` (must re-land).
+**Replay law.** Same `%k` ⇒ same terminator and, if `land`, same digest. Else **hard fail**. Model swap + same policy = same `%k`. Compiler bump **or** `policy_id` bump = new `%k` (must re-land). A new `memory_id` under the same `policy_id` is the same `%k`, and it does not authorize a second digest. Memory may change proposals only on a key that has not yet landed. A re-interpret that disagrees still hard-fails.
+
+## Three artifacts the control plane versions
+
+The opcodes in this document are the application loop. The compiler loop and the controller loop are not extra opcodes on that walk. Judgment: [SURVEY_MATCH.md](SURVEY_MATCH.md).
+
+| Edit | Persists as | Year-1 |
+|---|---|---|
+| Next allowlisted Kernel after `{where: L}` | Application digest at `%k` | The PoC |
+| Append a fail to the session log; same retrieval rule | `memory_id` (not in `%k`) | Log it. Do not call it a new controller |
+| Human edits the CFG, the allowlist, or the stopping rule | New `policy_id`, new `%k` | Allowed. This is engineering, not self-evolution |
+| Automatic propose → freeze → holdout → `promote` of a `policy_id` | New `policy_id` | **Specified, not built.** Sketch below |
+| New `check` rule or a sink that consumes `Pipeline.depth` | New `compiler_ver`, new `%k` | Process: [CHOREO.md](CHOREO.md). Not a mid-walk rewrite |
+| Relax \(F\) or `max_abs_err` so a candidate passes | — | Illegal for every automatic loop. A human may open a new experiment with a new contract |
+
+`promote` is not `land`. `land` stores an application digest. `promote` publishes a procedure that later application jobs may pin. Serve never interprets a controller-development module.
+
+The first automatic delta is reusable **instructions** or the **retrieval policy**. It is not agent code, not a new opcode, not `check.py`, and not the contract. Compiler pin and model pin stay fixed for the comparison (attribution). Development traces exclude the holdout families. Four arms, matched per-job budget: fixed policy, fixed policy plus memory only, frozen procedure, conventional search on the same slots.
+
+Sketch (not `lintel-ir.poc`, no schema change in year 1): [examples/later/controller-dev.sketch.lintel](../examples/later/controller-dev.sketch.lintel). Entry conditions: [LATER.md](LATER.md).
 
 **Serve.** `lookup(%k)`. Miss or hard-fail → last_good or classical. No LLM.
 
@@ -148,10 +168,11 @@ Serve still `lookup(%k)` → previous digest.
 
 | When | Work |
 |---|---|
-| **Now** | Linear v0 (degenerate) + [PoC](POC.md) CFG/cost/ADG + Choreo Kernel AST |
+| **Now** | Linear v0 (degenerate) + [PoC](POC.md) CFG/cost/ADG + Choreo Kernel AST. Humans own `policy_id` |
 | **Q1** | Compile PoC module → ADG; interpret ADG; `store[%k]`; replay; `adapter_gate` `{where: W\|L\|S\|V}` |
 | **Q3** | Second adapter = new enum / `adapter_id` (new keys), not a new IR |
-| **After PoC exit** | Coverage: `%w`, policy-hash, more edges ([LATER.md](LATER.md)). Same kernel `%k` |
+| **After the gate in SURVEY_MATCH** | Controller-development sketch may be run. Not a schema bump of `lintel-ir.poc` |
+| **After PoC exit** | Coverage: `%w` as the ADG digest, policy-hash, more edges ([LATER.md](LATER.md)). Same kernel `%k` fields |
 
 ## Non-goals
 

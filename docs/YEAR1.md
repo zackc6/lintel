@@ -1,6 +1,6 @@
 # Year-1 plan (doable, commercial)
 
-**Goal:** ship a next-generation agentic compiler as a product: Lintel walks specialize, Choreo is the typed kernel, a sink emits the binary, serve is freeze ([ARCHITECTURE.md](ARCHITECTURE.md)).
+**Goal:** ship the year-1 slice of a next-generation agentic compiler: Lintel walks one specialize job, Choreo is the typed kernel, a sink emits the binary, serve is freeze ([ARCHITECTURE.md](ARCHITECTURE.md)). Wider scope and the controller loop are judged in [SURVEY_MATCH.md](SURVEY_MATCH.md) and are not extra Q1–Q4 milestones.
 
 **Clock:** 12 months from kickoff (~2026-09 → 2027-08).  
 **IR:** Build the [PoC](POC.md) first — CFG + cost-as-gate + compile-to-ADG on one region, **and** a Choreo Kernel AST + `adapter_gate` `{where: W|L|S|V}` ([DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). Linear `lintel-ir.v0` and Triton `num_warps` knobs are degenerate, not the Q1 target. Staffing does not cap that set.
@@ -70,7 +70,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 | 9–10 | Cache key + replay after an intentional model-id swap; ADG digest pinned | Replay hard-fails on silent decision or ADG change |
 | 11–12 | Fallback fire-drill; solutions has a named partner candidate | M1: freeze + fallback + replayable log + ADG + Kernel AST in the admit record |
 
-**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT in lintel, AMD-as-second-live-adapter, a second live GPU vendor, an IR-LLM / neural compile path, vendoring `choreoir/` here. **Do** build CFG, cost, ADG compile, and the Choreo adapter_gate ([POC.md](POC.md), [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). Serving A/B nodes in the CFG may stub until Q2 / printer — do not stub `cond`, `cost`, or `adapter_gate`.
+**Do not build in Q1:** web IDE, multi-agent swarms, Cake IR as the SKU, SMT in lintel, AMD-as-second-live-adapter, a second live GPU vendor, an IR-LLM / neural compile path, vendoring `choreoir/` here, the controller-development module, a second decision area (fusion, communication, placement). **Do** build CFG, cost, ADG compile, and the Choreo adapter_gate ([POC.md](POC.md), [DATA_PLANE.md](DATA_PLANE.md), [CHOREO.md](CHOREO.md)). Serving A/B nodes in the CFG may stub until Q2 / printer — do not stub `cond`, `cost`, or `adapter_gate`. Humans may edit `policy_id`; an automatic `promote` is not a Q1 exit.
 
 ## Quarter plan (critical path)
 
@@ -85,7 +85,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 **Do not build**
 
-- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT in lintel. A *second* GPU vendor. Dual live L4. IR-LLM pretrain / neural compile. Vendoring `choreoir/` here.
+- Web IDE. Multi-agent swarms. Cake IR as the SKU. SMT in lintel. A *second* GPU vendor. Dual live L4. IR-LLM pretrain / neural compile. Vendoring `choreoir/` here. Controller-development runs. A second decision area (fusion, communication, placement).
 
 **Exit**
 
@@ -97,7 +97,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 
 - Amdahl triage on a **warm** server (GEAK v4 pattern: do not burn search on cold kernels).
 - Serving seam: shadow or A/B + **output parity** on the chosen engine.
-- T5-lite: Lintel routes recurring `{where}` into a **choreo PR** (new `check` rule or a printer that consumes the schedule), human-merged, `compiler_ver` bumped ([CHOREO.md](CHOREO.md) Undergo).
+- Compiler loop, when a fail class recurs: Lintel routes it into a **choreo PR** (new `check` rule or a printer that consumes the schedule), human-merged, `compiler_ver` bumped ([CHOREO.md](CHOREO.md) Undergo). A tighter allowlist is a `policy_id` bump, not that PR. Do not start controller-development runs in Q2.
 - Artifact cache keys + partner-facing replay pack.
 
 **Staffing note.** If you can hire toward 15, the extra five go to solutions + serving oracles, not a second IR.
@@ -132,7 +132,7 @@ If you only have **six** people: 1 founder-eng, 2 control-plane, 1 adapter, 1 or
 **Exit (GA)**
 
 - Commercial definition of done above.
-- Written **no** list for year 2 so sales cannot sell job (d) or survey M3 (LLM-as-compiler). YEAR1 M3 (Q3 replay) is in-scope.
+- Written **no** list for year 2 so sales cannot sell job (d), a model on serve, or controller self-improvement as a shipped feature. YEAR1 M3 (Q3 replay) is in-scope. The controller sketch stays behind its gate ([SURVEY_MATCH.md](SURVEY_MATCH.md)).
 
 **25 / 50 overlays** (same year, only if funded — not an IR gate)
 
@@ -177,4 +177,4 @@ Overnight/CI specialize is the default. Interactive search is a labeled lab tier
 ## What we will say in the Q4 launch post
 
 Honest: “Hot-path specialize with admit and freeze, on Choreo→Triton and [engine], for teams that already own their serving stack.”  
-Forbidden: “We replace your compiler.” “Agents are now the default.” “Faster than cuBLAS on everything.”
+Forbidden: “We replace your compiler.” “Agents are now the default.” “The control plane improves itself.” “Faster than cuBLAS on everything.”

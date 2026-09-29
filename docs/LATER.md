@@ -1,6 +1,6 @@
 # Coverage after the PoC
 
-The [PoC](POC.md) is the hard kernel on **one** graph. This file is how that kernel grows. Not survey M3. Serve stays `lookup(%k)`. Staffing does not delay these; sequence them by **dependency**, not by headcount.
+The [PoC](POC.md) is the hard kernel on **one** graph. This file is how that kernel grows. Serve stays `lookup(%k)`. The controller-development module is item 7 and stays behind the gate in [SURVEY_MATCH.md](SURVEY_MATCH.md). Staffing does not delay the earlier items; sequence them by **dependency**, not by headcount.
 
 ## Already in the PoC (do not redo)
 
@@ -8,16 +8,19 @@ CFG with `cond`, `cost` as a gate, compile module → ADG, interpret ADG, `%k` r
 
 ## Extend in this order
 
-### 1. Controller key `%w` (next)
+### 1. Workflow key `%w` (next)
 
-PoC freezes an ADG digest beside the admit record. Coverage makes that a first-class key:
+PoC freezes an ADG digest beside the admit record. Coverage makes that a first-class key. `%w` is the **compiled application workflow**, not the controller and not the memory snapshot.
 
 | Key | Fields | Artifact |
 |---|---|---|
-| `%k` | graph, hw, compiler, adapter, policy | Kernel digest |
-| `%w` | controller, policy, oracle bundle, \(F\), budget | ADG |
+| `%k` | graph, hw, compiler, adapter, `policy_id` | Application digest |
+| `%w` | that same procedure, oracle bundle, \(F\), budget | ADG |
+| `memory_id` | session / retrieval snapshot the procedure read | Audit only. Outside `%k` and `%w` |
 
-Triton/choreoir bump → new `%k`. Gate set / \(F\) / budget bump → new `%w` (and new `%k`, because `policy_id` is in `%k`).
+`policy_id` **is** the controller procedure version. It already sits inside `%k`. Do not invent a second name for it and call that `%w`.
+
+Triton/choreoir bump → new `compiler_ver` → new `%k`. A procedure bump (gates, \(F\), stopping rule, retrieval policy) → new `policy_id` → new `%w` and new `%k`. A longer log under the same retrieval rule → new `memory_id` only.
 
 Sketch (fuller compile module): [examples/later/wf_acme_specialize.compile.lintel](../examples/later/wf_acme_specialize.compile.lintel).
 
@@ -58,19 +61,36 @@ Data-plane coverage (not a new Lintel IR): [DATA_PLANE.md](DATA_PLANE.md). Chore
 
 ### 6. Placement / multi-SKU (after `%w` is boring)
 
-MARKET year-3 line: workflow freeze + placement. Only after partner CI runs frozen ADGs for one SKU. Still classical kernel lowering. Still not LLM-as-`opt`.
+MARKET year-3 line: workflow freeze, then placement only when a profile shows the kernel row is not the limit ([SURVEY_MATCH.md](SURVEY_MATCH.md)). Only after partner CI runs frozen ADGs for one SKU. Kernel lowering stays classical. Serve stays `lookup(%k)`.
 
-### 7. Intra-session verifier bundle (gray zone — stronger T5, not M3)
+### 7. Controller-development module (after application wins and one compiler change)
 
-Year-1 T5 is a **git PR** then a new `%k` ([SURVEY_MATCH.md](SURVEY_MATCH.md) two clocks). Cake grows tactic/verifier rules *inside* a long session **as data**. That is allowed later **only** if:
+This is the self-evolving loop of the **control** IR. It is not the PoC, and it is not item 1. Specify it so the procedure can be proposed and retained without pretending a session log already does that. Run it only after the gate in [SURVEY_MATCH.md](SURVEY_MATCH.md): repeated serving wins on partner traces, and at least one compiler change measured on a workload that did not motivate the patch.
 
-| Required | Forbidden |
+Sketch: [examples/later/controller-dev.sketch.lintel](../examples/later/controller-dev.sketch.lintel). Laws: [LINTEL_IR.md](LINTEL_IR.md).
+
+| Required | Forbidden in this first experiment |
 |---|---|
-| Extra Finding rules / allowlist / cost cal loaded from a **versioned bundle** | Rewriting `check.py` while walking `^try0`→`^try1` |
-| Bundle hash in `%k` and `%w` | Agent-authored opcodes or keywords at runtime |
-| `check` stays a **pure function**; no LLM in `check` | “Compiler is an agent” / C6-A |
+| Delta is instructions or the retrieval **policy** | Editing \(F\), tolerances, or the required gate set |
+| Compiler pin and model pin fixed for every arm | Bumping `choreoir` in the same comparison |
+| Dev families and holdout families disjoint | Holdout traces in the proposer’s context |
+| Freeze the candidate before holdout | Mid-walk rewrite of the ADG being evaluated |
+| `promote` publishes `policy_id` only | `promote` calling `land` or writing a cubin |
+| Four arms: fixed policy, memory-only, frozen procedure, conventional search | Recursive edit of the promoter itself |
 
-**Need.** `%w` boring; a real `{where}` corpus (two allowlisted kernels are not it). **Exit.** Same `%w` + same bundle hash ⇒ same extra rules, or hard fail. Until then, route evolution through choreo PRs. Safer for replay; slower than Cake’s 80M-token harness paper.
+**Exit.** On held-out families, at matched per-job budget, the frozen procedure beats the fixed policy on application performance or on search cost at the same performance, after development cost is disclosed. Otherwise `reject`, and the old `policy_id` stays what application jobs pin.
+
+### 8. Intra-session verifier bundle (compiler data, not a controller)
+
+Cake grows tactic/verifier rules inside a long session as data. Classify the bundle before hashing it:
+
+| Bundle contents | Artifact | Identity |
+|---|---|---|
+| Extra `check` rules the pure function executes | Compiler | Hash beside `compiler_ver`, inside `%k` |
+| A longer retrieval corpus, same retrieval rule | Memory | `memory_id` only |
+| A new rule for which slot to try next | Controller | New `policy_id` |
+
+Allowed later only if `check` stays a pure function with no LLM, the bundle hash is in the identity above, and nothing rewrites `check.py` while walking `^try0`→`^try1`. Until a real `{where}` corpus exists, route compiler changes through choreo PRs. Two allowlisted kernels are not that corpus.
 
 ## Compiler passes on Lintel IR (coverage)
 
@@ -85,8 +105,9 @@ No pass lowers Lintel IR to CUDA. No pass is InstCombine on Triton. Choreo `chec
 
 ## Non-goals (still)
 
-- Survey M3 / C6-A / LLM-as-`opt`.
-- Mid-walk `check.py` rewrite sold as T5 (gray-zone bundle is **data**, still a pure `check`).
+- A model on the serve path, or dropping check and fallback.
+- Mid-walk `check.py` rewrite. A verifier bundle is data with an identity, and `check` stays pure.
+- Running the controller-development module before the gate, or calling a session log a self-improved controller.
 - One cost model for L1–L7.
 - Cake IR / Tile as the control IR, or as the year-1 live **face** (Choreo is the face; Triton is the printer).
 - “Cake v2 the company” or “Choreo the company.” The adapter contract is already in the PoC.
