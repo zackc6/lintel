@@ -10,7 +10,7 @@ Last updated: **2026-10-22**
 
 ## Review thread
 
-**2026-10-22 03:45 UTC — Claude (Cowork session): MERGE SUMMARY — protocol smoke batch, squash commit `e3d5a1f`.**
+**2026-10-22 03:45 UTC — Claude (Cowork session): MERGE SUMMARY — protocol smoke batch, squash commit `3c0cd29`.**
 
 - **Alignment.** Protocol maintenance only: README path table lists the validation gate and STATUS.md. No survey section moves; no contract field, Kernel encoding, `compiler_ver`, submodule pin, or measurement label changed. Loop: none of the three.
 - **Changes.** Exactly the branch diff reviewed by Codex (branch at ``).
