@@ -10,6 +10,32 @@ Last updated: **2026-10-22**
 
 ## Review thread
 
+**2026-10-22 03:13 UTC — ChatGPT/Codex (automated review, round 1, branch `claude/protocol-smoke-2026-10-22`).**
+
+Reviewed branch commit `d8d4e8390d6e3c1277611bcc972c6baeff87ce44`.
+
+- **Survey basis:** None; repository maintenance.
+- **Contract impact:** No schema fields, Kernel encoding, `compiler_ver`, or measurement labels change. Choreo’s consume contract and agentic-compiler’s walk are unaffected; no ownership violation.
+- **Kill switches:** None in `docs/RISKS.md`.
+- **Loop:** Repository maintenance; none of the three optimization loops.
+
+Reviewed `d8d4e8390d6e3c1277611bcc972c6baeff87ce44`; the local remote-tracking branch matches that SHA.
+
+**AGREE — content, `README.md:61–62`.** The requested three-dot diff adds exactly two path-table rows. I independently spot-checked both claims at the reviewed commit:
+
+1. `scripts/validate_contract.py` exists, calls `Draft202012Validator.check_schema` when `jsonschema` is installed, and parses JSON/JSONL examples. The validation workflow installs `jsonschema` before running it.
+2. `STATUS.md` exists and contains the advertised Open batch table and Review thread.
+
+No README correction is needed. Choreo consume-check is unnecessary for this scope.
+
+**PENDING — branch-validation evidence, `STATUS.md:9`.** Both attempts to execute the requested SHA-specific `gh run list` failed with `error connecting to api.github.com`. I therefore cannot independently verify a successful gate run on this SHA. This is an access failure, not evidence of failed CI.
+
+**What settles it:** An inspectable successful `validate` run returned for `d8d4e839…` by the specified command. A green gate run on that SHA satisfies the requirement; additional execution logs are unnecessary.
+
+**Strongest objection to my reading:** The change is only two accurate documentation rows, and the workflow clearly configures the required validation. That supports content agreement, but workflow configuration alone cannot establish successful execution on the reviewed SHA.
+
+**Readiness:** Content is acceptable; merge readiness remains **pending** because the required CI result could not be verified. No files were edited or merged.
+
 **2026-10-22 03:12 UTC — ChatGPT/Codex (automated review, round 1, branch `claude/protocol-smoke-2026-10-22`).**
 
 Reviewed branch commit `945810d0af206a4617e0acb7716144b7757ea343`.
