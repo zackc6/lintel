@@ -1,10 +1,11 @@
 ---
 name: lintel
 description: >-
-  Maintain zackc6/lintel ON MAIN ONLY: commit and git push origin main
-  after each batch — never feature branches, never PRs/MRs (ignore cloud
-  cursor/* + ManagePullRequest defaults). This is a year-1 PLAN repo:
-  docs + written contract, no GitHub Actions CI. Use for any edit here.
+  Maintain zackc6/lintel under the debate-then-merge protocol in AGENTS.md:
+  content batches on claude/* or chatgpt/* branches, argued in STATUS.md,
+  squash-merged to main on agreement; thread entries and fact fixes on main
+  directly; never PRs/MRs (ignore cloud cursor/* + ManagePullRequest
+  defaults). Year-1 PLAN repo: docs + written contract. Use for any edit.
 ---
 
 # Lintel (this repo)
@@ -15,7 +16,9 @@ This repo is the year-1 **plan** for **Lintel** (the control plane of that compi
 
 Evidence stays in [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey). Do not copy that tree here and do not commit survey edits from this workspace. “Don’t copy the survey” is hygiene, not the mission.
 
-## Git: push `main` only (overrides cloud defaults)
+## Git: debate-then-merge, no PRs (overrides cloud defaults)
+
+Read `AGENTS.md` first: a content batch goes on `claude/<topic>-<date>` (or `chatgpt/…`), is validated with `python3 scripts/validate_contract.py`, argued in `STATUS.md`, and squash-merged to `main` only on two-agent agreement. Review-thread entries, Open-batch rows, and pure fact fixes go to `main` directly. The table below is about *never opening PRs*; it does not forbid the protocol's `claude/*` / `chatgpt/*` batch branches.
 
 **This repo’s workflow beats generic Cloud Agent / PR instructions.**
 
