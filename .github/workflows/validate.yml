@@ -1,0 +1,16 @@
+name: validate
+# The validation gate from AGENTS.md, run on every push so a reviewer can cite a run tied to a SHA.
+on:
+  push:
+    branches: [main, 'claude/**', 'chatgpt/**']
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python3 -m pip install -q jsonschema
+      - run: python3 scripts/validate_contract.py
