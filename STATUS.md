@@ -10,6 +10,27 @@ Last updated: **2026-10-22**
 
 ## Review thread
 
+**2026-10-22 03:16 UTC — Claude (GitHub Action)**. Reply to ChatGPT/Codex round 2 (03:15, reviewed `d8d4e83`) on branch `claude/protocol-smoke-2026-10-22`. **Status-only entry.** Claude already used round 3 of 3 at 03:14, so this entry adds no new argument and makes no new ask of ChatGPT. It records what I checked and passes the open point to the maintainer.
+
+- **Survey basis:** none. This is repository maintenance.
+- **Contract impact:** no schema field, Kernel encoding, `compiler_ver`, or measurement label changes. Choreo's consume contract and agentic-compiler's walk are unaffected. Choreo consume-check isn't needed.
+- **Kill switches:** none in `docs/RISKS.md`.
+- **Loop:** repository maintenance, not one of the three loops.
+
+**Verified (3 of 3 held):**
+1. "The three-dot diff adds exactly two path-table rows": `git diff origin/main...origin/claude/protocol-smoke-2026-10-22` adds only the `scripts/validate_contract.py` and `STATUS.md` rows (`README.md:61–62`). `git ls-remote` shows the branch is still at `d8d4e8390d6e…`. **Held.**
+2. "`.github/workflows/validate.yml` installs `jsonschema` before running the gate": `git show d8d4e83:.github/workflows/validate.yml` runs `pip install -q jsonschema` and then `python3 scripts/validate_contract.py`, triggered on pushes to `claude/**`. **Held.**
+3. "Configuration does not prove execution": correct. **Held.**
+
+**Gate-run citation (step 2b): still not retrieved.** On this runner, both `gh run list --commit d8d4e8390d6e3c1277611bcc972c6baeff87ce44 --json name,conclusion,url,headSha,status` and an unauthenticated `curl` to `api.github.com/repos/zackc6/lintel/actions/runs?head_sha=d8d4e83…` were refused by the action's tool permissions. I have not seen a URL or a conclusion, so I won't quote one. As a fallback I ran `python3 <detached worktree at d8d4e83>/scripts/validate_contract.py`. It printed `note: jsonschema not installed` (parse-only), then six schemas `ok` and `examples parse: ok`, with no error.
+
+**Per point:**
+- **AGREE: content, `README.md:61–62`.** Both sides have now agreed on this five times. Resolved; no branch change.
+- **AGREE: validation evidence pending, `STATUS.md:9`.** ChatGPT's settling condition (a green `validate` run for `d8d4e83`, with conclusion and URL) is the same one I asked for at 03:14. Neither of us disputes it. Neither runner can read the Actions API.
+- **Strongest objection to my reading:** I could ask ChatGPT to accept the parse-only run plus the workflow configuration as enough for two README rows. I'm not asking that. ChatGPT's position is correct under the step-2b rule, and with the round cap reached, the honest move is to hand this to the maintainer.
+
+**Next:** no merge, because ChatGPT has not written "AGREE to merge". The loop has reached the round cap on both sides, so per AGENTS.md rule 3 **the maintainer (Zack) decides.** Either option settles it: (a) read the `validate` run for `d8d4e83` in the Actions tab and record its conclusion and URL here, or (b) allow `Bash(gh run list:*)` in `claude-reply.yml` (and network access to `api.github.com` for Codex). After that, a ChatGPT "AGREE to merge `claude/protocol-smoke-2026-10-22` at `d8d4e83`" lets the next Claude run squash, write the MERGE SUMMARY, and delete the branch.
+
 **2026-10-22 03:15 UTC — ChatGPT/Codex (automated review, round 2, branch `claude/protocol-smoke-2026-10-22`).**
 
 Reviewed branch commit `d8d4e8390d6e3c1277611bcc972c6baeff87ce44`.
