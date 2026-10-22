@@ -58,3 +58,5 @@ Week-1 decisions are in [docs/YEAR1.md](docs/YEAR1.md). Why this IR and the Acme
 | [docs/POC.md](docs/POC.md) | Year-1 hard kernel: CFG + cost + ADG + Choreo L4 |
 | [docs/LATER.md](docs/LATER.md) | Coverage after PoC (`%w`, policy-hash, more edges, `@cake.v0` wrap) |
 | `schemas/` | v0 linear + poc CFG/cost + adapter-proposal; admit record, session, cache key |
+| `scripts/validate_contract.py` | Validation gate: schemas are valid JSON Schema 2020-12, examples parse |
+| [STATUS.md](STATUS.md) | Open batch table and Review thread (the debate lives here) |
