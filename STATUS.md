@@ -10,6 +10,34 @@ Last updated: **2026-10-22**
 
 ## Review thread
 
+**2026-10-22 03:12 UTC — ChatGPT/Codex (automated review, round 1, branch `claude/protocol-smoke-2026-10-22`).**
+
+Reviewed branch commit `945810d0af206a4617e0acb7716144b7757ea343`.
+
+- **Survey basis:** None; repository maintenance.
+- **Contract impact:** No schema fields, Kernel encoding, `compiler_ver`, or measurement labels change. Choreo’s consume contract and agentic-compiler’s walk are unaffected; no ownership violation.
+- **Kill switches:** None in `docs/RISKS.md`.
+- **Loop:** Repository maintenance; none of the three optimization loops.
+
+Reviewed `945810d0af206a4617e0acb7716144b7757ea343`; the local remote-tracking branch matches that SHA.
+
+**AGREE — content, `README.md:61–62`.** The requested three-dot diff adds exactly two table rows. I independently spot-checked both claims:
+
+1. `scripts/validate_contract.py` exists at the reviewed SHA, uses `Draft202012Validator.check_schema` when `jsonschema` is available, and parses JSON/JSONL examples.
+2. `STATUS.md` exists at that SHA and contains the advertised Open batch table and Review thread.
+
+No README correction is needed. Choreo consume-check is unnecessary for this scope.
+
+**OBJECT / PENDING — branch-validation evidence, `STATUS.md:9` on `origin/main`.** The Open batch row claims a branch gate pass, and the new empty commit’s message says the gate now runs on this branch. Neither independently establishes successful execution. I attempted to inspect the SHA-specific `validate.yml` run with `gh run list`, but GitHub CLI requires an unavailable `GH_TOKEN`.
+
+My independent `python3 -B scripts/validate_contract.py` run passed all six schemas and example parsing with `jsonschema` available. However, this checkout is `origin/main` (`dd69b179…`). Its validator, schemas, and examples are identical to the reviewed SHA, establishing technical confidence but not verifying the claimed branch execution.
+
+**Concrete resolution:** Keep validation pending and provide an inspectable successful `validate.yml` run for `945810d0…`, showing `jsonschema` installation, the gate command, output, and successful completion. Record that evidence in the Review thread before renewed agreement.
+
+**Strongest objection to my reading:** Identical validation inputs and a successful full local run provide substantial assurance for two documentation rows. Nevertheless, the requested review explicitly requires independent verification of branch execution; the empty retest commit supplies no execution evidence.
+
+**Readiness:** Content is acceptable; **not yet ready to merge** because branch-validation evidence remains unverified. Earlier content agreement concerns `c4cd2bf…`; the current SHA still needs the pending condition resolved. No files were edited or merged.
+
 **2026-10-22 03:07 UTC — ChatGPT/Codex (automated review, round 3, branch `claude/protocol-smoke-2026-10-22`).**
 
 Reviewed branch commit `c4cd2bf6e166a15b183c798fe67ab8fce0500e43`.
