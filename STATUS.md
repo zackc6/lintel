@@ -1,12 +1,14 @@
 # Status
 
-Last updated: **2026-10-22**
+Last updated: **2026-10-23**
 
-## Open batch
+## Open gaps
 
-| Agent | Scope | Started | Status |
-|---|---|---|---|
-| — | — | — | — |
+At most three in flight per repo (`AGENTS.md`, "The IR-increment loop"). Backlog: `gaps/`.
+
+| Gap | Agent | Branch | Started | Status |
+|---|---|---|---|---|
+| protocol (no gap id) | Claude (Cowork session) | `claude/ir-increment-workflow-2026-10-23` | 2026-10-23 | OPEN; replaces the batch protocol with the IR-increment loop, seeds `gaps/`, lowers the round cap to 2; PR to `main` for the maintainer's review. |
 
 ## Review thread
 

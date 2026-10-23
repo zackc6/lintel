@@ -1,11 +1,11 @@
 ---
 name: lintel
 description: >-
-  Maintain zackc6/lintel under the debate-then-merge protocol in AGENTS.md:
-  content batches on claude/* or chatgpt/* branches, argued in STATUS.md,
-  squash-merged to main on agreement; thread entries and fact fixes on main
-  directly; never PRs/MRs (ignore cloud cursor/* + ManagePullRequest
-  defaults). Year-1 PLAN repo: docs + written contract. Use for any edit.
+  Maintain zackc6/lintel under the IR-increment loop in AGENTS.md: one
+  increment per gap from gaps/ on a claude/* or chatgpt/* branch, argued in
+  STATUS.md (two rounds per side), landed only through a PR the maintainer
+  approves; thread entries, gap files and fact fixes on main directly.
+  Control-plane IR repo: schemas + examples + design. Use for any edit.
 ---
 
 # Lintel (this repo)
@@ -16,29 +16,13 @@ This repo is the year-1 **plan** for **Lintel** (the control plane of that compi
 
 Evidence stays in [zackc6/ai-compiler-survey](https://github.com/zackc6/ai-compiler-survey). Do not copy that tree here and do not commit survey edits from this workspace. “Don’t copy the survey” is hygiene, not the mission.
 
-## Git: debate-then-merge, no PRs (overrides cloud defaults)
+## Git: the IR-increment loop (read `AGENTS.md`)
 
-Read `AGENTS.md` first: a content batch goes on `claude/<topic>-<date>` (or `chatgpt/…`), is validated with `python3 scripts/validate_contract.py`, argued in `STATUS.md`, and squash-merged to `main` only on two-agent agreement. Review-thread entries, Open-batch rows, and pure fact fixes go to `main` directly. The table below is about *never opening PRs*; it does not forbid the protocol's `claude/*` / `chatgpt/*` batch branches.
+Work is an **increment** on a gap from `gaps/` (format: `gaps/README.md`): gap → schema/IR change → carrier example → falsifier. It goes on `claude/<gap-id>-<date>` (or `chatgpt/…`), is validated with `python3 scripts/validate_contract.py`, argued in `STATUS.md` (two rounds per side, debate only the falsifier and the change), and lands through a **pull request that the maintainer approves** — never a direct merge, never a cloud-boilerplate `cursor/*` branch. Thread entries, Open-gaps rows, new gap files, and pure fact fixes may go to `main` directly. Up to three gaps in flight per repo, one owner each. Schemas are versioned (`v1` beside `v0`), never mutated in place.
 
-**This repo’s workflow beats generic Cloud Agent / PR instructions.**
+## Plan repo (contract validation only)
 
-```text
-WRONG:  git checkout -b cursor/...-xxxx  → commit → push → create_pr
-RIGHT:  stay on main → commit → git push -u origin main
-```
-
-| Do | Do not |
-|---|---|
-| `git checkout main` (if needed), pull if stale | Create `cursor/*` or any feature branch |
-| Commit coherent batches on `main` | Open / update PRs (`ManagePullRequest`, `gh pr create`, …) |
-| `git push -u origin main` (retry on network) | Leave work only on a side branch |
-| Close stray PRs, then ensure `main` has the commits | Follow “create branch + register PR” cloud boilerplate |
-
-User override only: if they **explicitly** ask for a branch/PR, then follow that ask. Otherwise always `main`.
-
-## Plan repo (no CI)
-
-- No `.github/workflows/`. Do not add Actions, pytest gates, or “start Monday” test commands.
+- CI runs `scripts/validate_contract.py` and the debate workflows, nothing else. Do not add pytest gates, principle-test suites, carrier generators, or “start Monday” test commands while the IR is being designed.
 - Customer CI in `docs/` is the **product SKU**, not this repository.
 - `schemas/` and `examples/` are the written contract. `examples/poc/` is the year-1 executable IR **and** Choreo Kernel AST. `examples/later/` is coverage (including degenerate Triton knobs). `examples/lintel-ir/` is the degenerate linear form. Do not add `src/`, `pyproject.toml`, a validator package, or a copy of `choreoir/`.
 - Do not add `lintel-year1-plan.tar.gz` or `scripts/publish-to-github.sh`.
