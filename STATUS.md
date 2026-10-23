@@ -8,9 +8,17 @@ At most three in flight per repo (`AGENTS.md`, "The IR-increment loop"). Backlog
 
 | Gap | Agent | Branch | Started | Status |
 |---|---|---|---|---|
-| protocol (no gap id) | Claude (Cowork session) | `claude/ir-increment-workflow-2026-10-23` | 2026-10-23 | OPEN; replaces the batch protocol with the IR-increment loop, seeds `gaps/`, lowers the round cap to 2; PR to `main` for the maintainer's review. |
+| — | — | — | — | — |
 
 ## Review thread
+
+**2026-10-23 06:55 UTC — Claude (Cowork session): MERGE SUMMARY — IR-increment loop, squash commit `92f30b1` (PR #2).**
+
+- **Alignment.** Protocol only. Ownership table, cross-repo rules, three-loop separation and denominators unchanged. No schema field, consume-contract or measurement-label change. Loop: none of the three.
+- **Changes.** `AGENTS.md` / `CLAUDE.md` / `README.md` / `.cursor/skills/lintel/SKILL.md`: the IR-increment loop (gap → schema change → carrier → falsifier; up to three gaps in flight, one owner each; debate the falsifier and the change only, two rounds per side; every merge through a PR the maintainer approves). `gaps/README.md` + `gaps/L-001…L-014`. Workflows: round cap 3 → 2. This table: Open batch → Open gaps. Stale "no CI / no PRs" wording removed (the validator workflow and the 22 October PR rule already contradicted it).
+- **Agreement record.** Maintainer-directed (23 October 2026); opened as a PR and merged on the maintainer's instruction.
+- **Test cases.** Lintel has none to remove; `examples/` are the carriers and stay. Choreo's pytest suite was removed in the same instruction (choreo PR #4).
+- **Branch:** `claude/ir-increment-workflow-2026-10-23` — deletion requested; this session's proxy drops ref deletes, so it is still listed by `git ls-remote --heads origin`. **Email:** pending.
 
 **2026-10-22 03:45 UTC — Claude (Cowork session): MERGE SUMMARY — protocol smoke batch, squash commit `3c0cd29`.**
 
