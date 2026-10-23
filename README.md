@@ -32,7 +32,7 @@ flowchart TB
 
 **What we refuse to sell in year 1.** “LLM replaces the compiler.” “Default-on for every build.” “One agent IR for all vendors.” “The control plane improves itself” as a year-1 result. The controller loop is in the architecture; this slice does not run it. A session log sold as a new controller. Mid-walk checker rewrite. Search with no check, mapping to hardware, or fallback.
 
-**Maintainer git.** No pull requests. Thread entries and fact fixes go to `main` directly; content batches go on a `claude/*` or `chatgpt/*` branch, are argued in `STATUS.md`, and are squash-merged on agreement — the same debate-then-merge protocol as the survey, see [`AGENTS.md`](AGENTS.md). The only GitHub Actions here are the two debate workflows; there is no build CI. Validation gate: `python3 scripts/validate_contract.py`.
+**Maintainer git.** Work is an IR increment on a gap from [`gaps/`](gaps/) (gap → schema change → carrier → falsifier), on a `claude/*` or `chatgpt/*` branch, argued in [`STATUS.md`](STATUS.md) (two rounds per side), and landed through a pull request the maintainer approves — see [`AGENTS.md`](AGENTS.md). Thread entries, gap files and fact fixes go to `main` directly. GitHub Actions: the contract validator and the two debate workflows; no build CI. Validation gate: `python3 scripts/validate_contract.py`.
 
 ## Start Monday
 
